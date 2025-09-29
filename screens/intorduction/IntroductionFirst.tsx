@@ -1,17 +1,20 @@
+import { useNavigation } from "expo-router";
 import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 const IntroductionFirst = () => {
+  const navigation: any = useNavigation();
   return (
     <View style={styles.introduction1Component}>
       <View style={styles.block1IntroComponent}>
         <View style={styles.imgBlock}>
           <Image
             source={require("../../assets/tajjob/introduction/introduction1.jpg")}
+            style={styles.img}
           />
         </View>
         <View style={styles.textBlock}>
-          <Text style={styles.title}>Find your job easily and quickly.</Text>
+          <Text style={styles.title}>Find your job easily and quickly</Text>
           <Text style={styles.description}>
             With TajJob you can easily search for jobs and apply with just one
             click. All jobs in one place!
@@ -24,7 +27,12 @@ const IntroductionFirst = () => {
           <View style={[styles.dots, styles.dot3]}></View>
         </View>
       </View>
-      <Pressable style={[styles.btnNext, styles.btn]}>
+      <Pressable
+        style={[styles.btnNext, styles.btn]}
+        onPress={() => {
+          navigation.replace("IntroductionSecond");
+        }}
+      >
         <Text style={[styles.btnNext, styles.text]}>Next</Text>
       </Pressable>
     </View>
@@ -40,18 +48,22 @@ const styles = StyleSheet.create({
   },
   block1IntroComponent: {},
   imgBlock: {},
+  img: {
+    width: "100%",
+    height: 400,
+  },
   textBlock: {
     marginTop: 3,
   },
   title: {
     fontWeight: "bold",
-    fontSize: 30,
+    fontSize: 33,
     textAlign: "center",
     color: "#2F61F6",
   },
   description: {
     fontWeight: "bold",
-    fontSize: 26,
+    fontSize: 24,
     color: "#8E8E8E",
     paddingHorizontal: 20,
   },
@@ -80,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3A65FF",
     textAlign: "center",
   },
-  
+
   btn: {
     marginTop: 25,
     padding: 10,

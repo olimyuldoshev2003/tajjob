@@ -10,7 +10,7 @@ const IntroductionMain = ({ navigation }: { navigation: any }) => {
       />
       <Pressable style={styles.btnGetStatedBtn}>
         <Text style={styles.btnGetStatedBtn} onPress={() => {
-          navigation.navigate("IntroductionFirst");
+          navigation.replace("IntroductionFirst");
         }}>
           Get Started
         </Text>
