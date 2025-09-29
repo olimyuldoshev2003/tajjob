@@ -15,16 +15,51 @@ const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        // gestureEnabled: true,
+
+      }}
+    >
       <Stack.Screen name="IntroductionMain" component={IntroductionMain} />
       <Stack.Screen name="IntroductionFirst" component={IntroductionFirst} />
       <Stack.Screen name="IntroductionSecond" component={IntroductionSecond} />
       <Stack.Screen name="IntroductionThird" component={IntroductionThird} />
       <Stack.Screen name="SignInWith" component={SignInWith} />
-      <Stack.Screen name="SignIn" component={SignIn} />
-      <Stack.Screen name="SignUp" component={SignUp} />
-      <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-      <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen
+        name="SignIn"
+        component={SignIn}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+        }}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUp}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerStyle: {},
+        }}
+      />
+      <Stack.Screen
+        name="ForgetPassword"
+        component={ForgetPassword}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+        }}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+        }}
+      />
       {/* <Stack.Screen name="Home" component={TabNavigator} /> */}
     </Stack.Navigator>
   );
