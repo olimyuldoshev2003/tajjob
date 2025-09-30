@@ -27,10 +27,11 @@ const IntroductionSecond = () => {
           <View style={[styles.dots, styles.dot3]}></View>
         </View>
       </View>
-      <Pressable style={[styles.btnNext, styles.btn]}
+      <Pressable
+        style={[styles.btnNext, styles.btn]}
         onPress={() => {
           navigation.replace("IntroductionThird");
-        }} 
+        }}
       >
         <Text style={[styles.btnNext, styles.text]}>Next</Text>
       </Pressable>

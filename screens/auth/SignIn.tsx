@@ -22,9 +22,14 @@ const SignIn = () => {
   return (
     <View style={styles.signInComponent}>
       <View style={styles.backToSignInWithPageBlock}>
-        <FontAwesome name="close" size={47} color="black" onPress={() => {
-          navigation.navigate("SignInWith")
-        }}/>
+        <FontAwesome
+          name="close"
+          size={47}
+          color="black"
+          onPress={() => {
+            navigation.navigate("SignInWith");
+          }}
+        />
       </View>
       <View style={styles.signInComponentBlock}>
         <Text style={styles.textSignIn}>Sign In</Text>

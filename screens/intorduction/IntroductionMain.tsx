@@ -9,9 +9,12 @@ const IntroductionMain = ({ navigation }: { navigation: any }) => {
         style={styles.imgLogo}
       />
       <Pressable style={styles.btnGetStatedBtn}>
-        <Text style={styles.btnGetStatedBtn} onPress={() => {
-          navigation.replace("IntroductionFirst");
-        }}>
+        <Text
+          style={styles.btnGetStatedBtn}
+          onPress={() => {
+            navigation.replace("IntroductionFirst");
+          }}
+        >
           Get Started
         </Text>
       </Pressable>

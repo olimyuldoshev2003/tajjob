@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: `100%`,
     paddingHorizontal: 20,
-    paddingTop: 35
+    paddingTop: 35,
   },
   block1SignIn: {
     alignItems: "center",

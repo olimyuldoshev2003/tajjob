@@ -24,7 +24,7 @@ const StackNavigator = () => {
         name="IntroductionMain"
         component={IntroductionMain}
         options={{
-          animation: "fade", 
+          animation: "fade",
         }}
       />
       <Stack.Screen

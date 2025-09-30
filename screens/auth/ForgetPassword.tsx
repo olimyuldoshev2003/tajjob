@@ -11,14 +11,18 @@ import {
 } from "react-native";
 
 const ForgetPassword = () => {
-  const navigation:any = useNavigation()
+  const navigation: any = useNavigation();
   return (
     <View style={styles.forgetPasswordComponent}>
       <View style={styles.backToSignInPageBlock}>
-
-        <FontAwesome name="close" size={47} color="black" onPress={() => {
-          navigation.navigate("SignIn")
-        }}/>
+        <FontAwesome
+          name="close"
+          size={47}
+          color="black"
+          onPress={() => {
+            navigation.navigate("SignIn");
+          }}
+        />
       </View>
       <View style={styles.forgetPasswordComponentBlock}>
         <Text style={styles.textForgetPassword}>Trouble logging in?</Text>
