@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: `100%`,
     paddingHorizontal: 20,
+    paddingTop: 35
   },
   block1SignIn: {
     alignItems: "center",
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderRadius: 20,
-    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.6)",
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
   },
   imgSignInWith: {
     width: 36,
