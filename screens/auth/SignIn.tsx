@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -13,11 +15,152 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "expo-router";
 
+// Types
+interface SignInForm {
+  email: string;
+  password: string;
+}
+
+interface ValidationErrors {
+  email?: string;
+  password?: string;
+  general?: string;
+}
+
 const SignIn = () => {
   const navigation: any = useNavigation();
 
+  const [formData, setFormData] = useState<SignInForm>({
+    email: "",
+    password: "",
+  });
   const [showAndHidePassword, setShowAndHidePassword] =
     useState<boolean>(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Validation functions
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string): boolean => {
+    return password.length >= 6;
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {};
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (!validatePassword(formData.password)) {
+      newErrors.password = "Password must be at least 6 characters long";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle input changes
+  const handleInputChange = (field: keyof SignInForm, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Clear field-specific error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
+  };
+
+  // Mock API call - replace with your actual authentication service
+  const mockSignInAPI = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; message?: string }> => {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Mock validation - replace with real authentication logic
+    if (email === "o@gmail.com" && password === "olim2003") {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        message: "Invalid email or password. Please try again.",
+      };
+    }
+  };
+
+  // Handle sign in
+  const handleSignIn = async () => {
+    // Clear previous errors
+    setErrors({});
+
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Replace with your actual authentication logic
+      const result = await mockSignInAPI(formData.email, formData.password);
+
+      if (result.success) {
+        // Successful sign in
+        Alert.alert("Success", "Welcome back!");
+        navigation.replace("Application");
+        // Navigate to the main app screen
+        // navigation.navigate("Home"); // Uncomment and adjust as needed
+
+        // Reset form
+        setFormData({ email: "", password: "" });
+      } else {
+        // Failed sign in
+        setErrors({
+          general: result.message || "Sign in failed. Please try again.",
+        });
+      }
+    } catch (error) {
+      // Handle network or other errors
+      setErrors({
+        general: "Network error. Please check your connection and try again.",
+      });
+      console.error("Sign in error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle social sign in
+  const handleSocialSignIn = (provider: string) => {
+    Alert.alert(
+      "Social Sign In",
+      `This would normally sign you in with ${provider}. Implement your social authentication logic here.`
+    );
+    // Implement social authentication logic (Google, Apple, etc.)
+    // This typically involves using OAuth flows or Firebase Authentication
+  };
+
+  // Handle enter key press for password field
+  const handlePasswordSubmit = () => {
+    handleSignIn();
+  };
 
   return (
     <View style={styles.signInComponent}>
@@ -27,13 +170,25 @@ const SignIn = () => {
           size={47}
           color="black"
           onPress={() => {
-            navigation.navigate("SignInWith");
+            if (!isLoading) {
+              navigation.navigate("SignInWith");
+            }
           }}
         />
       </View>
+
       <View style={styles.signInComponentBlock}>
         <Text style={styles.textSignIn}>Sign In</Text>
+
+        {/* General Error Message */}
+        {errors.general && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errors.general}</Text>
+          </View>
+        )}
+
         <View style={styles.inpFieldsBlock}>
+          {/* Email Input */}
           <View style={[styles.inpEmailBlock, styles.inpBlock]}>
             <Image
               source={require("../../assets/tajjob/auth/emailLogo.jpg")}
@@ -41,11 +196,25 @@ const SignIn = () => {
             />
             <TextInput
               placeholder="Email"
-              style={[styles.inpEmail, styles.input]}
+              style={[
+                styles.inpEmail,
+                styles.input,
+                errors.email && styles.inputError,
+              ]}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoComplete="email"
+              value={formData.email}
+              onChangeText={(value) => handleInputChange("email", value)}
+              onSubmitEditing={handlePasswordSubmit}
+              editable={!isLoading}
             />
+            {errors.email && (
+              <Text style={styles.fieldErrorText}>{errors.email}</Text>
+            )}
           </View>
+
+          {/* Password Input */}
           <View style={[styles.inpPasswordBlock, styles.inpBlock]}>
             <Image
               source={require("../../assets/tajjob/auth/passwordLogo.jpg")}
@@ -53,8 +222,16 @@ const SignIn = () => {
             />
             <TextInput
               placeholder="Password"
-              style={[styles.inpPassword, styles.input]}
+              style={[
+                styles.inpPassword,
+                styles.input,
+                errors.password && styles.inputError,
+              ]}
               secureTextEntry={!showAndHidePassword}
+              value={formData.password}
+              onChangeText={(value) => handleInputChange("password", value)}
+              onSubmitEditing={handlePasswordSubmit}
+              editable={!isLoading}
             />
             {showAndHidePassword ? (
               <AntDesign
@@ -62,7 +239,7 @@ const SignIn = () => {
                 size={35}
                 color="black"
                 style={styles.showAndHidePasswordIcon}
-                onPress={() => setShowAndHidePassword(false)}
+                onPress={() => !isLoading && setShowAndHidePassword(false)}
               />
             ) : (
               <AntDesign
@@ -70,70 +247,121 @@ const SignIn = () => {
                 size={35}
                 color="black"
                 style={styles.showAndHidePasswordIcon}
-                onPress={() => setShowAndHidePassword(true)}
+                onPress={() => !isLoading && setShowAndHidePassword(true)}
               />
             )}
+            {errors.password && (
+              <Text style={styles.fieldErrorText}>{errors.password}</Text>
+            )}
+
             <View style={styles.btnForgetPasswordBlock}>
               <Pressable
                 style={styles.btnForgetPassword}
                 onPress={() => {
-                  navigation.navigate("ForgetPassword");
+                  if (!isLoading) {
+                    navigation.navigate("ForgetPassword");
+                  }
                 }}
+                disabled={isLoading}
               >
-                <Text style={styles.textBtnForgetPassword}>
+                <Text
+                  style={[
+                    styles.textBtnForgetPassword,
+                    isLoading && styles.disabledText,
+                  ]}
+                >
                   Forgot your password
                 </Text>
               </Pressable>
             </View>
           </View>
-          <Pressable style={styles.btnSignIn}>
-            <Text style={styles.textBtnSignIn}>Sign In</Text>
+
+          {/* Sign In Button */}
+          <Pressable
+            style={[styles.btnSignIn, isLoading && styles.btnDisabled]}
+            onPress={handleSignIn}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.textBtnSignIn}>Sign In</Text>
+            )}
           </Pressable>
         </View>
+
+        {/* Divider */}
         <View style={styles.block2SignIn}>
           <View style={[styles.line, styles.line1]}></View>
           <Text style={styles.textBlock3SignIn}>Or</Text>
           <View style={[styles.line, styles.line2]}></View>
         </View>
+
+        {/* Social Sign In Options */}
         <View style={styles.block3SignIn}>
-          {/* <View style={styles.blocksSignInWith}>
-          <Image
-          source={require("../../assets/tajjob/auth/facebookLogo.jpg")}
-          style={styles.imgSignInWith}
-          />
-          <Text style={styles.textSignInWith}>Continue with Facebook</Text>
-          </View> */}
-          <View style={styles.blocksSignInWith}>
+          <Pressable
+            style={[
+              styles.blocksSignInWith,
+              isLoading && styles.socialButtonDisabled,
+            ]}
+            onPress={() => handleSocialSignIn("Google")}
+            disabled={isLoading}
+          >
             <Image
               source={require("../../assets/tajjob/auth/googleLogo.jpg")}
               style={styles.imgSignInWith}
             />
             <Text style={styles.textSignInWith}>Continue with Google</Text>
-          </View>
-          <View style={styles.blocksSignInWith}>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.blocksSignInWith,
+              isLoading && styles.socialButtonDisabled,
+            ]}
+            onPress={() => handleSocialSignIn("Twitter")}
+            disabled={isLoading}
+          >
             <Image
               source={require("../../assets/tajjob/auth/twitterLogo.jpg")}
               style={styles.imgSignInWith}
             />
-            <Text style={styles.textSignInWith}>Continue with Twiiter</Text>
-          </View>
-          <View style={styles.blocksSignInWith}>
+            <Text style={styles.textSignInWith}>Continue with Twitter</Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.blocksSignInWith,
+              isLoading && styles.socialButtonDisabled,
+            ]}
+            onPress={() => handleSocialSignIn("Apple")}
+            disabled={isLoading}
+          >
             <Image
               source={require("../../assets/tajjob/auth/appleLogo.jpg")}
               style={styles.imgSignInWith}
             />
-            <Text style={styles.textSignInWith}>Continue with IOS</Text>
-          </View>
+            <Text style={styles.textSignInWith}>Continue with iOS</Text>
+          </Pressable>
         </View>
+
+        {/* Sign Up Link */}
         <View style={styles.blockSignUpOpenPageBtn}>
           <Text style={styles.textSignUp}>Don't have an account?</Text>
           <Pressable
             style={styles.btnSignUp}
             onPress={() => {
-              navigation.navigate("SignUp");
+              if (!isLoading) {
+                navigation.navigate("SignUp");
+              }
             }}
+            disabled={isLoading}
           >
-            <Text style={styles.textBtnSignUp}>Sign up</Text>
+            <Text
+              style={[styles.textBtnSignUp, isLoading && styles.disabledText]}
+            >
+              Sign up
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -155,7 +383,6 @@ const styles = StyleSheet.create({
   },
   signInComponentBlock: {
     display: "flex",
-    // justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
   },
@@ -200,12 +427,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     width: `100%`,
   },
+  inputError: {
+    borderColor: "#ff3b30",
+    borderWidth: 1,
+  },
   btnForgetPasswordBlock: {
     marginTop: 5,
     display: "flex",
     alignItems: "flex-end",
   },
-
   btnForgetPassword: {},
   textBtnForgetPassword: {
     textAlign: "right",
@@ -217,6 +447,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#3A65FF",
     paddingVertical: 12,
     borderRadius: 20,
+  },
+  btnDisabled: {
+    backgroundColor: "#9cb0ff",
   },
   textBtnSignIn: {
     textAlign: "center",
@@ -263,6 +496,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
   },
+  socialButtonDisabled: {
+    opacity: 0.5,
+  },
   imgSignInWith: {
     width: 36,
     height: 36,
@@ -285,5 +521,26 @@ const styles = StyleSheet.create({
   textBtnSignUp: {
     color: "#3A65FF",
     fontSize: 16,
+  },
+  errorContainer: {
+    backgroundColor: "#ff3b30",
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+    width: 320,
+  },
+  errorText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+  },
+  fieldErrorText: {
+    color: "#ff3b30",
+    fontSize: 14,
+    marginTop: 5,
+    marginLeft: 10,
+  },
+  disabledText: {
+    opacity: 0.5,
   },
 });

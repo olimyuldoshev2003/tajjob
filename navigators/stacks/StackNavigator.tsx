@@ -10,6 +10,7 @@ import IntroductionThird from "@/screens/intorduction/IntroductionThird";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { StyleSheet } from "react-native";
+import TabNavigator from "../tabs/TabNavigator";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -31,7 +32,7 @@ const StackNavigator = () => {
         name="IntroductionFirst"
         component={IntroductionFirst}
         options={{
-          animation: "slide_from_bottom",
+          animation: "slide_from_left",
         }}
       />
       <Stack.Screen
@@ -91,6 +92,7 @@ const StackNavigator = () => {
           animation: "slide_from_right",
         }}
       />
+      <Stack.Screen name="Application" component={TabNavigator} />
     </Stack.Navigator>
   );
 };
