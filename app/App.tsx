@@ -1,4 +1,5 @@
 import StackNavigator from "@/navigators/stacks/StackNavigator";
+import TabNavigator from "@/navigators/tabs/TabNavigator";
 import {
   NavigationContainer,
   NavigationIndependentTree,
@@ -24,7 +25,7 @@ function App() {
   return (
     <NavigationIndependentTree>
       <NavigationContainer>
-        <StackNavigator />
+        <TabNavigator />
       </NavigationContainer>
     </NavigationIndependentTree>
   );
