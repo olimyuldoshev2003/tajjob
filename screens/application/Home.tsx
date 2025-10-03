@@ -1,6 +1,13 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 // Icons
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -35,6 +42,12 @@ const Home = () => {
               />
               <TextInput style={styles.searchInput} placeholder="Search" />
             </View>
+            <Pressable style={styles.filterBtn}>
+              <Image
+                source={require("../../assets/tajjob/home/filter.jpg")}
+                style={styles.filterIcon}
+              />
+            </Pressable>
           </View>
         </View>
         <View style={styles.sectionHomeComponent}></View>
@@ -55,14 +68,17 @@ const styles = StyleSheet.create({
   homeComponentBlock: {},
   headerHomeComponent: {
     backgroundColor: "#0961F6",
-    paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 30,
+    borderStartEndRadius: 20,
+    borderEndEndRadius: 20,
+    boxShadow: "0 6px 4px #00000040",
   },
   headerBlock1: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    paddingHorizontal: 20,
   },
   headerTextBlock: {},
   greetingsAndName: {
@@ -93,9 +109,14 @@ const styles = StyleSheet.create({
   },
   headerBlock2: {
     marginTop: 25,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 10,
   },
   searchInputBlock: {
     position: "relative",
+    flex: 1,
   },
   searchIcon: {
     position: "absolute",
@@ -112,5 +133,12 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     fontWeight: "600",
   },
+  filterBtn: {
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+  },
+  filterIcon: {},
   sectionHomeComponent: {},
 });
