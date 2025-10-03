@@ -52,9 +52,7 @@ const Home = () => {
         </View>
         <View style={styles.sectionHomeComponent}>
           {/* Jobs */}
-          <View style={styles.container}>
-
-          </View>
+          <View style={styles.container}></View>
         </View>
       </View>
     </View>
@@ -146,4 +144,5 @@ const styles = StyleSheet.create({
   },
   filterIcon: {},
   sectionHomeComponent: {},
+  container: {},
 });
