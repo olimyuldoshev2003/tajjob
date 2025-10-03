@@ -12,6 +12,7 @@
   "javascript.inlayHints.parameterTypes.enabled": false,
   "javascript.inlayHints.variableTypes.enabled": false,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": false,
-  // "typescript.inlayHints.variableTypes.enabled": true,
-  "audioCues.noInlayHints": "off"
+  "accessibility.signals.noInlayHints": {
+    "sound": "off"
+  }
 }
