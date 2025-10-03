@@ -50,7 +50,12 @@ const Home = () => {
             </Pressable>
           </View>
         </View>
-        <View style={styles.sectionHomeComponent}></View>
+        <View style={styles.sectionHomeComponent}>
+          {/* Jobs */}
+          <View style={styles.container}>
+
+          </View>
+        </View>
       </View>
     </View>
   );
