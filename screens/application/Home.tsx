@@ -14,6 +14,7 @@ import {
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "expo-router";
 
 // Define the props interface
 interface HomeProps {
@@ -21,6 +22,8 @@ interface HomeProps {
 }
 
 const Home = ({ onJobPress }: HomeProps) => {
+  const navigation: any = useNavigation();
+
   const jobs = [
     {
       id: 1,
@@ -117,6 +120,14 @@ const Home = ({ onJobPress }: HomeProps) => {
     },
   ];
 
+  const handleJobPress = (job: any) => {
+    // Call the parent's onJobPress function if it exists
+    onJobPress?.(job); // This equivalents to:
+    // if (onJobPress) {
+    //   onJobPress(job);
+    // }
+  };
+
   // Component for rendering applicant images with dynamic positioning
   const ApplierImages = ({ applierImgs }: { applierImgs: any }) => {
     return (
@@ -141,11 +152,6 @@ const Home = ({ onJobPress }: HomeProps) => {
     );
   };
 
-  const handleJobPress = (job: any) => {
-    // Call the parent's onJobPress function if it exists
-    onJobPress?.(job);
-  };
-
   return (
     <View style={styles.homeComponent}>
       <View style={styles.homeComponentBlock}>
@@ -161,6 +167,9 @@ const Home = ({ onJobPress }: HomeProps) => {
                 size={44}
                 color="white"
                 style={styles.notificationIcon}
+                onPress={() => {
+                  navigation.navigate("Notifications");
+                }}
               />
               <View style={styles.newNotificationNotice} />
             </View>

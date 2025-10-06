@@ -1,11 +1,9 @@
-import React, { useRef, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import React, { useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Modalize } from "react-native-modalize";
 
 // Import your screens
 import History from "@/screens/application/History";
-import Home from "@/screens/application/Home";
 import Message from "@/screens/application/Message";
 import Profile from "@/screens/application/Profile";
 
@@ -14,22 +12,24 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import JobDetailModal from "./JobDetailModal";
+import JobDetailModal from "../../components/home/JobDetailModal";
+import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
 
-const Tab = createBottomTabNavigator();
+const TabNavigator = () => {
+  const Tab = createBottomTabNavigator();
 
-const TabNavigatorWithModal = () => {
   const modalizeRef = useRef<any>(null);
   const [selectedJob, setSelectedJob] = useState<any>(null);
 
   // Function to open modal with job data
-  const openJobModal = (jobData: any) => {
+  function openJobModal(jobData: any) {
     setSelectedJob(jobData);
     modalizeRef.current?.open();
-  };
+  }
 
-  // Enhanced Home component with modal control
-  const HomeWithModal = () => <Home onJobPress={openJobModal} />;
+  const StackNavigatorHomePageWithFunctionOpenJobModal = () => (
+    <StackNavigatorHomePage openJobModal={openJobModal} />
+  );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -52,8 +52,8 @@ const TabNavigatorWithModal = () => {
         }}
       >
         <Tab.Screen
-          name="Home"
-          component={HomeWithModal}
+          name="HomeStack"
+          component={StackNavigatorHomePageWithFunctionOpenJobModal}
           options={{
             tabBarLabel: "Job",
             tabBarIcon({ size, color }) {
@@ -103,4 +103,4 @@ const TabNavigatorWithModal = () => {
   );
 };
 
-export default TabNavigatorWithModal;
+export default TabNavigator;
