@@ -4,16 +4,17 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Import your screens
 import History from "@/screens/application/History";
-import Message from "@/screens/application/Message";
 import Profile from "@/screens/application/Profile";
 
 // Icons
+import Messages from "@/screens/application/Message";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import JobDetailModal from "../../components/home/JobDetailModal";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
+import StackNavigatorMessagesPage from "../stacks/StackNavigatorMessagesPage";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
@@ -64,9 +65,10 @@ const TabNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="Message"
-          component={Message}
+          name="MessagesStack"
+          component={StackNavigatorMessagesPage}
           options={{
+            tabBarLabel: "Message",
             tabBarIcon({ size, color }) {
               return (
                 <MaterialCommunityIcons

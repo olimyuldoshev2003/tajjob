@@ -207,9 +207,7 @@ const Home = ({ onJobPress }: HomeProps) => {
                     <Text style={styles.job}>{job.job}</Text>
                   </View>
                 </View>
-                <Pressable>
-                  <FontAwesome name="bookmark-o" size={36} color="black" />
-                </Pressable>
+                <FontAwesome name="bookmark-o" size={36} color="black" />
               </View>
               <View style={styles.locationContainerBlock}>
                 <Entypo name="location-pin" size={29} color="black" />
@@ -347,6 +345,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 20,
     backgroundColor: "#fff",
+    zIndex: 20,
   },
   headerContainerBlock: {
     flexDirection: "row",
