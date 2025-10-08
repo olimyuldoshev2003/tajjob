@@ -7,7 +7,6 @@ import History from "@/screens/application/History";
 import Profile from "@/screens/application/Profile";
 
 // Icons
-import Messages from "@/screens/application/Message";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
