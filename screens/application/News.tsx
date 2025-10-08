@@ -4,7 +4,10 @@ import React from 'react'
 const News = () => {
   return (
     <View style={styles.newsComponent}>
-      <ScrollView contentContainerStyle={styles.newsBlock}>
+      <ScrollView
+        contentContainerStyle={styles.newsBlock}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.newsSentDay}>Yesterday</Text>
 
         {/* News 1 */}

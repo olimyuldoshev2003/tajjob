@@ -5,7 +5,10 @@ import { ScrollView } from "react-native-gesture-handler";
 const Suggestions = () => {
   return (
     <View style={styles.suggestionsComponent}>
-      <ScrollView contentContainerStyle={styles.suggestions}>
+      <ScrollView
+        contentContainerStyle={styles.suggestions}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.suggestionsSentDay}>Yesterday</Text>
 
         {/* Suggestion 1 */}
