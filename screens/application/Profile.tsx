@@ -1,5 +1,12 @@
+import Entypo from "@expo/vector-icons/Entypo";
 import React from "react";
-import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 
 const Profile = () => {
   return (
@@ -19,12 +26,31 @@ const Profile = () => {
           </View>
           <View style={styles.settingsAndFunctionalities}>
             <View style={styles.general}>
-              {/* <Pressable style={styles.btnEditProfile}>
-                <Text style={styles.btntextEditProfile}></Text>
-              </Pressable> */}
-              <View></View>
+              <Text style={styles.generalText}>General</Text>
+              <View style={styles.generalBlock}>
+                {/* Edit User */}
+                <TouchableHighlight
+                  style={[styles.editUserBtn, styles.btnFunc]}
+                >
+                  <View style={styles.iconFuncTypeAndIconRightSideBlock}>
+                    <View style={styles.iconAndFuncTypeBlock}>
+                      <Image  style={styles.icon} />
+                      <Text style={styles.funcTypeText}></Text>
+                    </View>
+                    <Entypo
+                      name="chevron-small-right"
+                      size={37}
+                      color="black"
+                      style={styles.rightSideIcon}
+                    />
+                  </View>
+                </TouchableHighlight>
+              </View>
             </View>
-            <View style={styles.äppearance}></View>
+            <View style={styles.appearance}>
+              <Text style={styles.appearanceText}>Appearance</Text>
+              <View style={styles.appearanceBlock}></View>
+            </View>
           </View>
         </View>
       </View>
@@ -35,8 +61,13 @@ const Profile = () => {
 export default Profile;
 
 const styles = StyleSheet.create({
-  profileComponent: { flex: 1, backgroundColor: "#2623D2" },
-  profileComponentBlock: {},
+  profileComponent: {
+    flex: 1,
+    backgroundColor: "#2623D2",
+  },
+  profileComponentBlock: {
+    flex: 1,
+  },
   headerBlockProfileComponent: {
     padding: 25,
     paddingTop: 50,
@@ -54,10 +85,11 @@ const styles = StyleSheet.create({
     marginTop: 65,
   },
   imgFullnameAndNumberPhoneOfUserBlock: {
+    // position: "absolute",
     alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 20,
-    top: -67,
+    top: -65,
   },
   userImg: {
     width: 96,
@@ -73,7 +105,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "400",
   },
-  settingsAndFunctionalities: {},
+  settingsAndFunctionalities: {
+    padding: 20,
+    paddingTop: 0,
+  },
   general: {},
-  äppearance: {},
+  generalText: {
+    fontSize: 22,
+    fontWeight: "500",
+  },
+  generalBlock: {},
+  // Styles of 6 type buttons, which has the same style
+  btnFunc: {},
+  iconFuncTypeAndIconRightSideBlock: {},
+
+  appearance: {},
+  appearanceText: {
+    fontSize: 22,
+    fontWeight: "500",
+  },
+  appearanceBlock: {},
+
 });
