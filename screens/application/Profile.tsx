@@ -2,6 +2,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import React from "react";
 import {
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -18,13 +19,13 @@ const Profile = () => {
         <View style={styles.sectionBlockProfileComponent}>
           <View style={styles.imgFullnameAndNumberPhoneOfUserBlock}>
             <Image
-              source={require("../../assets/tajjob/profile/prpofileImg.jpg")}
+              source={require("../../assets/tajjob/profile/profileImg.jpg")}
               style={styles.userImg}
             />
             <Text style={styles.userFullname}>Olim Yuldoshev</Text>
             <Text style={styles.userNumberPhone}>+992919697875</Text>
           </View>
-          <View style={styles.settingsAndFunctionalities}>
+          <ScrollView contentContainerStyle={styles.settingsAndFunctionalities}>
             <View style={styles.general}>
               <Text style={styles.generalText}>General</Text>
               <View style={styles.generalBlock}>
@@ -34,8 +35,59 @@ const Profile = () => {
                 >
                   <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                     <View style={styles.iconAndFuncTypeBlock}>
-                      <Image  style={styles.icon} />
-                      <Text style={styles.funcTypeText}></Text>
+                      <View style={styles.iconBlock}>
+                        <Image
+                          source={require("../../assets/tajjob/profile/userIcon.jpg")}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <Text style={styles.funcTypeText}>Edit user</Text>
+                    </View>
+                    <Entypo
+                      name="chevron-small-right"
+                      size={37}
+                      color="black"
+                      style={styles.rightSideIcon}
+                    />
+                  </View>
+                </TouchableHighlight>
+
+                {/* Create Resume */}
+                <TouchableHighlight
+                  style={[styles.createResumeBtn, styles.btnFunc]}
+                >
+                  <View style={styles.iconFuncTypeAndIconRightSideBlock}>
+                    <View style={styles.iconAndFuncTypeBlock}>
+                      <View style={styles.iconBlock}>
+                        <Image
+                          source={require("../../assets/tajjob/profile/documentIcon.jpg")}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <Text style={styles.funcTypeText}>Create resume</Text>
+                    </View>
+                    <Entypo
+                      name="chevron-small-right"
+                      size={37}
+                      color="black"
+                      style={styles.rightSideIcon}
+                    />
+                  </View>
+                </TouchableHighlight>
+
+                {/* Saved Jobs */}
+                <TouchableHighlight
+                  style={[styles.savedJobsBtn, styles.btnFunc]}
+                >
+                  <View style={styles.iconFuncTypeAndIconRightSideBlock}>
+                    <View style={styles.iconAndFuncTypeBlock}>
+                      <View style={styles.iconBlock}>
+                        <Image
+                          source={require("../../assets/tajjob/profile/saveIcon.jpg")}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <Text style={styles.funcTypeText}>Saved jobs</Text>
                     </View>
                     <Entypo
                       name="chevron-small-right"
@@ -49,9 +101,76 @@ const Profile = () => {
             </View>
             <View style={styles.appearance}>
               <Text style={styles.appearanceText}>Appearance</Text>
-              <View style={styles.appearanceBlock}></View>
+              <View style={styles.appearanceBlock}>
+                {/* Settings */}
+                <TouchableHighlight
+                  style={[styles.settingsBtn, styles.btnFunc]}
+                >
+                  <View style={styles.iconFuncTypeAndIconRightSideBlock}>
+                    <View style={styles.iconAndFuncTypeBlock}>
+                      <View style={styles.iconBlock}>
+                        <Image
+                          source={require("../../assets/tajjob/profile/settingsIcon.jpg")}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <Text style={styles.funcTypeText}>Settings</Text>
+                    </View>
+                    <Entypo
+                      name="chevron-small-right"
+                      size={37}
+                      color="black"
+                      style={styles.rightSideIcon}
+                    />
+                  </View>
+                </TouchableHighlight>
+
+                {/* Securiry */}
+                <TouchableHighlight
+                  style={[styles.securityBtn, styles.btnFunc]}
+                >
+                  <View style={styles.iconFuncTypeAndIconRightSideBlock}>
+                    <View style={styles.iconAndFuncTypeBlock}>
+                      <View style={styles.iconBlock}>
+                        <Image
+                          source={require("../../assets/tajjob/profile/lockIcon.jpg")}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <Text style={styles.funcTypeText}>Security</Text>
+                    </View>
+                    <Entypo
+                      name="chevron-small-right"
+                      size={37}
+                      color="black"
+                      style={styles.rightSideIcon}
+                    />
+                  </View>
+                </TouchableHighlight>
+
+                {/* Share */}
+                <TouchableHighlight style={[styles.shareBtn, styles.btnFunc]}>
+                  <View style={styles.iconFuncTypeAndIconRightSideBlock}>
+                    <View style={styles.iconAndFuncTypeBlock}>
+                      <View style={styles.iconBlock}>
+                        <Image
+                          source={require("../../assets/tajjob/profile/shareIcon.jpg")}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <Text style={styles.funcTypeText}>Share</Text>
+                    </View>
+                    <Entypo
+                      name="chevron-small-right"
+                      size={37}
+                      color="black"
+                      style={styles.rightSideIcon}
+                    />
+                  </View>
+                </TouchableHighlight>
+              </View>
             </View>
-          </View>
+          </ScrollView>
         </View>
       </View>
     </View>
@@ -114,10 +233,40 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "500",
   },
-  generalBlock: {},
+  generalBlock: {
+    marginTop: 20,
+    gap: 15,
+  },
+  editUserBtn: {},
+  createResumeBtn: {},
+  savedJobsBtn: {},
+  /////////////////////////////////////////////////////////////
   // Styles of 6 type buttons, which has the same style
   btnFunc: {},
-  iconFuncTypeAndIconRightSideBlock: {},
+  iconFuncTypeAndIconRightSideBlock: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  iconAndFuncTypeBlock: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 20,
+  },
+  iconBlock: {
+    backgroundColor: "#D9D9D9",
+    padding: 10,
+    borderRadius: 50,
+  },
+
+  icon: {
+    width: 32,
+    height: 32,
+    resizeMode: "contain",
+  },
+  funcTypeText: {},
+  rightSideIcon: {},
+  /////////////////////////////////////////////////////////////
 
   appearance: {},
   appearanceText: {
@@ -125,5 +274,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   appearanceBlock: {},
-
+  settingsBtn: {},
+  securityBtn: {},
+  shareBtn: {},
 });
