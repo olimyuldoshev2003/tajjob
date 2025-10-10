@@ -3,8 +3,6 @@ import React, { useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Import your screens
-import History from "@/screens/application/History";
-import Profile from "@/screens/application/Profile";
 
 // Icons
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -12,8 +10,10 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import JobDetailModal from "../../components/home/JobDetailModal";
+import StackNavigatorHistoryPage from "../stacks/StackNavigatorHistoryPage";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
 import StackNavigatorMessagesPage from "../stacks/StackNavigatorMessagesPage";
+import StackNavigatorProfilePage from "../stacks/StackNavigatorProfilePage";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
@@ -80,18 +80,20 @@ const TabNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="History"
-          component={History}
+          name="HistoryStack"
+          component={StackNavigatorHistoryPage}
           options={{
+            tabBarLabel: "History",
             tabBarIcon({ size, color }) {
               return <FontAwesome5 name="history" size={size} color={color} />;
             },
           }}
         />
         <Tab.Screen
-          name="Profile"
-          component={Profile}
+          name="ProfileStack"
+          component={StackNavigatorProfilePage}
           options={{
+            tabBarLabel: "Profile",
             tabBarIcon({ size, color }) {
               return <FontAwesome name="user" size={size} color={color} />;
             },

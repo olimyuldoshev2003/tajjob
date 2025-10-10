@@ -192,7 +192,14 @@ const Home = ({ onJobPress }: HomeProps) => {
             </Pressable>
           </View>
         </View>
+
         <ScrollView contentContainerStyle={styles.sectionHomeComponent}>
+          <View style={styles.suggestedJobAndSeeAllTextsBlock}>
+            <Text style={styles.suggestedJobText}>Suggested job</Text>
+            <Pressable style={styles.seeAllBtn}>
+              <Text style={styles.seeAllBtnText}>See all</Text>
+            </Pressable>
+          </View>
           {jobs.map((job) => (
             <Pressable
               key={job.id}
@@ -236,6 +243,105 @@ const Home = ({ onJobPress }: HomeProps) => {
               </View>
             </Pressable>
           ))}
+          <View style={styles.recentJobsBlock}>
+            <Text style={styles.recentJobsText}>Recent Jobs</Text>
+            <ScrollView
+              horizontal
+              style={styles.filterByCategoryBlock}
+              contentContainerStyle={styles.filterByCategoryBlockScroll}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            >
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>All</Text>
+              </Pressable>
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>IT-Job</Text>
+              </Pressable>
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>Operator</Text>
+              </Pressable>
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              </Pressable>
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              </Pressable>
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              </Pressable>
+              <Pressable style={styles.filterByCategoryBtn}>
+                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              </Pressable>
+            </ScrollView>
+            <View style={styles.recentJobs}>
+              {jobs.map((job) => (
+                <Pressable
+                  key={job.id}
+                  style={styles.containerRecentJobs}
+                  onPress={() => handleJobPress(job)}
+                >
+                  <View style={styles.headerContainerBlockRecentJobs}>
+                    <View
+                      style={
+                        styles.employerImgEmployerNameAndJobBlockRecentJobs
+                      }
+                    >
+                      <Image
+                        source={job.employerImg}
+                        style={styles.employerImgRecentJobs}
+                      />
+                      <View style={styles.employerNameAndJobBlockRecentJobs}>
+                        <Text style={styles.employerNameRecentJobs}>
+                          {job.employer}
+                        </Text>
+                        <Text style={styles.jobRecentJobs}>{job.job}</Text>
+                      </View>
+                    </View>
+                    <FontAwesome name="bookmark-o" size={36} color="black" />
+                  </View>
+                  <View style={styles.locationContainerBlockRecentJobs}>
+                    <Entypo name="location-pin" size={29} color="black" />
+                    <Text style={styles.locationRecentJobs}>
+                      {job.location}
+                    </Text>
+                  </View>
+                  <View
+                    style={
+                      styles.employmentTypeWorkingModelAndJobLevelContainerBlockRecentJobs
+                    }
+                  >
+                    <Text style={styles.employmentTypeRecentJobs}>
+                      {job.employmentType}
+                    </Text>
+                    <Text style={styles.workingModelRecentJobs}>
+                      {job.workingModel}
+                    </Text>
+                    <Text style={styles.jobLevelRecentJobs}>
+                      {job.jobLevel}
+                    </Text>
+                  </View>
+                  <View style={styles.lineContainerBlockRecentJobs} />
+                  <View
+                    style={styles.appliersAndSalaryContainerBlockRecentJobs}
+                  >
+                    <View
+                      style={styles.someAppliersImgsAndAppliersAmountRecentJobs}
+                    >
+                      <ApplierImages applierImgs={job.applierImgs} />
+                      <Text style={styles.aplliersAmountRecentJobs}>
+                        {job.appliers} Appliers
+                      </Text>
+                    </View>
+                    <Text style={styles.salaryAmountRecentJobs}>
+                      <Text style={styles.salaryRecentJobs}>{job.salary}</Text>
+                      /month
+                    </Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          </View>
         </ScrollView>
       </View>
     </View>
@@ -336,6 +442,25 @@ const styles = StyleSheet.create({
     gap: 15,
     paddingBottom: 215,
   },
+
+  suggestedJobAndSeeAllTextsBlock: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  suggestedJobText: {
+    fontSize: 28,
+    fontWeight: "500",
+  },
+  seeAllBtn: {},
+  seeAllBtnText: {
+    color: "#6865C2",
+    fontSize: 22,
+    fontWeight: "400",
+  },
+
+  // Styles of the elements from backend
+  ///////////////////////////////////////////////////
   container: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
@@ -462,4 +587,163 @@ const styles = StyleSheet.create({
   salary: {
     color: "#766EAA",
   },
+  ///////////////////////////////////////////////////
+
+  recentJobsBlock: {},
+  recentJobsText: {
+    fontSize: 28,
+    fontWeight: "500",
+  },
+  filterByCategoryBlock: {},
+  filterByCategoryBlockScroll: {
+    marginTop: 10,
+    // flex: 1,
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    gap:20
+  },
+  filterByCategoryBtn: {
+    backgroundColor: "#d4d4d4",
+    paddingVertical: 2.5,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+  },
+  filterByCategoryBtnText: {
+    fontSize: 20,
+    fontWeight: "400",
+  },
+  recentJobs: {
+    marginTop: 30,
+    gap: 15,
+  },
+
+  // Styles of the elements from backend recent jobs
+  ///////////////////////////////////////////////////
+  containerRecentJobs: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: "#fff",
+    zIndex: 20,
+  },
+  headerContainerBlockRecentJobs: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  employerImgEmployerNameAndJobBlockRecentJobs: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  employerImgRecentJobs: {
+    width: 61,
+    height: 58,
+    borderRadius: 50,
+  },
+  employerNameAndJobBlockRecentJobs: {},
+  employerNameRecentJobs: {
+    fontWeight: "bold",
+    fontSize: 22,
+  },
+  jobRecentJobs: {
+    color: "#888888",
+    fontSize: 18,
+  },
+  locationContainerBlockRecentJobs: {
+    marginTop: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 10,
+  },
+  locationRecentJobs: {
+    color: "#B7B7B7",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  employmentTypeWorkingModelAndJobLevelContainerBlockRecentJobs: {
+    marginTop: 13,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  employmentTypeRecentJobs: {
+    color: "#616161",
+    fontSize: 18,
+    fontWeight: "600",
+    paddingVertical: 1,
+    paddingHorizontal: 16,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 8,
+  },
+  workingModelRecentJobs: {
+    color: "#616161",
+    fontSize: 18,
+    fontWeight: "600",
+    paddingVertical: 1,
+    paddingHorizontal: 16,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 8,
+  },
+  jobLevelRecentJobs: {
+    color: "#616161",
+    fontSize: 18,
+    fontWeight: "600",
+    paddingVertical: 1,
+    paddingHorizontal: 16,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 8,
+  },
+  lineContainerBlockRecentJobs: {
+    marginTop: 14,
+    backgroundColor: "#D9D9D9",
+    height: 6,
+  },
+  appliersAndSalaryContainerBlockRecentJobs: {
+    marginTop: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  someAppliersImgsAndAppliersAmountRecentJobs: {},
+  someAppliersImgAndDownIconRecentJobs: {
+    position: "relative",
+    height: 30,
+  },
+  appliersImgRecentJobs: {
+    width: 30,
+    height: 30,
+    position: "absolute",
+    borderRadius: 35,
+    zIndex: 5,
+  },
+  downIconRecentJobs: {
+    position: "absolute",
+    borderRadius: 35,
+    top: 0,
+    left: 42, // 3 images * 14 = 42
+    zIndex: 5,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  aplliersAmountRecentJobs: {
+    color: "#878787",
+    fontSize: 18,
+    fontWeight: "500",
+    marginTop: 4,
+  },
+  salaryAmountRecentJobs: {
+    fontSize: 23,
+    fontWeight: "700",
+    color: "#7E7E7E",
+  },
+  salaryRecentJobs: {
+    color: "#766EAA",
+  },
+  ///////////////////////////////////////////////////
 });

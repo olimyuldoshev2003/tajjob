@@ -86,6 +86,7 @@ const Profile = () => {
                           source={require("../../assets/tajjob/profile/saveIcon.jpg")}
                           style={styles.icon}
                         />
+                        {/* <FontAwesome name="bookmark-o" size={36} color="black" /> */}
                       </View>
                       <Text style={styles.funcTypeText}>Saved jobs</Text>
                     </View>
@@ -264,16 +265,24 @@ const styles = StyleSheet.create({
     height: 32,
     resizeMode: "contain",
   },
-  funcTypeText: {},
+  funcTypeText: {
+    fontSize: 18,
+    fontWeight: "500",
+  },
   rightSideIcon: {},
   /////////////////////////////////////////////////////////////
 
-  appearance: {},
+  appearance: {
+    marginTop: 30,
+  },
   appearanceText: {
     fontSize: 22,
     fontWeight: "500",
   },
-  appearanceBlock: {},
+  appearanceBlock: {
+    marginTop: 20,
+    gap: 15,
+  },
   settingsBtn: {},
   securityBtn: {},
   shareBtn: {},
