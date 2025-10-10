@@ -14,6 +14,7 @@ import StackNavigatorHistoryPage from "../stacks/StackNavigatorHistoryPage";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
 import StackNavigatorMessagesPage from "../stacks/StackNavigatorMessagesPage";
 import StackNavigatorProfilePage from "../stacks/StackNavigatorProfilePage";
+import { Modal } from "react-native";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();

@@ -37,7 +37,7 @@ const Profile = () => {
                     <View style={styles.iconAndFuncTypeBlock}>
                       <View style={styles.iconBlock}>
                         <Image
-                          source={require("../../assets/tajjob/profile/userIcon.jpg")}
+                          source={require("../../assets/tajjob/profile/userIcon.png")}
                           style={styles.icon}
                         />
                       </View>
@@ -60,7 +60,7 @@ const Profile = () => {
                     <View style={styles.iconAndFuncTypeBlock}>
                       <View style={styles.iconBlock}>
                         <Image
-                          source={require("../../assets/tajjob/profile/documentIcon.jpg")}
+                          source={require("../../assets/tajjob/profile/documentIcon.png")}
                           style={styles.icon}
                         />
                       </View>
@@ -111,7 +111,7 @@ const Profile = () => {
                     <View style={styles.iconAndFuncTypeBlock}>
                       <View style={styles.iconBlock}>
                         <Image
-                          source={require("../../assets/tajjob/profile/settingsIcon.jpg")}
+                          source={require("../../assets/tajjob/profile/settingsIcon.png")}
                           style={styles.icon}
                         />
                       </View>
@@ -134,7 +134,7 @@ const Profile = () => {
                     <View style={styles.iconAndFuncTypeBlock}>
                       <View style={styles.iconBlock}>
                         <Image
-                          source={require("../../assets/tajjob/profile/lockIcon.jpg")}
+                          source={require("../../assets/tajjob/profile/lockIcon.png")}
                           style={styles.icon}
                         />
                       </View>
@@ -155,7 +155,7 @@ const Profile = () => {
                     <View style={styles.iconAndFuncTypeBlock}>
                       <View style={styles.iconBlock}>
                         <Image
-                          source={require("../../assets/tajjob/profile/shareIcon.jpg")}
+                          source={require("../../assets/tajjob/profile/shareIcon.png")}
                           style={styles.icon}
                         />
                       </View>

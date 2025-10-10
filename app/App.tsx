@@ -1,4 +1,3 @@
-import StackNavigator from "@/navigators/stacks/StackNavigator";
 import TabNavigator from "@/navigators/tabs/TabNavigator";
 import {
   NavigationContainer,

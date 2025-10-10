@@ -1,12 +1,14 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -23,6 +25,8 @@ interface HomeProps {
 
 const Home = ({ onJobPress }: HomeProps) => {
   const navigation: any = useNavigation();
+
+  const [modalFilter, setModalFilter] = useState<boolean>(false);
 
   const jobs = [
     {
@@ -120,6 +124,11 @@ const Home = ({ onJobPress }: HomeProps) => {
     },
   ];
 
+  // Functions
+  function handleModalFilter() {
+    setModalFilter(!modalFilter);
+  }
+
   const handleJobPress = (job: any) => {
     // Call the parent's onJobPress function if it exists
     onJobPress?.(job); // This equivalents to:
@@ -184,7 +193,7 @@ const Home = ({ onJobPress }: HomeProps) => {
               />
               <TextInput style={styles.searchInput} placeholder="Search" />
             </View>
-            <Pressable style={styles.filterBtn}>
+            <Pressable style={styles.filterBtn} onPress={handleModalFilter}>
               <Image
                 source={require("../../assets/tajjob/home/filter.jpg")}
                 style={styles.filterIcon}
@@ -344,6 +353,24 @@ const Home = ({ onJobPress }: HomeProps) => {
           </View>
         </ScrollView>
       </View>
+      {/* Modal Filter */}
+      <Modal
+        visible={modalFilter}
+        transparent={true}
+        onRequestClose={() => {
+          setModalFilter(false);
+        }}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalFilter(false)}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent}>
+                <Text>Modal Content</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -352,7 +379,7 @@ export default Home;
 
 const styles = StyleSheet.create({
   homeComponent: {
-    height: `100%`,
+    flex: 1,
     backgroundColor: "#fff",
     paddingTop: 30,
   },
@@ -600,7 +627,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     // flexDirection: "row",
     // justifyContent: "space-between",
-    gap:20
+    gap: 20,
   },
   filterByCategoryBtn: {
     backgroundColor: "#d4d4d4",
@@ -744,6 +771,25 @@ const styles = StyleSheet.create({
   },
   salaryRecentJobs: {
     color: "#766EAA",
+  },
+  ///////////////////////////////////////////////////
+
+  // Modal Filter
+  ///////////////////////////////////////////////////
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 0,
+    padding: 0,
+    top: 0,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    minWidth: 300,
   },
   ///////////////////////////////////////////////////
 });
