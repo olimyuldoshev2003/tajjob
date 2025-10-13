@@ -1,16 +1,17 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, { useState } from "react";
 import {
+  Animated,
   Image,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
+
+import { Picker } from "@react-native-picker/picker";
 
 // Icons
 import Entypo from "@expo/vector-icons/Entypo";
@@ -27,6 +28,10 @@ const Home = ({ onJobPress }: HomeProps) => {
   const navigation: any = useNavigation();
 
   const [modalFilter, setModalFilter] = useState<boolean>(false);
+  const [filterByCity, setFilterByCity] = useState<string>("");
+
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const slideAnim = React.useRef(new Animated.Value(300)).current;
 
   const jobs = [
     {
@@ -125,17 +130,48 @@ const Home = ({ onJobPress }: HomeProps) => {
   ];
 
   // Functions
-  function handleModalFilter() {
-    setModalFilter(!modalFilter);
-  }
+  const handleModalFilter = () => {
+    if (!modalFilter) {
+      // Open modal with animation
+      setModalFilter(true);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      // Close modal with animation
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 300,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setModalFilter(false);
+      });
+    }
+  };
 
   const handleJobPress = (job: any) => {
-    // Call the parent's onJobPress function if it exists
-    onJobPress?.(job); // This equivalents to:
-    // if (onJobPress) {
-    //   onJobPress(job);
-    // }
+    onJobPress?.(job);
   };
+
+  function handleCloseModalFilter() {
+    setModalFilter(false);
+  }
 
   // Component for rendering applicant images with dynamic positioning
   const ApplierImages = ({ applierImgs }: { applierImgs: any }) => {
@@ -145,10 +181,7 @@ const Home = ({ onJobPress }: HomeProps) => {
           <Image
             key={index}
             source={imgSource}
-            style={[
-              styles.appliersImg,
-              { left: index * 14 }, // Dynamic positioning: 0, 14, 28, etc.
-            ]}
+            style={[styles.appliersImg, { left: index * 14 }]}
           />
         ))}
         <Entypo
@@ -353,24 +386,53 @@ const Home = ({ onJobPress }: HomeProps) => {
           </View>
         </ScrollView>
       </View>
-      {/* Modal Filter */}
-      <Modal
-        visible={modalFilter}
-        transparent={true}
-        onRequestClose={() => {
-          setModalFilter(false);
-        }}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalFilter(false)}>
-          <View style={styles.overlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
-                <Text>Modal Content</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+
+      {/* Modal Filter with Animation */}
+      {modalFilter && (
+        <View style={styles.modalContainer}>
+          {/* Backdrop with fade animation */}
+          <Animated.View
+            style={[styles.overlayModalFilter, { opacity: fadeAnim }]}
+          >
+            <Pressable
+              style={styles.backdropPressable}
+              onPress={handleModalFilter}
+            />
+          </Animated.View>
+
+          {/* Modal content with slide animation */}
+          <Animated.View
+            style={[
+              styles.modalFilterStyle,
+              {
+                // transform: [{ translateY: slideAnim }],
+                opacity: fadeAnim,
+              },
+            ]}
+          >
+            <View style={styles.modalFilterHeader}>
+              <Text style={styles.modalHeaderText}>Filter</Text>
+              <FontAwesome
+                name="close"
+                size={42}
+                color="black"
+                onPress={handleModalFilter}
+              />
+            </View>
+            <View style={styles.filterBySelectBlock}>
+              <Picker
+                selectedValue={filterByCity}
+                onValueChange={(itemValue) => setFilterByCity(itemValue)}
+                style={{ height: 50, width: 150 }}
+              >
+                <Picker.Item label="Java" value="java" />
+                <Picker.Item label="JavaScript" value="js" />
+                <Picker.Item label="Python" value="python" />
+              </Picker>
+            </View>
+          </Animated.View>
+        </View>
+      )}
     </View>
   );
 };
@@ -381,12 +443,13 @@ const styles = StyleSheet.create({
   homeComponent: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 30,
   },
-  homeComponentBlock: {},
+  homeComponentBlock: {
+    flex: 1,
+  },
   headerHomeComponent: {
     backgroundColor: "#0961F6",
-    paddingTop: 16,
+    paddingTop: 50,
     paddingBottom: 30,
     borderStartEndRadius: 20,
     borderEndEndRadius: 20,
@@ -454,6 +517,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontStyle: "italic",
     fontWeight: "600",
+    zIndex: 0,
   },
   filterBtn: {
     paddingVertical: 9,
@@ -467,9 +531,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     marginTop: 5,
     gap: 15,
-    paddingBottom: 215,
+    paddingBottom: 22,
   },
-
   suggestedJobAndSeeAllTextsBlock: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -485,9 +548,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "400",
   },
-
-  // Styles of the elements from backend
-  ///////////////////////////////////////////////////
   container: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
@@ -591,7 +651,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 35,
     top: 0,
-    left: 42, // 3 images * 14 = 42
+    left: 42,
     zIndex: 5,
     backgroundColor: "white",
     shadowColor: "#000",
@@ -614,8 +674,6 @@ const styles = StyleSheet.create({
   salary: {
     color: "#766EAA",
   },
-  ///////////////////////////////////////////////////
-
   recentJobsBlock: {},
   recentJobsText: {
     fontSize: 28,
@@ -624,9 +682,6 @@ const styles = StyleSheet.create({
   filterByCategoryBlock: {},
   filterByCategoryBlockScroll: {
     marginTop: 10,
-    // flex: 1,
-    // flexDirection: "row",
-    // justifyContent: "space-between",
     gap: 20,
   },
   filterByCategoryBtn: {
@@ -643,9 +698,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     gap: 15,
   },
-
-  // Styles of the elements from backend recent jobs
-  ///////////////////////////////////////////////////
   containerRecentJobs: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
@@ -749,7 +801,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 35,
     top: 0,
-    left: 42, // 3 images * 14 = 42
+    left: 42,
     zIndex: 5,
     backgroundColor: "white",
     shadowColor: "#000",
@@ -772,24 +824,48 @@ const styles = StyleSheet.create({
   salaryRecentJobs: {
     color: "#766EAA",
   },
-  ///////////////////////////////////////////////////
 
-  // Modal Filter
-  ///////////////////////////////////////////////////
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 0,
-    padding: 0,
+  // Modal Filter with Animation
+  modalContainer: {
+    position: "absolute",
     top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
   },
-  modalContent: {
+  overlayModalFilter: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  backdropPressable: {
+    flex: 1,
+  },
+  modalFilterStyle: {
+    position: "absolute",
     backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    minWidth: 300,
+    // borderTopLeftRadius: 20,
+    // borderTopRightRadius: 20,
+    width: "100%",
+    height: "100%",
+    zIndex: 9999,
   },
-  ///////////////////////////////////////////////////
+  modalFilterHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    boxShadow: "0 0 10px gray",
+    paddingTop: 60,
+    paddingBottom: 8,
+    paddingHorizontal: 20,
+  },
+  modalHeaderText: {
+    fontSize: 32,
+    fontWeight: "700",
+  },
+  filterBySelectBlock: {},
 });
