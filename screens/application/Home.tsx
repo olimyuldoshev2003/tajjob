@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import { Picker } from "@react-native-picker/picker";
+import RNPickerSelect from "react-native-picker-select";
 
 // Icons
 import Entypo from "@expo/vector-icons/Entypo";
@@ -31,7 +32,7 @@ const Home = ({ onJobPress }: HomeProps) => {
   const [filterByCity, setFilterByCity] = useState<string>("");
 
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
-  const slideAnim = React.useRef(new Animated.Value(300)).current;
+  const slideAnim = React.useRef(new Animated.Value(1000)).current;
 
   const jobs = [
     {
@@ -155,7 +156,7 @@ const Home = ({ onJobPress }: HomeProps) => {
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
-          toValue: 300,
+          toValue: 1000,
           duration: 300,
           useNativeDriver: true,
         }),
@@ -168,10 +169,6 @@ const Home = ({ onJobPress }: HomeProps) => {
   const handleJobPress = (job: any) => {
     onJobPress?.(job);
   };
-
-  function handleCloseModalFilter() {
-    setModalFilter(false);
-  }
 
   // Component for rendering applicant images with dynamic positioning
   const ApplierImages = ({ applierImgs }: { applierImgs: any }) => {
@@ -197,7 +194,7 @@ const Home = ({ onJobPress }: HomeProps) => {
   return (
     <View style={styles.homeComponent}>
       <View style={styles.homeComponentBlock}>
-        <View style={styles.headerHomeComponent}>
+        <View style={[styles.headerHomeComponent]}>
           <View style={styles.headerBlock1}>
             <View style={styles.headerTextBlock}>
               <Text style={styles.greetingsAndName}>Hi Olim</Text>
@@ -216,15 +213,29 @@ const Home = ({ onJobPress }: HomeProps) => {
               <View style={styles.newNotificationNotice} />
             </View>
           </View>
-          <View style={styles.headerBlock2}>
-            <View style={styles.searchInputBlock}>
+          <View
+            style={[
+              styles.headerBlock2,
+              modalFilter && styles.headerBlock2InOpeningModalFilter,
+            ]}
+          >
+            <View
+              style={[
+                styles.searchInputBlock,
+                // modalFilter && styles.searchInputBlockInOpeningModalFilter,
+              ]}
+            >
               <Ionicons
                 name="search"
                 size={38}
                 color="black"
                 style={styles.searchIcon}
               />
-              <TextInput style={styles.searchInput} placeholder="Search" />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search"
+                pointerEvents="none"
+              />
             </View>
             <Pressable style={styles.filterBtn} onPress={handleModalFilter}>
               <Image
@@ -387,7 +398,7 @@ const Home = ({ onJobPress }: HomeProps) => {
         </ScrollView>
       </View>
 
-      {/* Modal Filter with Animation */}
+      {/* Modal Filter with Animation - FIXED */}
       {modalFilter && (
         <View style={styles.modalContainer}>
           {/* Backdrop with fade animation */}
@@ -400,35 +411,69 @@ const Home = ({ onJobPress }: HomeProps) => {
             />
           </Animated.View>
 
-          {/* Modal content with slide animation */}
+          {/* Modal content with slide animation - FIXED */}
           <Animated.View
             style={[
               styles.modalFilterStyle,
               {
-                // transform: [{ translateY: slideAnim }],
-                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
               },
             ]}
           >
-            <View style={styles.modalFilterHeader}>
-              <Text style={styles.modalHeaderText}>Filter</Text>
-              <FontAwesome
-                name="close"
-                size={42}
-                color="black"
-                onPress={handleModalFilter}
-              />
-            </View>
-            <View style={styles.filterBySelectBlock}>
-              <Picker
-                selectedValue={filterByCity}
-                onValueChange={(itemValue) => setFilterByCity(itemValue)}
-                style={{ height: 50, width: 150 }}
-              >
-                <Picker.Item label="Java" value="java" />
-                <Picker.Item label="JavaScript" value="js" />
-                <Picker.Item label="Python" value="python" />
-              </Picker>
+            <View style={styles.modalContent}>
+              <View style={styles.modalFilterHeader}>
+                <Text style={styles.modalHeaderText}>Filter</Text>
+                <Pressable onPress={handleModalFilter}>
+                  <FontAwesome name="close" size={42} color="black" />
+                </Pressable>
+              </View>
+              <View style={styles.filterBySelectBlock}>
+                {/* <Picker
+                  selectedValue={filterByCity}
+                  onValueChange={(itemValue) => setFilterByCity(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="All cities" value="" />
+                  <Picker.Item label="Dushanbe" value="dushanbe" />
+                  <Picker.Item label="Khujand" value="khujand" />
+                  <Picker.Item label="Kulob" value="kulob" />
+                  <Picker.Item label="Bokhtar" value="bokhtar" />
+                </Picker> */}
+                <RNPickerSelect
+                  onValueChange={(value) => console.log(value)}
+                  items={[
+                    { label: "All cities", value: "" },
+                    { label: "Dushanbe", value: "dushanbe" },
+                    { label: "Khujand", value: "khujand" },
+                    { label: "Kulob", value: "kulob" },
+                    { label: "Bokhtar", value: "bokhtar" },
+                  ]}
+                  style={{
+                    inputIOS: {
+                      width: "100%",
+                      borderRadius: 20,
+                      borderWidth: 1,
+                      fontSize: 18,
+                      paddingVertical: 12,
+                      paddingHorizontal: 10,
+                      color: "black",
+                      backgroundColor: "#F5F6FA",
+                      marginTop: 10,
+                    },
+                    inputAndroid: {
+                      width: "100%",
+                      borderRadius: 20,
+                      borderWidth: 1,
+                      fontSize: 18,
+                      paddingVertical: 1,
+                      paddingHorizontal: 10,
+                      color: "black",
+                      backgroundColor: "#F5F6FA",
+                      marginTop: 10,
+                    },
+                  }}
+                />
+              </View>
             </View>
           </Animated.View>
         </View>
@@ -499,10 +544,17 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 10,
   },
+  headerBlock2InOpeningModalFilter: {
+    display: "none",
+  },
   searchInputBlock: {
     position: "relative",
     flex: 1,
   },
+  searchInputBlockInOpeningModalFilter: {
+    display: "none",
+  },
+
   searchIcon: {
     position: "absolute",
     top: 9,
@@ -517,7 +569,6 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontStyle: "italic",
     fontWeight: "600",
-    zIndex: 0,
   },
   filterBtn: {
     paddingVertical: 9,
@@ -825,7 +876,7 @@ const styles = StyleSheet.create({
     color: "#766EAA",
   },
 
-  // Modal Filter with Animation
+  // Modal Filter with Animation - COMPLETELY FIXED
   modalContainer: {
     position: "absolute",
     top: 0,
@@ -847,25 +898,36 @@ const styles = StyleSheet.create({
   },
   modalFilterStyle: {
     position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: "white",
-    // borderTopLeftRadius: 20,
-    // borderTopRightRadius: 20,
-    width: "100%",
-    height: "100%",
-    zIndex: 9999,
+  },
+  modalContent: {
+    flex: 1,
+    marginTop: 50,
   },
   modalFilterHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    boxShadow: "0 0 10px gray",
-    paddingTop: 60,
-    paddingBottom: 8,
+    paddingBottom: 20,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E5E5",
   },
   modalHeaderText: {
     fontSize: 32,
     fontWeight: "700",
   },
-  filterBySelectBlock: {},
+  filterBySelectBlock: {
+    padding: 0,
+    marginHorizontal: 20,
+  },
+  picker: {
+    width: "100%",
+    borderRadius: 20,
+    borderWidth: 1,
+  },
 });
