@@ -1,8 +1,8 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, { useState } from "react";
 import {
-  Animated,
   Image,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,7 +11,6 @@ import {
   View,
 } from "react-native";
 
-import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 
 // Icons
@@ -30,9 +29,6 @@ const Home = ({ onJobPress }: HomeProps) => {
 
   const [modalFilter, setModalFilter] = useState<boolean>(false);
   const [filterByCity, setFilterByCity] = useState<string>("");
-
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
-  const slideAnim = React.useRef(new Animated.Value(1000)).current;
 
   const jobs = [
     {
@@ -132,38 +128,7 @@ const Home = ({ onJobPress }: HomeProps) => {
 
   // Functions
   const handleModalFilter = () => {
-    if (!modalFilter) {
-      // Open modal with animation
-      setModalFilter(true);
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      // Close modal with animation
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 1000,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        setModalFilter(false);
-      });
-    }
+    setModalFilter(!modalFilter);
   };
 
   const handleJobPress = (job: any) => {
@@ -216,7 +181,7 @@ const Home = ({ onJobPress }: HomeProps) => {
           <View
             style={[
               styles.headerBlock2,
-              modalFilter && styles.headerBlock2InOpeningModalFilter,
+              // modalFilter && styles.headerBlock2InOpeningModalFilter,
             ]}
           >
             <View
@@ -398,28 +363,22 @@ const Home = ({ onJobPress }: HomeProps) => {
         </ScrollView>
       </View>
 
-      {/* Modal Filter with Animation - FIXED */}
-      {modalFilter && (
+      {/* Modal Filter using React Native Modal Component */}
+      <Modal
+        visible={modalFilter}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleModalFilter}
+      >
         <View style={styles.modalContainer}>
-          {/* Backdrop with fade animation */}
-          <Animated.View
-            style={[styles.overlayModalFilter, { opacity: fadeAnim }]}
-          >
-            <Pressable
-              style={styles.backdropPressable}
-              onPress={handleModalFilter}
-            />
-          </Animated.View>
+          {/* Backdrop */}
+          <Pressable
+            style={styles.overlayModalFilter}
+            onPress={handleModalFilter}
+          />
 
-          {/* Modal content with slide animation - FIXED */}
-          <Animated.View
-            style={[
-              styles.modalFilterStyle,
-              {
-                transform: [{ translateY: slideAnim }],
-              },
-            ]}
-          >
+          {/* Modal content */}
+          <View style={styles.modalFilterStyle}>
             <View style={styles.modalContent}>
               <View style={styles.modalFilterHeader}>
                 <Text style={styles.modalHeaderText}>Filter</Text>
@@ -427,57 +386,48 @@ const Home = ({ onJobPress }: HomeProps) => {
                   <FontAwesome name="close" size={42} color="black" />
                 </Pressable>
               </View>
-              <View style={styles.filterBySelectBlock}>
-                {/* <Picker
-                  selectedValue={filterByCity}
-                  onValueChange={(itemValue) => setFilterByCity(itemValue)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="All cities" value="" />
-                  <Picker.Item label="Dushanbe" value="dushanbe" />
-                  <Picker.Item label="Khujand" value="khujand" />
-                  <Picker.Item label="Kulob" value="kulob" />
-                  <Picker.Item label="Bokhtar" value="bokhtar" />
-                </Picker> */}
-                <RNPickerSelect
-                  onValueChange={(value) => console.log(value)}
-                  items={[
-                    { label: "All cities", value: "" },
-                    { label: "Dushanbe", value: "dushanbe" },
-                    { label: "Khujand", value: "khujand" },
-                    { label: "Kulob", value: "kulob" },
-                    { label: "Bokhtar", value: "bokhtar" },
-                  ]}
-                  style={{
-                    inputIOS: {
-                      width: "100%",
-                      borderRadius: 20,
-                      borderWidth: 1,
-                      fontSize: 18,
-                      paddingVertical: 12,
-                      paddingHorizontal: 10,
-                      color: "black",
-                      backgroundColor: "#F5F6FA",
-                      marginTop: 10,
-                    },
-                    inputAndroid: {
-                      width: "100%",
-                      borderRadius: 20,
-                      borderWidth: 1,
-                      fontSize: 18,
-                      paddingVertical: 1,
-                      paddingHorizontal: 10,
-                      color: "black",
-                      backgroundColor: "#F5F6FA",
-                      marginTop: 10,
-                    },
-                  }}
-                />
-              </View>
+              <ScrollView contentContainerStyle={styles.modalFilterSection}>
+                <View style={styles.filterBySelectBlock}>
+                  <RNPickerSelect
+                    onValueChange={(value) => setFilterByCity(value)}
+                    items={[
+                      { label: "All cities", value: "" },
+                      { label: "Dushanbe", value: "dushanbe" },
+                      { label: "Khujand", value: "khujand" },
+                      { label: "Kulob", value: "kulob" },
+                      { label: "Bokhtar", value: "bokhtar" },
+                    ]}
+                    style={{
+                      inputIOS: {
+                        width: "100%",
+                        borderRadius: 20,
+                        borderWidth: 1,
+                        fontSize: 18,
+                        paddingVertical: 12,
+                        paddingHorizontal: 10,
+                        color: "black",
+                        backgroundColor: "#F5F6FA",
+                        marginTop: 10,
+                      },
+                      inputAndroid: {
+                        width: "100%",
+                        borderRadius: 20,
+                        borderWidth: 1,
+                        fontSize: 18,
+                        paddingVertical: 1,
+                        paddingHorizontal: 10,
+                        color: "black",
+                        backgroundColor: "#F5F6FA",
+                        marginTop: 10,
+                      },
+                    }}
+                  />
+                </View>
+              </ScrollView>
             </View>
-          </Animated.View>
+          </View>
         </View>
-      )}
+      </Modal>
     </View>
   );
 };
@@ -876,33 +826,18 @@ const styles = StyleSheet.create({
     color: "#766EAA",
   },
 
-  // Modal Filter with Animation - COMPLETELY FIXED
+  // Modal Filter using React Native Modal Component
   modalContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 9999,
+    flex: 1,
+    justifyContent: "flex-start",
   },
   overlayModalFilter: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  backdropPressable: {
-    flex: 1,
-  },
   modalFilterStyle: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: "white",
+    height: "100%",
   },
   modalContent: {
     flex: 1,
@@ -921,6 +856,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "700",
   },
+  modalFilterSection: {},
   filterBySelectBlock: {
     padding: 0,
     marginHorizontal: 20,

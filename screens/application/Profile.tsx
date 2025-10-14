@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    marginTop: 65,
+    marginTop: 45,
   },
   imgFullnameAndNumberPhoneOfUserBlock: {
     // position: "absolute",
