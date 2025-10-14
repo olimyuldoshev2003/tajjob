@@ -423,6 +423,9 @@ const Home = ({ onJobPress }: HomeProps) => {
                     }}
                   />
                 </View>
+                <View style={styles.filterBySphere}>
+
+                </View>
               </ScrollView>
             </View>
           </View>
@@ -866,4 +869,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
   },
+  filterBySphere: {
+    
+  }
 });
