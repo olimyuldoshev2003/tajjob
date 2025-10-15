@@ -1,6 +1,7 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useNavigation } from "expo-router";
 import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Modalize } from "react-native-modalize";
@@ -11,6 +12,8 @@ interface JobDetailModalProps {
 }
 
 const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
+  const navigation: any = useNavigation();
+
   function handleCloseModal() {
     modalizeRef?.current?.close();
   }
@@ -67,12 +70,16 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
           </View>
         </View>
         <View style={styles.buttonsBlock}>
-                  <Pressable style={styles.btnCancel}
-                  onPress={handleCloseModal}
-                  >
+          <Pressable style={styles.btnCancel} onPress={handleCloseModal}>
             <Text style={styles.textBtnCancel}>Cancel</Text>
           </Pressable>
-          <Pressable style={styles.btnOpenPageJobByIdPage}>
+          <Pressable
+            style={styles.btnOpenPageJobByIdPage}
+            onPress={() => {
+              navigation.navigate("Job", { id: 1 });
+              handleCloseModal();
+            }}
+          >
             <Text style={styles.textBtnOpenPageJobByIdPage}>Next</Text>
           </Pressable>
         </View>
@@ -207,8 +214,8 @@ const styles = StyleSheet.create({
   },
   textBtnOpenPageJobByIdPage: {
     fontSize: 25,
-      fontWeight: "500",
-    color: "white"
+    fontWeight: "500",
+    color: "white",
   },
 });
 

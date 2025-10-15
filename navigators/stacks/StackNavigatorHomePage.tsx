@@ -1,4 +1,5 @@
 import Home from "@/screens/application/Home";
+import Job from "@/screens/application/Job";
 import Notifications from "@/screens/application/Notifications";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
@@ -34,6 +35,14 @@ const StackNavigatorHomePage = ({ openJobModal }: { openJobModal: any }) => {
             
             headerShown: true,
             animation: "slide_from_right",
+          }}
+        />
+        <Stack.Screen
+          name="Job"
+          component={Job}
+          options={{
+            
+            animation: "fade_from_bottom",
           }}
         />
       </Stack.Navigator>
