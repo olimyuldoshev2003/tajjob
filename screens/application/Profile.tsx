@@ -1,4 +1,5 @@
 import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React from "react";
 import {
   Image,
@@ -92,10 +93,16 @@ const Profile = () => {
                   >
                     <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={styles.iconAndFuncTypeBlock}>
-                        <View style={styles.iconBlock}>
-                          <Image
+                        <View style={[styles.iconBlock, styles.saveIconBlock]}>
+                          {/* <Image
                             source={require("../../assets/tajjob/profile/saveIcon.jpg")}
-                            style={styles.icon}
+                            style={[styles.icon, styles.saveIcon]}
+                            /> */}
+                          <FontAwesome
+                            name="bookmark-o"
+                            size={32}
+                            color="black"
+                            style={[ styles.saveIcon]}
                           />
                         </View>
                         <Text style={styles.funcTypeText}>Saved jobs</Text>
@@ -269,6 +276,11 @@ const styles = StyleSheet.create({
   editUserBtn: {},
   createResumeBtn: {},
   savedJobsBtn: {},
+  saveIconBlock: {
+    paddingVertical:10,
+    paddingHorizontal:15.4,
+  },
+  saveIcon: {},
   /////////////////////////////////////////////////////////////
   // Styles of 6 type buttons, which has the same style
   btnFunc: {
