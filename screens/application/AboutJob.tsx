@@ -3,11 +3,14 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 const AboutJob = ({ route }: { route: any }) => {
   return (
-    <ScrollView contentContainerStyle={styles.aboutJobComponent}>
-      <View style={styles.aboutJobComponentBlock}>
+    <View style={styles.aboutJobComponent}>
+      <ScrollView
+        style={styles.aboutJobComponentBlock}
+        contentContainerStyle={styles.aboutJobComponentScrollViewBlock}
+      >
         <Text style={styles.aboutJobText}>{route.params.aboutJob}</Text>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -22,8 +25,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
   },
+  aboutJobComponentScrollViewBlock: {},
   aboutJobText: {
     fontSize: 18,
     fontWeight: "500",
+    paddingBottom: 30,
   },
 });
