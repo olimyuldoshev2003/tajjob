@@ -183,7 +183,7 @@ const Job = ({ route }: { route: any }) => {
           <Pressable
             style={styles.shareBtn}
             // onPress={onShare} // Add the share function here
-            onPress={showCustomShareOptions} // Using custom share options
+            onPress={onShare} // Using custom share options
           >
             <Entypo name="share" size={32} color="black" />
           </Pressable>
