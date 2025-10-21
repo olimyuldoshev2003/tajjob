@@ -1,6 +1,6 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Pressable,
@@ -14,10 +14,16 @@ import {
 // @ts-ignore
 import Stars from "react-native-stars";
 
-const ReviewJob = ({ route }: { route: any }) => {
+const ReviewJob = ({
+  route,
+  setModalAddReview,
+}: {
+  route: any;
+  setModalAddReview: any;
+}) => {
   // console.log(route.params.id);
 
-  // const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(0);
 
   return (
     <View style={styles.reviewJobComponent}>
@@ -28,7 +34,12 @@ const ReviewJob = ({ route }: { route: any }) => {
         <View style={styles.headerReviewJobComponent}>
           <View style={styles.headerBlock1ReviewJobComponent}>
             <Text style={styles.headerBlock1Text}>Reviews</Text>
-            <Pressable style={styles.btnHeaderBlock1}>
+            <Pressable
+              style={styles.btnHeaderBlock1}
+              onPress={() => {
+                setModalAddReview(true);
+              }}
+            >
               <Text style={styles.btnTextHeaderBlock1}>Add review</Text>
             </Pressable>
           </View>
@@ -97,10 +108,9 @@ const ReviewJob = ({ route }: { route: any }) => {
                   <View style={styles.fullnameAndRatingBlock}>
                     <Text style={styles.fullnameReviewer}>John Boris</Text>
                     <Stars
-                      // default={2.5}
+                      default={rating}
                       count={5}
                       disabled={true}
-                      // half={true}
                       starSize={50}
                       fullStar={<Entypo name="star" size={18} color="orange" />}
                       emptyStar={
@@ -112,7 +122,19 @@ const ReviewJob = ({ route }: { route: any }) => {
                     />
                   </View>
                 </View>
+                <Entypo name="heart-outlined" size={30} color="black" />
               </View>
+              <View style={styles.sectionReviewBlock}>
+                <Text style={styles.review}>
+                  Reliable, Trusted, Innovative, Digital, Banking, Modern, Safe,
+                  Fast, Customer, Service, Support, Convenient, Mobile,
+                  Application, Professional, Easy, Secure, Transparent,
+                  Flexible, Growth, Future, Smart, Finance, Helpful,
+                  User-friendly, Strong, Accessible, Simple, Efficient,
+                  Excellent, Popular
+                </Text>
+              </View>
+              <Text style={styles.reviewTime}>11 days ago</Text>
             </View>
           </View>
         </View>
@@ -230,7 +252,10 @@ const styles = StyleSheet.create({
     boxShadow: "0 0 5px gray",
     borderRadius: 20,
   },
-  headerReviewBlock: {},
+  headerReviewBlock: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   userImgFullnameAndRatingBlock: {
     flexDirection: "row",
     alignItems: "center",
@@ -247,5 +272,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
   },
- 
+  sectionReviewBlock: {
+    marginTop: 10,
+  },
+  review: {
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  reviewTime: {
+    color: "#C2C2C2",
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "right",
+  },
 });

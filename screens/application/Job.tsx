@@ -1,3 +1,4 @@
+import ModalAddReview from "@/components/job/ModalAddReview";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -6,7 +7,7 @@ import {
   NavigationIndependentTree,
 } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Image,
@@ -24,6 +25,8 @@ import ReviewJob from "./ReviewJob";
 const Job = ({ route }: { route: any }) => {
   const navigation: any = useNavigation();
   const Tab = createMaterialTopTabNavigator();
+  const [modalAddReview, setModalAddReview] = useState<boolean>(false);
+  const [modalApply, setModalApply] = useState<boolean>(false);
 
   // Basic share function
   const onShare = async () => {
@@ -164,6 +167,10 @@ const Job = ({ route }: { route: any }) => {
     // Implement copy to clipboard
     Alert.alert("Success", "Job link copied to clipboard!");
   };
+
+  const ReviewJobWithModalAddReview = ({ route }: { route: any }) => (
+    <ReviewJob setModalAddReview={setModalAddReview} route={route} />
+  );
 
   return (
     <View style={styles.jobComponent}>
@@ -320,7 +327,7 @@ const Job = ({ route }: { route: any }) => {
               />
               <Tab.Screen
                 name="ReviewJob"
-                component={ReviewJob}
+                component={ReviewJobWithModalAddReview}
                 options={{
                   tabBarLabel: "Review",
                 }}
@@ -331,6 +338,16 @@ const Job = ({ route }: { route: any }) => {
             </Tab.Navigator>
           </NavigationContainer>
         </NavigationIndependentTree>
+        <View style={styles.btnApplyJobBlock}>
+          <Pressable style={styles.btnApplyJob}>
+            <Text style={styles.btnTextApplyJob}>Apply</Text>
+          </Pressable>
+        </View>
+
+        <ModalAddReview
+          modalAddReview={modalAddReview}
+          setModalAddReview={setModalAddReview}
+        />
       </View>
     </View>
   );
@@ -379,7 +396,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    marginTop: 77,
+    marginTop: 57,
   },
   employerImgEmplyerNameAndJobBlock: {
     alignItems: "center",
@@ -455,4 +472,18 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   aboutJobCompanyAndReviewBlock: {},
+  btnApplyJobBlock: {
+    paddingHorizontal: 10,
+  },
+  btnApplyJob: {
+    backgroundColor: "#2623D2",
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  btnTextApplyJob: {
+    textAlign: "center",
+    color: "#FFFFFF",
+    fontSize: 25,
+    fontWeight: "700",
+  },
 });
