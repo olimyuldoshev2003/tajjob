@@ -2,7 +2,15 @@ import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React, { useState } from "react";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 // @ts-ignore
 import Stars from "react-native-stars";
@@ -66,9 +74,15 @@ const ModalAddReview = ({
                 }
               />
             </View>
-            <View style={styles.writingTheReviewBlock}>
+            <View style={styles.block2SectionModalReview}>
               <View style={styles.emailBlock}>
+                <Text style={styles.emailLabel}>Email</Text>
+                <TextInput
                 
+                  placeholder="Enter your email"
+                  style={styles.emailInput}
+                  keyboardType="email-address"
+                />
               </View>
             </View>
           </View>
@@ -136,6 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "400",
   },
-  writingTheReviewBlock: {},
+  block2SectionModalReview: { marginTop: 160 },
+
   emailBlock: {},
+  emailLabel: {},
+  emailInput: {},
 });
