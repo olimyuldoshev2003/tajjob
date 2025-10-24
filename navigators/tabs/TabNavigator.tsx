@@ -2,8 +2,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React, { useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-// Import your screens
-
 // Icons
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -14,7 +12,6 @@ import StackNavigatorHistoryPage from "../stacks/StackNavigatorHistoryPage";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
 import StackNavigatorMessagesPage from "../stacks/StackNavigatorMessagesPage";
 import StackNavigatorProfilePage from "../stacks/StackNavigatorProfilePage";
-import { Modal } from "react-native";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();

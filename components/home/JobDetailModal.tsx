@@ -1,7 +1,7 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Modalize } from "react-native-modalize";
@@ -17,6 +17,16 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
   function handleCloseModal() {
     modalizeRef?.current?.close();
   }
+
+  const handleNavigateToJob = () => {
+    handleCloseModal();
+    // Navigate to the Job screen with the job data
+    navigation.navigate("HomeStack", {
+      screen: "Job",
+      params: { id: jobData?.id || 1, jobData: jobData },
+    });
+  };
+
   return (
     <Modalize
       ref={modalizeRef}
@@ -75,10 +85,7 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
           </Pressable>
           <Pressable
             style={styles.btnOpenPageJobByIdPage}
-            onPress={() => {
-              navigation.navigate("Job", { id: 1 });
-              handleCloseModal();
-            }}
+            onPress={handleNavigateToJob}
           >
             <Text style={styles.textBtnOpenPageJobByIdPage}>Next</Text>
           </Pressable>

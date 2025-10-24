@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 // @ts-ignore
 import Stars from "react-native-stars";
@@ -74,17 +75,36 @@ const ModalAddReview = ({
                 }
               />
             </View>
-            <View style={styles.block2SectionModalReview}>
+            <ScrollView style={styles.block2SectionModalReview}>
               <View style={styles.emailBlock}>
                 <Text style={styles.emailLabel}>Email</Text>
+                <View style={styles.emailIconAndInput}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/emailLogo.jpg")}
+                    style={[styles.emailImg]}
+                  />
+                  <TextInput
+                    placeholder="Enter your email"
+                    style={styles.emailInput}
+                    keyboardType="email-address"
+                  />
+                </View>
+              </View>
+              <View style={styles.reviewCommentBlock}>
+                <Text style={styles.reviewCommentLabel}>
+                  Add detailed review
+                </Text>
                 <TextInput
-                
-                  placeholder="Enter your email"
-                  style={styles.emailInput}
-                  keyboardType="email-address"
+                  placeholder="Enter here"
+                  style={styles.reviewCommentInput}
+                  multiline
+                  numberOfLines={7}
                 />
               </View>
-            </View>
+              <Pressable style={styles.btnAddReview}>
+                <Text style={styles.btnTextAddReview}>Submit</Text>
+              </Pressable>
+            </ScrollView>
           </View>
         </View>
       </View>
@@ -129,6 +149,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     padding: 13,
     marginTop: 39,
+    paddingBottom: 86,
   },
   userImgFullnameAndRatingBlock: {
     position: "absolute",
@@ -150,9 +171,64 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "400",
   },
-  block2SectionModalReview: { marginTop: 160 },
+  block2SectionModalReview: {
+    marginTop: 160,
+    paddingHorizontal: 10,
+    paddingBottom: 60,
+  },
 
-  emailBlock: {},
-  emailLabel: {},
-  emailInput: {},
+  emailBlock: {
+    gap: 10,
+  },
+  emailLabel: {
+    color: "#4C4ADA",
+    fontSize: 25,
+    fontWeight: "500",
+  },
+  emailIconAndInput: {},
+  emailImg: { width: 38, height: 38, position: "absolute", top: 6, left: 6 },
+  emailInput: {
+    borderWidth: 1,
+    borderColor: "#fff",
+    paddingHorizontal: 15,
+    paddingLeft: 53,
+    paddingVertical: 12,
+    borderRadius: 20,
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    fontSize: 20,
+    width: `100%`,
+  },
+  reviewCommentBlock: {
+    gap: 10,
+    marginTop: 20,
+  },
+  reviewCommentLabel: {
+    color: "#4C4ADA",
+    fontSize: 25,
+    fontWeight: "500",
+  },
+  reviewCommentInput: {
+    borderWidth: 1,
+    borderColor: "#fff",
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    borderRadius: 20,
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    fontSize: 20,
+    width: `100%`,
+    height: 190,
+    textAlignVertical: "top",
+  },
+  btnAddReview: {
+    backgroundColor: "#2623D2",
+    paddingVertical: 15,
+    borderRadius: 20,
+    marginTop: 70,
+  },
+  btnTextAddReview: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 25,
+    fontWeight: "700",
+  },
 });

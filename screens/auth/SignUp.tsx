@@ -8,6 +8,11 @@ import {
   Text,
   TextInput,
   View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 
 // Icons
@@ -22,149 +27,171 @@ const SignUp = () => {
     useState<boolean>(false);
 
   return (
-    <View style={styles.signUpComponent}>
-      <View style={styles.backToSignInWithPageBlock}>
-        <FontAwesome
-          name="close"
-          size={47}
-          color="black"
-          onPress={() => {
-            navigation.navigate("SignInWith");
-          }}
-        />
-      </View>
-      <View style={styles.signUpComponentBlock}>
-        <Text style={styles.textSignUp}>Sign Up</Text>
-        <View style={styles.inpFieldsBlock}>
-          <View style={[styles.inpFullnameBlock, styles.inpBlock]}>
-            <Image
-              source={require("../../assets/tajjob/auth/userLogo.jpg")}
-              style={[styles.fullnameImg, styles.img]}
-            />
-            <TextInput
-              placeholder="Full Name"
-              style={[styles.inpFullname, styles.input]}
-              keyboardType="name-phone-pad"
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={[styles.inpDateBirthdayBlock, styles.inpBlock]}>
-            <Image
-              source={require("../../assets/tajjob/auth/dateLogo.jpg")}
-              style={[styles.dateBirthdayImg, styles.img]}
-            />
-            <TextInput
-              placeholder="Date Birthday"
-              style={[styles.inpFullname, styles.input]}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={[styles.inpNumberPhoneBlock, styles.inpBlock]}>
-            <Image
-              source={require("../../assets/tajjob/auth/phoneLogo.jpg")}
-              style={[styles.numberPhoneImg, styles.img]}
-            />
-            <TextInput
-              placeholder="Number Phone"
-              style={[styles.inpNumberPhone, styles.input]}
-              keyboardType="numeric"
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={[styles.inpEmailBlock, styles.inpBlock]}>
-            <Image
-              source={require("../../assets/tajjob/auth/emailLogo.jpg")}
-              style={[styles.emailImg, styles.img]}
-            />
-            <TextInput
-              placeholder="Email"
-              style={[styles.inpEmail, styles.input]}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={[styles.inpPasswordBlock, styles.inpBlock]}>
-            <Image
-              source={require("../../assets/tajjob/auth/passwordLogo.jpg")}
-              style={[styles.passwordImg, styles.img]}
-            />
-            <TextInput
-              placeholder="Password"
-              style={[styles.inpPassword, styles.input]}
-              secureTextEntry={!showAndHidePassword}
-            />
-            {showAndHidePassword ? (
-              <AntDesign
-                name="eye-invisible"
-                size={35}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.signUpComponent}>
+            <View style={styles.backToSignInWithPageBlock}>
+              <FontAwesome
+                name="close"
+                size={47}
                 color="black"
-                style={styles.showAndHidePasswordIcon}
-                onPress={() => setShowAndHidePassword(false)}
+                onPress={() => {
+                  navigation.navigate("SignInWith");
+                }}
               />
-            ) : (
-              <AntDesign
-                name="eye"
-                size={35}
-                color="black"
-                style={styles.showAndHidePasswordIcon}
-                onPress={() => setShowAndHidePassword(true)}
-              />
-            )}
+            </View>
+            <View style={styles.signUpComponentBlock}>
+              <Text style={styles.textSignUp}>Sign Up</Text>
+              <View style={styles.inpFieldsBlock}>
+                <View style={[styles.inpFullnameBlock, styles.inpBlock]}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/userLogo.jpg")}
+                    style={[styles.fullnameImg, styles.img]}
+                  />
+                  <TextInput
+                    placeholder="Full Name"
+                    style={[styles.inpFullname, styles.input]}
+                    keyboardType="name-phone-pad"
+                    autoCapitalize="none"
+                  />
+                </View>
+                <View style={[styles.inpDateBirthdayBlock, styles.inpBlock]}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/dateLogo.jpg")}
+                    style={[styles.dateBirthdayImg, styles.img]}
+                  />
+                  <TextInput
+                    placeholder="Date Birthday"
+                    style={[styles.inpFullname, styles.input]}
+                    keyboardType="default"
+                    autoCapitalize="none"
+                  />
+                </View>
+                <View style={[styles.inpNumberPhoneBlock, styles.inpBlock]}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/phoneLogo.jpg")}
+                    style={[styles.numberPhoneImg, styles.img]}
+                  />
+                  <TextInput
+                    placeholder="Number Phone"
+                    style={[styles.inpNumberPhone, styles.input]}
+                    keyboardType="numeric"
+                    autoCapitalize="none"
+                  />
+                </View>
+                <View style={[styles.inpEmailBlock, styles.inpBlock]}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/emailLogo.jpg")}
+                    style={[styles.emailImg, styles.img]}
+                  />
+                  <TextInput
+                    placeholder="Email"
+                    style={[styles.inpEmail, styles.input]}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                  />
+                </View>
+                <View style={[styles.inpPasswordBlock, styles.inpBlock]}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/passwordLogo.jpg")}
+                    style={[styles.passwordImg, styles.img]}
+                  />
+                  <TextInput
+                    placeholder="Password"
+                    style={[styles.inpPassword, styles.input]}
+                    secureTextEntry={!showAndHidePassword}
+                    autoComplete="password-new"
+                  />
+                  {showAndHidePassword ? (
+                    <AntDesign
+                      name="eye-invisible"
+                      size={35}
+                      color="black"
+                      style={styles.showAndHidePasswordIcon}
+                      onPress={() => setShowAndHidePassword(false)}
+                    />
+                  ) : (
+                    <AntDesign
+                      name="eye"
+                      size={35}
+                      color="black"
+                      style={styles.showAndHidePasswordIcon}
+                      onPress={() => setShowAndHidePassword(true)}
+                    />
+                  )}
+                </View>
+                <View style={[styles.inpConfirmPasswordBlock, styles.inpBlock]}>
+                  <Image
+                    source={require("../../assets/tajjob/auth/passwordLogo.jpg")}
+                    style={[styles.passwordImg, styles.img]}
+                  />
+                  <TextInput
+                    placeholder="Confirm password"
+                    style={[styles.inpPassword, styles.input]}
+                    secureTextEntry={!showAndHideConfirmPassword}
+                    autoComplete="password-new"
+                  />
+                  {showAndHideConfirmPassword ? (
+                    <AntDesign
+                      name="eye-invisible"
+                      size={35}
+                      color="black"
+                      style={styles.showAndHidePasswordIcon}
+                      onPress={() => setShowAndHideConfirmPassword(false)}
+                    />
+                  ) : (
+                    <AntDesign
+                      name="eye"
+                      size={35}
+                      color="black"
+                      style={styles.showAndHidePasswordIcon}
+                      onPress={() => setShowAndHideConfirmPassword(true)}
+                    />
+                  )}
+                </View>
+                <Pressable style={styles.btnSignUp}>
+                  <Text style={styles.textBtnSignUp}>Sign Up</Text>
+                </Pressable>
+              </View>
+              <View style={styles.blockSignInOpenPageBtn}>
+                <Text style={styles.textSignIn}>Already signed up?</Text>
+                <Pressable
+                  style={styles.btnSignIn}
+                  onPress={() => {
+                    navigation.navigate("SignIn");
+                  }}
+                >
+                  <Text style={styles.textBtnSignIn}>Sign in</Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
-          <View style={[styles.inpConfirmPasswordBlock, styles.inpBlock]}>
-            <Image
-              source={require("../../assets/tajjob/auth/passwordLogo.jpg")}
-              style={[styles.passwordImg, styles.img]}
-            />
-            <TextInput
-              placeholder="Confirm password"
-              style={[styles.inpPassword, styles.input]}
-              secureTextEntry={!showAndHideConfirmPassword}
-            />
-            {showAndHideConfirmPassword ? (
-              <AntDesign
-                name="eye-invisible"
-                size={35}
-                color="black"
-                style={styles.showAndHidePasswordIcon}
-                onPress={() => setShowAndHideConfirmPassword(false)}
-              />
-            ) : (
-              <AntDesign
-                name="eye"
-                size={35}
-                color="black"
-                style={styles.showAndHidePasswordIcon}
-                onPress={() => setShowAndHideConfirmPassword(true)}
-              />
-            )}
-          </View>
-          <Pressable style={styles.btnSignUp}>
-            <Text style={styles.textBtnSignUp}>Sign Up</Text>
-          </Pressable>
-        </View>
-        <View style={styles.blockSignInOpenPageBtn}>
-          <Text style={styles.textSignIn}>Already signed up?</Text>
-          <Pressable
-            style={styles.btnSignIn}
-            onPress={() => {
-              navigation.navigate("SignIn");
-            }}
-          >
-            <Text style={styles.textBtnSignIn}>Sign in</Text>
-          </Pressable>
-        </View>
-      </View>
-    </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 export default SignUp;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   signUpComponent: {
-    height: `100%`,
+    flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 20,
     paddingTop: 40,
@@ -174,7 +201,6 @@ const styles = StyleSheet.create({
   },
   signUpComponentBlock: {
     display: "flex",
-    // justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
   },
@@ -185,6 +211,8 @@ const styles = StyleSheet.create({
   inpFieldsBlock: {
     gap: 20,
     marginTop: 20,
+    width: "100%",
+    alignItems: "center",
   },
   inpFullnameBlock: {},
   inpFullname: {},
@@ -216,6 +244,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     left: 6,
+    zIndex: 1,
   },
   input: {
     borderWidth: 1,
@@ -234,6 +263,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#3A65FF",
     paddingVertical: 12,
     borderRadius: 20,
+    width: 320,
+    marginTop: 10,
   },
   textBtnSignUp: {
     textAlign: "center",
@@ -245,18 +276,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 15,
+    marginTop: 25,
     gap: 5,
   },
   textSignIn: {
     textAlign: "center",
     fontSize: 16,
     color: "#8E8E8E",
-    gap: 5,
   },
   btnSignIn: {},
   textBtnSignIn: {
     color: "#3A65FF",
     fontSize: 16,
+    fontWeight: "500",
   },
 });
