@@ -1,4 +1,5 @@
 import ModalAddReview from "@/components/job/ModalAddReview";
+import ModalApply from "@/components/job/ModalApply";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -339,7 +340,12 @@ const Job = ({ route }: { route: any }) => {
           </NavigationContainer>
         </NavigationIndependentTree>
         <View style={styles.btnApplyJobBlock}>
-          <Pressable style={styles.btnApplyJob}>
+          <Pressable
+            style={styles.btnApplyJob}
+            onPress={() => {
+              setModalApply(true);
+            }}
+          >
             <Text style={styles.btnTextApplyJob}>Apply</Text>
           </Pressable>
         </View>
@@ -348,6 +354,7 @@ const Job = ({ route }: { route: any }) => {
           modalAddReview={modalAddReview}
           setModalAddReview={setModalAddReview}
         />
+        <ModalApply modalApply={modalApply} setModalApply={setModalApply} />
       </View>
     </View>
   );

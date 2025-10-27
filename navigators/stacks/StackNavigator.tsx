@@ -60,7 +60,7 @@ const StackNavigator = () => {
         name="SignIn"
         component={SignIn}
         options={{
-                                                                                            // headerShown: true,
+          // headerShown: true,
           headerTitle: "",
           animation: "ios_from_right",
         }}

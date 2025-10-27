@@ -21,9 +21,15 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
   const handleNavigateToJob = () => {
     handleCloseModal();
     // Navigate to the Job screen with the job data
-    navigation.navigate("HomeStack", {
-      screen: "Job",
-      params: { id: jobData?.id || 1, jobData: jobData },
+    navigation.navigate("Application", {
+      screen: "HomeStack",
+      params: {
+        screen: "Job",
+        params: {
+          id: jobData?.id || 1,
+          jobData: jobData,
+        },
+      },
     });
   };
 
