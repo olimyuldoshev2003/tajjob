@@ -25,7 +25,7 @@ function App() {
   return (
     <NavigationIndependentTree>
       <NavigationContainer>
-        <StackNavigator />
+        <TabNavigator />
       </NavigationContainer>
     </NavigationIndependentTree>
   );

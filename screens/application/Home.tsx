@@ -12,9 +12,9 @@ import {
 } from "react-native";
 
 // import Dropdown from "react-native-input-select";
+import { Selector } from "rn-selector";
 import { AdvancedCheckbox } from "react-native-advanced-checkbox";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { Selector } from "rn-selector";
 
 // Icons
 import Entypo from "@expo/vector-icons/Entypo";
