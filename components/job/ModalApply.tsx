@@ -8,7 +8,7 @@ import {
   parsePhoneNumberFromString,
 } from "libphonenumber-js";
 import examples from "libphonenumber-js/examples.mobile.json";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -24,29 +24,34 @@ import { Selector } from "rn-selector";
 // @ts-ignore: Module 'country-telephone-data' has no type declarations
 import { allCountries } from "country-telephone-data";
 
-// Tajik SIM card prefixes and operators data
+// Updated Tajik SIM card prefixes and operators data for 2025
 const TAJIK_PREFIXES = {
   // Current & Primary prefixes
-  "90": "Tcell",
-  "91": "Tcell",
-  "92": "Tcell",
-  "93": "Megafon Tajikistan",
-  "94": "Megafon Tajikistan",
+  "90": "MegaFon Tajikistan (TT-Mobile)",
+  "91": "Historically Beeline / ex-Beeline",
+  "92": "Tcell (Somoncom)",
+  "93": "Tcell",
+  "94": "MegaFon Tajikistan",
+  "95": "TK-Mobile (CDMA historical)",
+  "96": "M.Teko / small CDMA operator",
+  "97": "Skytel / other small operator",
   "98": "Babilon-Mobile",
   "99": "Babilon-Mobile",
   "88": "ZET-Mobile",
-  "87": "ZET-Mobile",
-  "77": "O-Mobile",
-  "78": "O-Mobile",
+  "87": "Anor / ZET (disputed)",
+  "78": "Anor / O-Mobile (disputed)",
+  "77": "O-Mobile / Anor (overlap)",
+
   // Current (Niche/Legacy)
+  "55": "Tcell / ex-Beeline legacy",
   "44": "Various MVNOs",
-  "55": "Tcell (ex-Beeline)",
+
   // Historical Legacy (3-digit)
   "550": "Tcell (ex-Beeline)",
-  "918": "Tcell",
-  "917": "Tcell",
-  "933": "Megafon Tajikistan",
-  "934": "Megafon Tajikistan",
+  "917": "Tcell (historical)",
+  "918": "Babilon-Mobile",
+  "933": "MegaFon Tajikistan",
+  "934": "MegaFon Tajikistan",
 };
 
 const ModalApply = ({
@@ -64,25 +69,41 @@ const ModalApply = ({
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [detectedOperator, setDetectedOperator] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>("tj"); // Default to Tajikistan (lowercase)
+
+  const [detectedOperator, setDetectedOperator] = useState("");
+  // const [showCountrySelector, setShowCountrySelector] = useState(false);
 
   // Get all countries from the library and format for rn-selector
   const COUNTRIES_DATA = allCountries.map((country: any) => ({
-    value: country.iso2,
+    value: country.iso2, // This is lowercase (e.g., "tj", "us")
     label: `${country.name} (${country.dialCode})`,
     emoji: country.emoji,
     dialCode: country.dialCode,
     name: country.name,
   }));
 
-  // Find current selected country
+  // Find current selected country data
   const getSelectedCountry = () => {
     if (!selectedCountry) return null;
     return COUNTRIES_DATA.find(
       (country: any) => country.value === selectedCountry
     );
   };
+
+  // Get display text for selected country
+  // const getSelectedCountryDisplay = () => {
+  //   const country = getSelectedCountry();
+  //   return country ? `${country.name} (${country.dialCode})` : "Select Country";
+  // };
+
+  // Set default country when modal opens
+  useEffect(() => {
+    if (modalApply) {
+      setSelectedCountry("tj");
+      setPhone("+992 ");
+    }
+  }, [modalApply]);
 
   // Detect Tajik mobile operator from phone number
   const detectTajikOperator = (phoneNumber: string): string => {
@@ -123,17 +144,20 @@ const ModalApply = ({
     if (phoneNumber.startsWith("+992")) {
       const operator = detectTajikOperator(phoneNumber);
       setDetectedOperator(operator);
-      return "TJ";
+      return "tj"; // Return lowercase to match COUNTRIES_DATA
     }
 
     // Try to parse with libphonenumber first (most accurate)
     try {
       const phoneNumberObj = parsePhoneNumberFromString(phoneNumber);
       if (phoneNumberObj && phoneNumberObj.country) {
-        if (phoneNumberObj.country !== "TJ") {
+        // Convert to lowercase to match COUNTRIES_DATA format
+        const detectedCountry = phoneNumberObj.country.toLowerCase();
+
+        if (detectedCountry !== "tj") {
           setDetectedOperator("");
         }
-        return phoneNumberObj.country;
+        return detectedCountry;
       }
     } catch (error) {
       console.log("Error parsing phone number:", error);
@@ -150,10 +174,10 @@ const ModalApply = ({
     for (const country of sortedCountries) {
       const countryDialCode = country.dialCode.replace("+", "");
       if (cleanPhone.startsWith(countryDialCode)) {
-        if (country.value !== "TJ") {
+        if (country.value !== "tj") {
           setDetectedOperator("");
         }
-        return country.value;
+        return country.value; // Already lowercase
       }
     }
 
@@ -162,7 +186,6 @@ const ModalApply = ({
   };
 
   // Enhanced phone number formatting with Tajik prefix support
-  // FIXED: Enhanced phone number formatting with proper country switching
   const handlePhoneChange = (text: string) => {
     // Allow only digits, plus, spaces, and parentheses
     const cleaned = text.replace(/[^\d+()\s-]/g, "");
@@ -182,12 +205,14 @@ const ModalApply = ({
 
         // Format with new country
         try {
-          const formatter = new AsYouType(detectedCountry as CountryCode);
+          const formatter = new AsYouType(
+            detectedCountry.toUpperCase() as CountryCode
+          );
           const formatted = formatter.input(cleaned);
           setPhone(formatted);
 
           // Auto-detect operator for Tajik numbers
-          if (detectedCountry === "TJ" && formatted.startsWith("+992")) {
+          if (detectedCountry === "tj" && formatted.startsWith("+992")) {
             const operator = detectTajikOperator(formatted);
             setDetectedOperator(operator);
           }
@@ -205,12 +230,14 @@ const ModalApply = ({
     // No country change - format with current country
     if (selectedCountry) {
       try {
-        const formatter = new AsYouType(selectedCountry as CountryCode);
+        const formatter = new AsYouType(
+          selectedCountry.toUpperCase() as CountryCode
+        );
         const formatted = formatter.input(cleaned);
         setPhone(formatted);
 
         // Auto-detect operator for Tajik numbers
-        if (selectedCountry === "TJ" && formatted.startsWith("+992")) {
+        if (selectedCountry === "tj" && formatted.startsWith("+992")) {
           const operator = detectTajikOperator(formatted);
           setDetectedOperator(operator);
         }
@@ -222,7 +249,6 @@ const ModalApply = ({
     }
   };
 
-  // FIXED validation function
   // IMPROVED validation function
   const validatePhoneNumber = (phoneNumber: string, countryCode: string) => {
     // Clear error if input is too short
@@ -234,14 +260,14 @@ const ModalApply = ({
     try {
       const phoneNumberObj = parsePhoneNumberFromString(
         phoneNumber,
-        countryCode as CountryCode
+        countryCode.toUpperCase() as CountryCode
       );
 
       if (phoneNumberObj && phoneNumberObj.isValid()) {
         setPhoneError("");
 
         // Only validate Tajik prefix when number is complete (11+ digits)
-        if (countryCode === "TJ" && phoneNumber.startsWith("+992")) {
+        if (countryCode === "tj" && phoneNumber.startsWith("+992")) {
           const cleanNumber = phoneNumber.replace(/[^\d]/g, "");
           if (cleanNumber.length >= 11) {
             const operator = detectTajikOperator(phoneNumber);
@@ -270,40 +296,31 @@ const ModalApply = ({
     }
   };
 
-  // FIXED: Handle country selection - ALWAYS clear phone number
-  // FIXED: Handle country selection
+  // Handle country selection
   const handleCountrySelect = (countryCode: string) => {
     setSelectedCountry(countryCode);
+    console.log(countryCode);
+
+    // setShowCountrySelector(false);
     setPhoneError("");
     setDetectedOperator("");
 
-    // Only clear phone if user explicitly selects a different country
-    // Don't clear if it's the same country or if we have a valid number
-    if (
-      phone &&
-      !phone.startsWith(
-        `+${COUNTRIES_DATA.find(
-          (c: any) => c.value === countryCode
-        )?.dialCode.replace("+", "")}`
-      )
-    ) {
-      setPhone("");
+    // Update phone with new country code
+    const country = COUNTRIES_DATA.find((c: any) => c.value === countryCode);
+    if (country) {
+      setPhone(`+${country.dialCode} `);
     }
   };
 
   // Get phone number placeholder based on selected country
   const getPhonePlaceholder = () => {
-    if (!selectedCountry) {
-      return "Please select a country first";
-    }
-
-    if (selectedCountry === "TJ") {
+    if (selectedCountry === "tj") {
       return "e.g., +992 93 123 4567";
     }
 
     try {
       const exampleNumber = getExampleNumber(
-        selectedCountry as CountryCode,
+        selectedCountry.toUpperCase() as CountryCode,
         examples
       );
       if (exampleNumber) {
@@ -314,6 +331,7 @@ const ModalApply = ({
     }
 
     const country = getSelectedCountry();
+
     return `Enter phone number (${country?.dialCode || "+1"})`;
   };
 
@@ -404,7 +422,7 @@ const ModalApply = ({
     try {
       const phoneNumber = parsePhoneNumberFromString(
         phone,
-        selectedCountry as CountryCode
+        selectedCountry.toUpperCase() as CountryCode
       );
 
       if (!phoneNumber || !phoneNumber.isValid()) {
@@ -413,8 +431,8 @@ const ModalApply = ({
         return;
       }
 
-      // FIXED: Additional validation for Tajik numbers - only when complete
-      if (selectedCountry === "TJ") {
+      // Additional validation for Tajik numbers - only when complete
+      if (selectedCountry === "tj") {
         const cleanNumber = phone.replace(/[^\d]/g, "");
         if (cleanNumber.length >= 11) {
           const operator = detectTajikOperator(phone);
@@ -474,7 +492,8 @@ const ModalApply = ({
               setIsLoading(false);
               setPhoneError("");
               setDetectedOperator("");
-              setSelectedCountry(null);
+              setSelectedCountry("tj");
+              // setShowCountrySelector(false);
             },
           },
         ]
@@ -595,41 +614,58 @@ const ModalApply = ({
                 <Text style={styles.phoneLabel}>Phone Number *</Text>
 
                 <View style={styles.countrySelectorContainer}>
-                  <Selector
-                    options={COUNTRIES_DATA}
-                    selectedValue={selectedCountry}
-                    onValueChange={handleCountrySelect}
-                    placeholder="Select Country"
-                    searchable={true}
-                    primaryColor="#4C4ADA"
-                    customArrow={
+                  {/* {!showCountrySelector ? (
+                    <Pressable
+                      style={styles.selectedCountryContainer}
+                      onPress={() => setShowCountrySelector(true)}
+                    >
+                      <Text style={styles.selectedCountryText}>
+                        {getSelectedCountryDisplay()}
+                      </Text>
                       <Entypo name="chevron-thin-down" size={16} color="#666" />
-                    }
-                    optionStyle={styles.optionStyle}
-                    searchPlaceholder="Search countries..."
-                  />
+                    </Pressable>
+                  ) : ( */}
+                  <View style={styles.selectorWrapper}>
+                    <Selector
+                      options={COUNTRIES_DATA}
+                      selectedValue={selectedCountry}
+                      onValueChange={handleCountrySelect}
+                      placeholder="Select Country"
+                      searchable={true}
+                      primaryColor="#4C4ADA"
+                      customArrow={
+                        <Entypo
+                          name="chevron-thin-down"
+                          size={16}
+                          color="#666"
+                        />
+                      }
+                      optionStyle={styles.optionStyle}
+                      searchPlaceholder="Search countries..."
+                      style={styles.selectorStyle}
+                      dropdownStyle={styles.dropdownStyle}
+                    />
+                    {/* Close selector when tapping outside */}
+                    <Pressable style={styles.selectorBackdrop} />
+                  </View>
+                  {/* )} */}
                 </View>
 
                 <View style={styles.phoneInputContainer}>
                   <Image
                     source={require("../../assets/tajjob/auth/phoneLogo.jpg")}
-                    style={[
-                      styles.phoneImg,
-                      !selectedCountry && styles.phoneImgDisabled,
-                    ]}
+                    style={styles.phoneImg}
                   />
                   <TextInput
                     placeholder={getPhonePlaceholder()}
                     style={[
                       styles.phoneInput,
                       phoneError && styles.phoneInputError,
-                      !selectedCountry && styles.phoneInputDisabled,
                     ]}
                     keyboardType="phone-pad"
                     value={phone}
                     onChangeText={handlePhoneChange}
                     returnKeyType="next"
-                    editable={!!selectedCountry}
                     placeholderTextColor="#999"
                   />
                 </View>
@@ -644,10 +680,8 @@ const ModalApply = ({
                   <Text style={styles.phoneErrorText}>{phoneError}</Text>
                 ) : (
                   <Text style={styles.phoneHintText}>
-                    {!selectedCountry
-                      ? "Please select a country first to enter phone number"
-                      : selectedCountry === "TJ"
-                      ? "Start with +992. Supported prefixes: 90, 91, 92 (Tcell), 93, 94 (Megafon), etc."
+                    {selectedCountry === "tj"
+                      ? "Start with +992. Supported prefixes: 90 (Megafon), 91 (ex-Beeline), 92-93 (Tcell), 94 (Megafon), 98-99 (Babilon), etc."
                       : "Start with + or select country. The country will auto-detect."}
                   </Text>
                 )}
@@ -736,7 +770,6 @@ const ModalApply = ({
   );
 };
 
-// STYLES REMAIN EXACTLY THE SAME - NO CHANGES
 const styles = StyleSheet.create({
   modalApplyComponent: {},
   overlayModalApply: {
@@ -798,7 +831,14 @@ const styles = StyleSheet.create({
     paddingLeft: 53,
     paddingVertical: 12,
     borderRadius: 20,
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
     fontSize: 20,
     width: "100%",
     backgroundColor: "#fff",
@@ -829,7 +869,14 @@ const styles = StyleSheet.create({
     paddingLeft: 53,
     paddingVertical: 12,
     borderRadius: 20,
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
     fontSize: 20,
     width: "100%",
     backgroundColor: "#fff",
@@ -844,6 +891,62 @@ const styles = StyleSheet.create({
   },
   countrySelectorContainer: {
     zIndex: 1000,
+  },
+  selectedCountryContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#fff",
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
+    backgroundColor: "#fff",
+  },
+  selectedCountryText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  selectorWrapper: {
+    position: "relative",
+  },
+  selectorStyle: {
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
+    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+  },
+  selectorBackdrop: {
+    position: "absolute",
+    top: -100,
+    left: -20,
+    right: -20,
+    bottom: -100,
+    zIndex: -1,
+  },
+  dropdownStyle: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    marginTop: 5,
+    maxHeight: 200,
   },
   optionStyle: {
     paddingVertical: 12,
@@ -860,9 +963,6 @@ const styles = StyleSheet.create({
     left: 11,
     zIndex: 1,
   },
-  phoneImgDisabled: {
-    opacity: 0.5,
-  },
   phoneInput: {
     borderWidth: 1,
     borderColor: "#fff",
@@ -870,15 +970,17 @@ const styles = StyleSheet.create({
     paddingLeft: 53,
     paddingVertical: 12,
     borderRadius: 20,
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
     fontSize: 20,
     width: "100%",
     backgroundColor: "#fff",
-  },
-  phoneInputDisabled: {
-    backgroundColor: "#f5f5f5",
-    color: "#999",
-    borderColor: "#ddd",
   },
   phoneInputError: {
     borderColor: "#d32f2f",
@@ -913,7 +1015,14 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   uploadCVButton: {
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
     borderRadius: 20,
     paddingVertical: 12,
     paddingHorizontal: 15,
@@ -988,7 +1097,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
     borderRadius: 20,
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.6)",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
     fontSize: 20,
     width: "100%",
     height: 190,
