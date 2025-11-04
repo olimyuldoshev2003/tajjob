@@ -69,7 +69,7 @@ const ModalApply = ({
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState<string>("tj"); // Default to Tajikistan (lowercase)
+  const [selectedCountry, setSelectedCountry] = useState<string>(""); // Start empty
 
   const [detectedOperator, setDetectedOperator] = useState("");
   // const [showCountrySelector, setShowCountrySelector] = useState(false);
@@ -77,7 +77,7 @@ const ModalApply = ({
   // Get all countries from the library and format for rn-selector
   const COUNTRIES_DATA = allCountries.map((country: any) => ({
     value: country.iso2, // This is lowercase (e.g., "tj", "us")
-    label: `${country.name} (${country.dialCode})`,
+    label: `${country.name} (+${country.dialCode})`,
     emoji: country.emoji,
     dialCode: country.dialCode,
     name: country.name,
@@ -227,6 +227,16 @@ const ModalApply = ({
       }
     }
 
+    // If phone input is empty or doesn't start with +, clear selected country
+    if (!cleaned || !cleaned.startsWith("+") || cleaned.length < 3) {
+      if (selectedCountry !== "") {
+        setSelectedCountry("");
+      }
+      setPhoneError("");
+      setDetectedOperator("");
+      return;
+    }
+
     // No country change - format with current country
     if (selectedCountry) {
       try {
@@ -299,7 +309,6 @@ const ModalApply = ({
   // Handle country selection
   const handleCountrySelect = (countryCode: string) => {
     setSelectedCountry(countryCode);
-    console.log(countryCode);
 
     // setShowCountrySelector(false);
     setPhoneError("");
@@ -492,7 +501,7 @@ const ModalApply = ({
               setIsLoading(false);
               setPhoneError("");
               setDetectedOperator("");
-              setSelectedCountry("tj");
+              setSelectedCountry("");
               // setShowCountrySelector(false);
             },
           },
@@ -614,17 +623,6 @@ const ModalApply = ({
                 <Text style={styles.phoneLabel}>Phone Number *</Text>
 
                 <View style={styles.countrySelectorContainer}>
-                  {/* {!showCountrySelector ? (
-                    <Pressable
-                      style={styles.selectedCountryContainer}
-                      onPress={() => setShowCountrySelector(true)}
-                    >
-                      <Text style={styles.selectedCountryText}>
-                        {getSelectedCountryDisplay()}
-                      </Text>
-                      <Entypo name="chevron-thin-down" size={16} color="#666" />
-                    </Pressable>
-                  ) : ( */}
                   <View style={styles.selectorWrapper}>
                     <Selector
                       options={COUNTRIES_DATA}
@@ -648,7 +646,6 @@ const ModalApply = ({
                     {/* Close selector when tapping outside */}
                     <Pressable style={styles.selectorBackdrop} />
                   </View>
-                  {/* )} */}
                 </View>
 
                 <View style={styles.phoneInputContainer}>
