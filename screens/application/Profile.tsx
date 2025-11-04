@@ -1,5 +1,7 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
   Image,
@@ -10,7 +12,20 @@ import {
   View,
 } from "react-native";
 
+// Define your navigation types
+type RootStackParamList = {
+  EditUser: undefined;
+  // Add other screens here as needed
+  // SignIn: undefined;
+  // Home: undefined;
+  // etc.
+};
+
+type ProfileNavigationProp = StackNavigationProp<RootStackParamList>;
+
 const Profile = () => {
+  const navigation = useNavigation<ProfileNavigationProp>();
+
   return (
     <View style={styles.profileComponent}>
       <View style={styles.profileComponentBlock}>
@@ -42,6 +57,9 @@ const Profile = () => {
                   <TouchableHighlight
                     style={[styles.editUserBtn, styles.btnFunc]}
                     underlayColor="#f0f0f0"
+                    onPress={() => {
+                      navigation.navigate("EditUser");
+                    }}
                   >
                     <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={styles.iconAndFuncTypeBlock}>
@@ -94,15 +112,11 @@ const Profile = () => {
                     <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={styles.iconAndFuncTypeBlock}>
                         <View style={[styles.iconBlock, styles.saveIconBlock]}>
-                          {/* <Image
-                            source={require("../../assets/tajjob/profile/saveIcon.jpg")}
-                            style={[styles.icon, styles.saveIcon]}
-                            /> */}
                           <FontAwesome
                             name="bookmark-o"
                             size={32}
                             color="black"
-                            style={[ styles.saveIcon]}
+                            style={[styles.saveIcon]}
                           />
                         </View>
                         <Text style={styles.funcTypeText}>Saved jobs</Text>
@@ -277,8 +291,8 @@ const styles = StyleSheet.create({
   createResumeBtn: {},
   savedJobsBtn: {},
   saveIconBlock: {
-    paddingVertical:10,
-    paddingHorizontal:15.4,
+    paddingVertical: 10,
+    paddingHorizontal: 15.4,
   },
   saveIcon: {},
   /////////////////////////////////////////////////////////////

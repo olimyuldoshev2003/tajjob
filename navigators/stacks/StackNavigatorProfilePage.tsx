@@ -1,3 +1,4 @@
+import EditUser from "@/screens/application/EditUser";
 import Profile from "@/screens/application/Profile";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
@@ -12,7 +13,20 @@ const StackNavigatorProfilePage = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Profile" component={Profile} options={{}} />
+      <Stack.Screen
+        name="EditUser"
+        component={EditUser}
+        options={{
+          headerShown: true,
+          title: "Personal Information",
+          headerStyle: {
+            backgroundColor: "#fff",
+          },
+          headerShadowVisible: true,
+          animation: "slide_from_right",
+        }}
+      />
     </Stack.Navigator>
   );
 };
