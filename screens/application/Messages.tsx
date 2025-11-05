@@ -1,11 +1,22 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Messages = () => {
-  const users:any = [
+
+  const navigation:any = useNavigation()
+
+  const users: any = [
     {
       id: 1,
       name: "Danny Hopkins",
@@ -480,18 +491,27 @@ const Messages = () => {
             showsVerticalScrollIndicator={false}
           >
             {users.map((item: any) => (
-              <View style={styles.container} key={item.id}>
-                <View style={styles.userImgFullNameAndMessageBlock}>
-                  <Image source={{ uri: item.avatar }} style={styles.userImg} />
-                  <View style={styles.fullNameAndMessageBlock}>
-                    <Text style={styles.fullName}>{item.name}</Text>
-                    <Text style={styles.message}>
-                      {item.lastMessage || item.email}
-                    </Text>
+              <TouchableWithoutFeedback key={item.id} onPress={() => {
+                  navigation.navigate("Message", {
+                    id: item.id,
+                  });
+              }}>
+                <View style={styles.container}>
+                  <View style={styles.userImgFullNameAndMessageBlock}>
+                    <Image
+                      source={{ uri: item.avatar }}
+                      style={styles.userImg}
+                    />
+                    <View style={styles.fullNameAndMessageBlock}>
+                      <Text style={styles.fullName}>{item.name}</Text>
+                      <Text style={styles.message}>
+                        {item.lastMessage || item.email}
+                      </Text>
+                    </View>
                   </View>
+                  <Text style={styles.time}>{item.time}</Text>
                 </View>
-                <Text style={styles.time}>{item.time}</Text>
-              </View>
+              </TouchableWithoutFeedback>
             ))}
           </ScrollView>
         ) : (

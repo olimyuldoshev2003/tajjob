@@ -27,31 +27,63 @@ import { allCountries } from "country-telephone-data";
 // Updated Tajik SIM card prefixes and operators data for 2025
 const TAJIK_PREFIXES = {
   // Current & Primary prefixes
-  "90": "MegaFon Tajikistan (TT-Mobile)",
-  "91": "Historically Beeline / ex-Beeline",
-  "92": "Tcell (Somoncom)",
+  "90": "MegaFon Tajikistan",
+  "55": "MegaFon Tajikistan",
+  "41": "MegaFon Tajikistan",
+  "88": "MegaFon Tajikistan",
+  "00": "MegaFon Tajikistan",
+  "01": "MegaFon Tajikistan",
+  "02": "MegaFon Tajikistan",
+  "07": "MegaFon Tajikistan",
+  "97": "MegaFon Tajikistan",
+  "12": "MegaFon Tajikistan",
+  "21": "MegaFon Tajikistan",
+  "27": "MegaFon Tajikistan",
+  "91": "ZET-Mobile",
+  "40": "ZET-Mobile",
+  "80": "ZET-Mobile",
+  "33": "ZET-Mobile",
+  "81": "ZET-Mobile",
+  "03": "ZET-Mobile",
+  "04": "ZET-Mobile",
+  "08": "ZET-Mobile",
+  "05": "ZET-Mobile",
+  "09": "ZET-Mobile",
+  "06": "ZET-Mobile",
+  "18": "ZET-Mobile",
+  "19": "ZET-Mobile",
+  "66": "ZET-Mobile",
+  "38": "ZET-Mobile",
+  "92": "Tcell",
   "93": "Tcell",
-  "94": "MegaFon Tajikistan",
-  "95": "TK-Mobile (CDMA historical)",
-  "96": "M.Teko / small CDMA operator",
-  "97": "Skytel / other small operator",
+  "50": "Tcell",
+  "77": "Tcell",
+  "70": "Tcell",
+  "99": "Tcell",
+  "11": "Tcell",
+  "10": "O-Mobile",
+  "20": "O-Mobile",
+  "22": "O-Mobile",
+  "30": "O-Mobile",
+  "78": "Anor",
+  "87": "Anor",
   "98": "Babilon-Mobile",
-  "99": "Babilon-Mobile",
-  "88": "ZET-Mobile",
-  "87": "Anor / ZET (disputed)",
-  "78": "Anor / O-Mobile (disputed)",
-  "77": "O-Mobile / Anor (overlap)",
-
-  // Current (Niche/Legacy)
-  "55": "Tcell / ex-Beeline legacy",
-  "44": "Various MVNOs",
+  "94": "Babilon-Mobile",
+  "71": "Babilon-Mobile",
+  "17": "Babilon-Mobile",
+  "75": "Babilon-Mobile",
 
   // Historical Legacy (3-digit)
-  "550": "Tcell (ex-Beeline)",
-  "917": "Tcell (historical)",
+  "440": "ZET-Mobile",
+  "444": "ZET-Mobile",
+  "030": "ZET-Mobile",
+  "040": "ZET-Mobile",
+  "080": "ZET-Mobile",
+  "442": "ZET-Mobile",
+  "443": "ZET-Mobile",
+  "447": "ZET-Mobile",
+  "449": "ZET-Mobile",
   "918": "Babilon-Mobile",
-  "933": "MegaFon Tajikistan",
-  "934": "MegaFon Tajikistan",
 };
 
 const ModalApply = ({
@@ -82,6 +114,9 @@ const ModalApply = ({
     dialCode: country.dialCode,
     name: country.name,
   }));
+
+  console.log(examples);
+  
 
   // Find current selected country data
   const getSelectedCountry = () => {
@@ -667,18 +702,18 @@ const ModalApply = ({
                   />
                 </View>
 
-                {detectedOperator ? (
+                {/* {detectedOperator ? (
                   <Text style={styles.operatorText}>
                     Detected: {detectedOperator}
                   </Text>
-                ) : null}
+                ) : null} */}
 
                 {phoneError ? (
                   <Text style={styles.phoneErrorText}>{phoneError}</Text>
                 ) : (
                   <Text style={styles.phoneHintText}>
                     {selectedCountry === "tj"
-                      ? "Start with +992. Supported prefixes: 90 (Megafon), 91 (ex-Beeline), 92-93 (Tcell), 94 (Megafon), 98-99 (Babilon), etc."
+                      ? "Start with +992. Supported prefixes: 90, 91, 92, 93, 94, 98, 99, etc."
                       : "Start with + or select country. The country will auto-detect."}
                   </Text>
                 )}

@@ -1,5 +1,5 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Image,
   Modal,
@@ -9,6 +9,8 @@ import {
   Text,
   TextInput,
   View,
+  Animated,
+  Dimensions,
 } from "react-native";
 
 // import Dropdown from "react-native-input-select";
@@ -22,6 +24,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "expo-router";
 
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+
 // Define the props interface
 interface HomeProps {
   onJobPress?: (job: any) => void;
@@ -33,6 +37,52 @@ const Home = ({ onJobPress }: HomeProps) => {
   const [modalFilter, setModalFilter] = useState<boolean>(false);
   const [filterByCity, setFilterByCity] = useState<string>("");
   const [checked, setChecked] = useState(false);
+
+  // Animation values
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (modalFilter) {
+      // Animate in
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      // Animate out
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [modalFilter]);
+
+  const modalTranslateY = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-SCREEN_HEIGHT * 1, 0],
+  });
+
+  const backdropOpacity = backdropAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 0.5],
+  });
 
   const jobs = [
     {
@@ -230,6 +280,24 @@ const Home = ({ onJobPress }: HomeProps) => {
     setModalFilter(!modalFilter);
   };
 
+  const handleCloseModal = () => {
+    // Animate out before closing
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setModalFilter(false);
+    });
+  };
+
   const handleJobPress = (job: any) => {
     onJobPress?.(job);
   };
@@ -277,18 +345,8 @@ const Home = ({ onJobPress }: HomeProps) => {
               <View style={styles.newNotificationNotice} />
             </View>
           </View>
-          <View
-            style={[
-              styles.headerBlock2,
-              // modalFilter && styles.headerBlock2InOpeningModalFilter,
-            ]}
-          >
-            <View
-              style={[
-                styles.searchInputBlock,
-                // modalFilter && styles.searchInputBlockInOpeningModalFilter,
-              ]}
-            >
+          <View style={[styles.headerBlock2]}>
+            <View style={[styles.searchInputBlock]}>
               <Ionicons
                 name="search"
                 size={38}
@@ -462,47 +520,49 @@ const Home = ({ onJobPress }: HomeProps) => {
         </ScrollView>
       </View>
 
-      {/* Modal Filter using React Native Modal Component */}
+      {/* Modal Filter sliding from top */}
       <Modal
         visible={modalFilter}
-        animationType="slide"
+        animationType="none"
         transparent={true}
-        onRequestClose={handleModalFilter}
+        onRequestClose={handleCloseModal}
+        statusBarTranslucent={true}
       >
         <View style={styles.modalContainer}>
-          {/* Backdrop */}
-          <Pressable
-            style={styles.overlayModalFilter}
-            onPress={handleModalFilter}
-          />
+          {/* Animated Backdrop */}
+          <Animated.View
+            style={[styles.overlayModalFilter, { opacity: backdropOpacity }]}
+          >
+            <Pressable
+              style={styles.backdropPressable}
+              onPress={handleCloseModal}
+            />
+          </Animated.View>
 
-          {/* Modal content */}
-          <View style={styles.modalFilterStyle}>
+          {/* Animated Modal Content */}
+          <Animated.ScrollView
+            style={[
+              styles.modalFilterStyle,
+              {
+                transform: [{ translateY: modalTranslateY }],
+              },
+            ]}
+          >
             <View style={styles.modalContent}>
               <View style={styles.modalFilterHeader}>
                 <Text style={styles.modalHeaderText}>Filter</Text>
-                <Pressable onPress={handleModalFilter}>
+                <Pressable
+                  onPress={handleCloseModal}
+                  style={styles.closeButton}
+                >
                   <FontAwesome name="close" size={42} color="black" />
                 </Pressable>
               </View>
-              <ScrollView contentContainerStyle={styles.modalFilterSection}>
+              <ScrollView
+                contentContainerStyle={styles.modalFilterSection}
+                showsVerticalScrollIndicator={false}
+              >
                 <View style={styles.filterBySelectBlock}>
-                  {/* <Dropdown
-                    label="Country"
-                    placeholder="Select the city..."
-                    options={[
-                      { label: "All cities", value: " " },
-                      { label: "Dushanbe", value: "dushanbe" },
-                      { label: "Khujand", value: "khujand" },
-                      { label: "Kulob", value: "kulob" },
-                      { label: "Bokhtar", value: "bokhtar" },
-                    ]}
-                    selectedValue={filterByCity}
-                    onValueChange={(value: any) => {
-                      setFilterByCity(value);
-                    }}
-                    primaryColor={"green"}
-                  /> */}
                   <Selector
                     options={[
                       { label: "All cities", value: "" },
@@ -512,7 +572,7 @@ const Home = ({ onJobPress }: HomeProps) => {
                       { label: "Bokhtar", value: "bokhtar" },
                     ]}
                     selectedValue={filterByCity}
-                    onValueChange={(value, option) => {
+                    onValueChange={(value) => {
                       setFilterByCity(value);
                     }}
                     placeholder="Select the city..."
@@ -822,7 +882,7 @@ const Home = ({ onJobPress }: HomeProps) => {
                 </View>
               </ScrollView>
             </View>
-          </View>
+          </Animated.ScrollView>
         </View>
       </Modal>
     </View>
@@ -891,17 +951,10 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 10,
   },
-  headerBlock2InOpeningModalFilter: {
-    display: "none",
-  },
   searchInputBlock: {
     position: "relative",
     flex: 1,
   },
-  searchInputBlockInOpeningModalFilter: {
-    display: "none",
-  },
-
   searchIcon: {
     position: "absolute",
     top: 9,
@@ -1226,23 +1279,40 @@ const styles = StyleSheet.create({
     color: "#766EAA",
   },
 
-  // Modal Filter using React Native Modal Component
+  // Modal Filter sliding from top
   //////////////////////////////////////////////////
   modalContainer: {
     flex: 1,
     justifyContent: "flex-start",
   },
   overlayModalFilter: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  backdropPressable: {
+    flex: 1,
+  },
   modalFilterStyle: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
     backgroundColor: "white",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    // maxHeight: SCREEN_HEIGHT * 0.8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
     height: "100%",
   },
   modalContent: {
     flex: 1,
-    marginTop: 10,
   },
   modalFilterHeader: {
     flexDirection: "row",
@@ -1250,8 +1320,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 20,
     paddingHorizontal: 20,
+    paddingTop: 25,
     borderBottomWidth: 1,
     borderBottomColor: "#E5E5E5",
+  },
+  closeButton: {
+    padding: 5,
   },
   modalHeaderText: {
     fontSize: 32,
@@ -1283,21 +1357,21 @@ const styles = StyleSheet.create({
   },
   titleFilterBySphere: {
     fontSize: 25,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   checkboxesForFilterBySphereBlock: {
     marginTop: 10,
     gap: 12,
   },
 
-  // Filter By Experice
+  // Filter By Experience
   filterByExperience: {
     paddingHorizontal: 20,
     marginTop: 10,
   },
   titleFilterByExperience: {
     fontSize: 25,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   checkboxesForFilterByExperienceBlock: {
     marginTop: 10,

@@ -1,3 +1,4 @@
+import Message from "@/screens/application/Message";
 import Messages from "@/screens/application/Messages";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
@@ -13,6 +14,11 @@ const StackNavigatorMessagesPage = () => {
       }}
     >
       <Stack.Screen name="Messages" component={Messages} />
+      <Stack.Screen name="Message" component={Message}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
     </Stack.Navigator>
   );
 };
