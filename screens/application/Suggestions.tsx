@@ -9,56 +9,55 @@ const Suggestions = () => {
         contentContainerStyle={styles.suggestions}
         showsVerticalScrollIndicator={false}
       >
-        <View   style={styles.suggestionsContainer}>
-
-        </View>
-        <Text style={styles.suggestionsSentDay}>Yesterday</Text>
-        {/* Suggestion 1 */}
-        <View style={styles.suggestionsBlockOfThisDay}>
-          <View style={styles.suggestion}>
-            <Image
-              source={require("../../assets/tajjob/notifications/alif-suggestion.jpg")}
-              style={styles.suggestionImg}
-            />
-            <View style={styles.suggestionTitleAndDescriptionBlock}>
-              <Text style={styles.suggestionTitle}>Alif Bank</Text>
-              <Text style={styles.suggestionDescription}>
-                Alif Bank needs an operator worker and you can apply for a job
-                that suits you and wish you success.
-              </Text>
-              <Text style={styles.suggestionTime}>06:47</Text>
+        <View style={styles.suggestionsContainer}>
+          <Text style={styles.suggestionsSentDay}>Yesterday</Text>
+          {/* Suggestion 1 */}
+          <View style={styles.suggestionsBlockOfThisDay}>
+            <View style={styles.suggestion}>
+              <Image
+                source={require("../../assets/tajjob/notifications/alif-suggestion.jpg")}
+                style={styles.suggestionImg}
+              />
+              <View style={styles.suggestionTitleAndDescriptionBlock}>
+                <Text style={styles.suggestionTitle}>Alif Bank</Text>
+                <Text style={styles.suggestionDescription}>
+                  Alif Bank needs an operator worker and you can apply for a job
+                  that suits you and wish you success.
+                </Text>
+                <Text style={styles.suggestionTime}>06:47</Text>
+              </View>
             </View>
-          </View>
 
-          {/* Suggestion 2 */}
-          <View style={styles.suggestion}>
-            <Image
-              source={require("../../assets/tajjob/notifications/humo-suggestion.jpg")}
-              style={styles.suggestionImg}
-            />
-            <View style={styles.suggestionTitleAndDescriptionBlock}>
-              <Text style={styles.suggestionTitle}>Humo Bank</Text>
-              <Text style={styles.suggestionDescription}>
-                Humo Bank needs an frontier card worker and you can apply for a
-                job that suits you and wish you success.
-              </Text>
-              <Text style={styles.suggestionTime}>06:48</Text>
+            {/* Suggestion 2 */}
+            <View style={styles.suggestion}>
+              <Image
+                source={require("../../assets/tajjob/notifications/humo-suggestion.jpg")}
+                style={styles.suggestionImg}
+              />
+              <View style={styles.suggestionTitleAndDescriptionBlock}>
+                <Text style={styles.suggestionTitle}>Humo Bank</Text>
+                <Text style={styles.suggestionDescription}>
+                  Humo Bank needs an frontier card worker and you can apply for
+                  a job that suits you and wish you success.
+                </Text>
+                <Text style={styles.suggestionTime}>06:48</Text>
+              </View>
             </View>
-          </View>
 
-          {/* Suggestion 3 */}
-          <View style={styles.suggestion}>
-            <Image
-              source={require("../../assets/tajjob/notifications/eskhata-suggestion.jpg")}
-              style={styles.suggestionImg}
-            />
-            <View style={styles.suggestionTitleAndDescriptionBlock}>
-              <Text style={styles.suggestionTitle}>Eskhata Bank</Text>
-              <Text style={styles.suggestionDescription}>
-                Eskhata Bank needs an communication worker and you can apply for
-                a job that suits you and wish you success.
-              </Text>
-              <Text style={styles.suggestionTime}>06:48</Text>
+            {/* Suggestion 3 */}
+            <View style={styles.suggestion}>
+              <Image
+                source={require("../../assets/tajjob/notifications/eskhata-suggestion.jpg")}
+                style={styles.suggestionImg}
+              />
+              <View style={styles.suggestionTitleAndDescriptionBlock}>
+                <Text style={styles.suggestionTitle}>Eskhata Bank</Text>
+                <Text style={styles.suggestionDescription}>
+                  Eskhata Bank needs an communication worker and you can apply
+                  for a job that suits you and wish you success.
+                </Text>
+                <Text style={styles.suggestionTime}>06:48</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -79,6 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingBottom: 15,
   },
+  suggestionsContainer: {},
   suggestionsSentDay: {
     textAlign: "center",
     color: "#9E9E9E",
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   suggestionImg: {
     width: "100%",
-    height: 95, 
+    height: 95,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },

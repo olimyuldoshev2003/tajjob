@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableHighlight,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -491,11 +492,16 @@ const Messages = () => {
             showsVerticalScrollIndicator={false}
           >
             {users.map((item: any) => (
-              <TouchableWithoutFeedback key={item.id} onPress={() => {
+              <TouchableHighlight
+                key={item.id}
+                activeOpacity={0.6}
+                underlayColor="#f0f0f0"
+                onPress={() => {
                   navigation.navigate("Message", {
                     id: item.id,
                   });
-              }}>
+                }}
+              >
                 <View style={styles.container}>
                   <View style={styles.userImgFullNameAndMessageBlock}>
                     <Image
@@ -511,7 +517,7 @@ const Messages = () => {
                   </View>
                   <Text style={styles.time}>{item.time}</Text>
                 </View>
-              </TouchableWithoutFeedback>
+              </TouchableHighlight>
             ))}
           </ScrollView>
         ) : (
@@ -579,7 +585,7 @@ const styles = StyleSheet.create({
   },
 
   messagesContent: {
-    padding: 17,
+    // padding: 17,
   },
 
   container: {
@@ -587,6 +593,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     // alignItems: "center",
     paddingVertical: 8,
+    paddingHorizontal: 17,
   },
   userImgFullNameAndMessageBlock: {
     flexDirection: "row",

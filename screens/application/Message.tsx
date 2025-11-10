@@ -3,10 +3,18 @@ import {
   FontAwesome,
   FontAwesome5,
   Ionicons,
+  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 const Message = ({ route }: { route: any }) => {
   // console.log(route.params.id);
@@ -48,18 +56,92 @@ const Message = ({ route }: { route: any }) => {
           <View style={styles.messagesContainer}>
             <Text style={styles.messagesSentDay}>Yesterday</Text>
             <View style={styles.messagesBlockOfThisDay}>
-              <View style={styles.messageOfUserBlock}>
-                <Text style={styles.messageOfUser}></Text>
-                <View style={styles.messageSentTimeAndSeenBlock}></View>
+              <View style={styles.messageOfUserMainBlock}>
+                <View style={styles.messageOfUserBlock}>
+                  <Text style={styles.messageOfUser}>Hello</Text>
+                  <View style={styles.messageSentTimeAndSeenBlock}>
+                    <Text style={styles.messageSentTime}>13:47</Text>
+                    <MaterialCommunityIcons
+                      name="check-all"
+                      size={24}
+                      color="#00b7ff"
+                      style={styles.messageSeenIcon}
+                    />
+                  </View>
+                </View>
               </View>
-              <View style={styles.messageOfHRBlock}>
-                <Text style={styles.messageOfHR}></Text>
-                <View style={styles.messageSentTimeAndSeenBlock}></View>
+              <View style={styles.messageOfHRMainBlock}>
+                <View style={styles.messageOfHRBlock}>
+                  <Text style={styles.messageOfHR}>Hi</Text>
+                  <View style={styles.messageSentTimeAndSeenBlock}>
+                    <Text style={styles.messageSentTime}>13:47</Text>
+                    <MaterialCommunityIcons
+                      name="check-all"
+                      size={24}
+                      color="#00b7ff"
+                      style={styles.messageSeenIcon}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.messageOfHRMainBlock}>
+                <View style={styles.messageOfHRBlock}>
+                  <Text style={styles.messageOfHR}>How can I help you?</Text>
+                  <View style={styles.messageSentTimeAndSeenBlock}>
+                    <Text style={styles.messageSentTime}>13:47</Text>
+                    <MaterialCommunityIcons
+                      name="check-all"
+                      size={24}
+                      color="#00b7ff"
+                      style={styles.messageSeenIcon}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.messageOfUserMainBlock}>
+                <View style={styles.messageOfUserBlock}>
+                  <Text style={styles.messageOfUser}>
+                    I sent a request to your company in marketing area.
+                  </Text>
+                  <View style={styles.messageSentTimeAndSeenBlock}>
+                    <Text style={styles.messageSentTime}>13:47</Text>
+                    <MaterialCommunityIcons
+                      name="check-all"
+                      size={24}
+                      color="#00b7ff"
+                      style={styles.messageSeenIcon}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.messageOfHRMainBlock}>
+                <View style={styles.messageOfHRBlock}>
+                  <Text style={styles.messageOfHR}>
+                    Ok. So, our specialists will message you.
+                  </Text>
+                  <View style={styles.messageSentTimeAndSeenBlock}>
+                    <Text style={styles.messageSentTime}>13:47</Text>
+                    <MaterialCommunityIcons
+                      name="check-all"
+                      size={24}
+                      color="#00b7ff"
+                      style={styles.messageSeenIcon}
+                    />
+                  </View>
+                </View>
               </View>
             </View>
           </View>
         </ScrollView>
-        <View style={styles.footerMessagesComponentBlock}></View>
+        <View style={styles.footerMessagesComponentBlock}>
+          <View style={styles.inputMessageAndIconBlock}>
+            <TextInput
+              style={styles.inputMessage}
+              placeholder="Messages"
+              placeholderTextColor={"#9E9E9E"}
+            />
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -111,14 +193,92 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   sectionAndFooterMessagesComponentBlock: {},
-  sectionMessagesComponentBlock: {},
+  sectionMessagesComponentBlock: {
+    height: "72%",
+  },
   messagesContainer: {},
-  messagesSentDay: {},
-  messageOfUser: {},
-  messageOfUserBlock: {},
-  messageOfHR: {},
-  messageOfHRBlock: {},
-  messageSentTimeAndSeenBlock: {},
-  messagesBlockOfThisDay: {},
-  footerMessagesComponentBlock: {},
+  messagesSentDay: {
+    alignSelf: "center",
+    color: "#9E9E9E",
+    fontSize: 20,
+    fontWeight: "500",
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+    backgroundColor: "#fff",
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+    borderRadius: 5,
+  },
+  messagesBlockOfThisDay: {
+    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginTop: 5,
+  },
+  messageOfUserMainBlock: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  messageOfUserBlock: {
+    width: "60%",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+    padding: 8,
+    borderRadius: 10,
+  },
+  messageOfUser: {
+    fontSize: 20,
+    fontWeight: "400",
+  },
+  messageOfHRMainBlock: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  messageOfHRBlock: {
+    width: "60%",
+    backgroundColor: "#2623D2",
+    padding: 8,
+    borderRadius: 10,
+  },
+  messageOfHR: {
+    fontSize: 20,
+    fontWeight: "400",
+    color: "#fff",
+  },
+  messageSentTimeAndSeenBlock: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 5,
+  },
+  messageSentTime: {
+    color: "#9E9E9E",
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  messageSeenIcon: {},
+  footerMessagesComponentBlock: {
+    paddingHorizontal: 10,
+  },
+  inputMessageAndIconBlock: {},
+  inputMessage: {
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5, 
+    fontSize: 21, 
+    fontWeight: "400",
+    borderRadius: 15,
+    paddingLeft: 50
+  },
 });

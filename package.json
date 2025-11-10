@@ -62,6 +62,7 @@
     "react-native-screens": "~4.16.0",
     "react-native-star-svg-rating": "^1.8.3",
     "react-native-stars": "^1.2.2",
+    "react-native-stickers": "^0.0.2",
     "react-native-vector-icons": "^10.3.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "^0.5.1",
