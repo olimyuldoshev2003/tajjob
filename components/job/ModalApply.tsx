@@ -113,10 +113,7 @@ const ModalApply = ({
     emoji: country.emoji,
     dialCode: country.dialCode,
     name: country.name,
-  }));
-
-  console.log(examples);
-  
+  }));  
 
   // Find current selected country data
   const getSelectedCountry = () => {

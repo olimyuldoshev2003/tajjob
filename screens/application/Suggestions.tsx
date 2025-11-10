@@ -9,8 +9,10 @@ const Suggestions = () => {
         contentContainerStyle={styles.suggestions}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.suggestionsSentDay}>Yesterday</Text>
+        <View   style={styles.suggestionsContainer}>
 
+        </View>
+        <Text style={styles.suggestionsSentDay}>Yesterday</Text>
         {/* Suggestion 1 */}
         <View style={styles.suggestionsBlockOfThisDay}>
           <View style={styles.suggestion}>
