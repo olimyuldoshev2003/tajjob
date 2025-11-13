@@ -35,8 +35,6 @@ interface Message {
 const Message = ({ route }: { route: any }) => {
   const navigation: any = useNavigation();
 
-  const [pickerVisible, setPickerVisible] = useState<boolean>(false);
-  const [finalImage, setFinalImage] = useState<any>(null);
   const [messageText, setMessageText] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -53,27 +51,6 @@ const Message = ({ route }: { route: any }) => {
       timestamp: "13:47",
       type: "text",
     },
-    {
-      id: "3",
-      text: "How can I help you?",
-      isUser: false,
-      timestamp: "13:47",
-      type: "text",
-    },
-    {
-      id: "4",
-      text: "I sent a request to your company in marketing area.",
-      isUser: true,
-      timestamp: "13:47",
-      type: "text",
-    },
-    {
-      id: "5",
-      text: "Ok. So, our specialists will message you.",
-      isUser: false,
-      timestamp: "13:47",
-      type: "text",
-    },
   ]);
 
   // Voice recording states
@@ -85,108 +62,26 @@ const Message = ({ route }: { route: any }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [recordingAnimation] = useState(new Animated.Value(0));
   const [playbackProgress, setPlaybackProgress] = useState<number>(0);
-  const [playbackDuration, setPlaybackDuration] = useState<number>(0);
+  const [playbackPosition, setPlaybackPosition] = useState<number>(0);
 
   const recordingRef = useRef<Audio.Recording | null>(null);
   const recordingTimerRef = useRef<any>(null);
   const playbackTimerRef = useRef<any>(null);
-  const isRecordingActiveRef = useRef<boolean>(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // Custom Waveform Component with real audio-based visualization
-  const CustomWaveform = ({
-    duration,
-    progress,
-    width,
-    height,
-    waveColor,
-    progressColor,
-    isPlaying,
-  }: {
-    duration: number;
-    progress: number;
-    width: number;
-    height: number;
-    waveColor: string;
-    progressColor: string;
-    isPlaying: boolean;
-  }) => {
-    const bars = 20;
-    const progressWidth = (progress / duration) * width;
-
-    // Generate waveform bars with more variation for realism
-    const generateBars = () => {
-      const barData = [];
-      for (let i = 0; i < bars; i++) {
-        // Create a more dynamic waveform pattern
-        const position = i / bars;
-        const baseHeight =
-          Math.sin(position * Math.PI * 4) * 0.4 +
-          Math.cos(position * Math.PI * 2) * 0.3 +
-          0.5;
-        const variation = Math.random() * 0.3 + 0.1;
-        const finalHeight = Math.max(0.2, Math.min(1, baseHeight + variation));
-        barData.push(finalHeight);
-      }
-      return barData;
-    };
-
-    const barData = generateBars();
-
-    return (
-      <View style={[styles.waveformContainer, { width, height }]}>
-        {/* Background waveform */}
-        <View style={styles.waveformBackground}>
-          {barData.map((amplitude, index) => {
-            const barPosition = (index / bars) * width;
-            const isActive = barPosition <= progressWidth;
-
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.waveformBar,
-                  {
-                    height: Math.max(6, amplitude * height * 0.9),
-                    backgroundColor: isActive ? progressColor : waveColor,
-                    marginRight: 2,
-                    opacity: isActive ? 1 : 0.7,
-                  },
-                ]}
-              />
-            );
-          })}
-        </View>
-
-        {/* Progress indicator line */}
-        {isPlaying && (
-          <View
-            style={[
-              styles.progressIndicator,
-              {
-                left: progressWidth,
-                backgroundColor: progressColor,
-              },
-            ]}
-          />
-        )}
-      </View>
-    );
-  };
-
-  // Voice recording animation
+  // Recording animation
   useEffect(() => {
     if (isRecording) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(recordingAnimation, {
             toValue: 1,
-            duration: 500,
+            duration: 1000,
             useNativeDriver: true,
           }),
           Animated.timing(recordingAnimation, {
             toValue: 0,
-            duration: 500,
+            duration: 1000,
             useNativeDriver: true,
           }),
         ])
@@ -201,13 +96,13 @@ const Message = ({ route }: { route: any }) => {
     }
   }, [isRecording]);
 
-  // Request permissions and setup audio
+  // Audio permissions and setup
   useEffect(() => {
     const setupAudio = async () => {
       try {
         const { status } = await Audio.requestPermissionsAsync();
         if (status !== "granted") {
-          console.log("Audio permissions not granted");
+          alert("Audio permissions are required for voice messages");
           return;
         }
 
@@ -218,7 +113,6 @@ const Message = ({ route }: { route: any }) => {
           shouldDuckAndroid: true,
           playThroughEarpieceAndroid: false,
         });
-        console.log("Audio setup completed");
       } catch (error) {
         console.log("Audio setup error:", error);
       }
@@ -226,7 +120,6 @@ const Message = ({ route }: { route: any }) => {
     setupAudio();
 
     return () => {
-      // Cleanup on unmount
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
       }
@@ -234,55 +127,46 @@ const Message = ({ route }: { route: any }) => {
         clearInterval(playbackTimerRef.current);
       }
       if (sound) {
-        sound.unloadAsync().catch(console.error);
+        sound.unloadAsync();
       }
-      if (recordingRef.current && isRecordingActiveRef.current) {
-        recordingRef.current.stopAndUnloadAsync().catch(console.error);
+      if (recordingRef.current) {
+        recordingRef.current.stopAndUnloadAsync();
       }
     };
   }, []);
 
-  // Start recording voice message
+  // Start recording - FIXED VERSION
   const startRecording = async () => {
-    if (isRecordingActiveRef.current) {
-      console.log("Recording already in progress");
-      return;
-    }
-
     try {
-      isRecordingActiveRef.current = true;
+      console.log("Starting recording...");
 
-      // Reset any previous recording
+      // Stop any existing recording
       if (recordingRef.current) {
-        try {
-          await recordingRef.current.stopAndUnloadAsync();
-        } catch (error) {
-          console.log("Error stopping previous recording:", error);
-        }
+        await recordingRef.current.stopAndUnloadAsync();
         recordingRef.current = null;
       }
 
-      // Configure audio mode for recording
+      // Configure audio for recording
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
+        staysActiveInBackground: false,
         shouldDuckAndroid: true,
         playThroughEarpieceAndroid: false,
       });
 
-      console.log("Starting recording...");
-
-      // Create new recording instance with better configuration
-      const { recording } = await Audio.Recording.createAsync(
+      // Create and start new recording
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
+      await recording.startAsync();
 
       recordingRef.current = recording;
       setIsRecording(true);
       setRecordingTime(0);
 
-      // Start timer
+      // Start recording timer
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
@@ -290,104 +174,100 @@ const Message = ({ route }: { route: any }) => {
       console.log("Recording started successfully");
     } catch (error) {
       console.error("Failed to start recording:", error);
-      isRecordingActiveRef.current = false;
       setIsRecording(false);
     }
   };
 
-  // Stop recording and send voice message
+  // Stop recording and send - FIXED VERSION
   const stopRecording = async () => {
-    if (!isRecordingActiveRef.current) {
-      return;
-    }
-
-    console.log("Stopping recording...");
-
-    // Clear timer first
-    if (recordingTimerRef.current) {
-      clearInterval(recordingTimerRef.current);
-      recordingTimerRef.current = null;
-    }
-
-    setIsRecording(false);
-    isRecordingActiveRef.current = false;
-
     try {
-      const currentRecording = recordingRef.current;
-      if (currentRecording) {
-        console.log("Stopping and unloading recording...");
-        await currentRecording.stopAndUnloadAsync();
+      console.log("Stopping recording...");
 
-        const uri = currentRecording.getURI();
-        console.log("Recording URI:", uri);
+      if (!recordingRef.current) {
+        console.log("No recording in progress");
+        return;
+      }
 
-        if (uri && recordingTime >= 1) {
-          const newVoiceMessage: Message = {
-            id: Date.now().toString(),
-            text: "Voice message",
-            isUser: true,
-            timestamp: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            type: "voice",
-            voiceUri: uri,
-            duration: recordingTime,
-          };
+      // Clear timer
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
 
-          setMessages((prev) => [...prev, newVoiceMessage]);
-          console.log("Voice message sent successfully");
+      // Stop and get recording
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
 
-          // Scroll to bottom when new message is added
-          setTimeout(() => {
-            scrollViewRef.current?.scrollToEnd({ animated: true });
-          }, 100);
-        } else if (recordingTime < 1) {
-          console.log("Recording too short");
-        }
+      console.log("Recording stopped, URI:", uri);
+      console.log("Recording duration:", recordingTime);
+
+      if (uri && recordingTime >= 1) {
+        // Create voice message
+        const newVoiceMessage: Message = {
+          id: Date.now().toString(),
+          text: "Voice message",
+          isUser: true,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          type: "voice",
+          voiceUri: uri,
+          duration: recordingTime,
+        };
+
+        setMessages((prev) => [...prev, newVoiceMessage]);
+        console.log("Voice message sent successfully");
+
+        // Scroll to bottom
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      } else {
+        console.log("Recording too short or no URI");
       }
     } catch (error) {
       console.error("Failed to stop recording:", error);
     } finally {
+      // Reset states
+      setIsRecording(false);
       recordingRef.current = null;
       setRecordingTime(0);
 
       // Reset audio mode for playback
-      try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          playsInSilentModeIOS: true,
-          staysActiveInBackground: false,
-          shouldDuckAndroid: true,
-          playThroughEarpieceAndroid: false,
-        });
-      } catch (error) {
-        console.log("Audio mode reset error:", error);
-      }
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false,
+      });
     }
   };
 
-  // Play voice message with proper progress tracking
+  // Play voice message - FIXED VERSION
   const playVoiceMessage = async (message: Message) => {
     try {
-      // Stop currently playing sound
+      console.log("Playing voice message:", message.id);
+
+      // If already playing this message, pause it
+      if (currentPlayingVoice === message.id) {
+        if (sound) {
+          await sound.pauseAsync();
+          setCurrentPlayingVoice(null);
+          if (playbackTimerRef.current) {
+            clearInterval(playbackTimerRef.current);
+            playbackTimerRef.current = null;
+          }
+        }
+        return;
+      }
+
+      // Stop any currently playing sound
       if (sound) {
         await sound.stopAsync();
         await sound.unloadAsync();
         setSound(null);
-        setCurrentPlayingVoice(null);
-        setPlaybackProgress(0);
-
-        if (playbackTimerRef.current) {
-          clearInterval(playbackTimerRef.current);
-          playbackTimerRef.current = null;
-        }
-      }
-
-      if (currentPlayingVoice === message.id) {
-        setCurrentPlayingVoice(null);
-        setPlaybackProgress(0);
-        return;
       }
 
       if (!message.voiceUri) {
@@ -395,9 +275,12 @@ const Message = ({ route }: { route: any }) => {
         return;
       }
 
-      console.log("Playing voice message:", message.voiceUri);
+      // Set current playing message
+      setCurrentPlayingVoice(message.id);
+      setPlaybackProgress(0);
+      setPlaybackPosition(0);
 
-      // Set audio mode for playback
+      // Configure audio for playback
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
@@ -406,6 +289,7 @@ const Message = ({ route }: { route: any }) => {
         playThroughEarpieceAndroid: false,
       });
 
+      // Load and play the sound
       const { sound: newSound } = await Audio.Sound.createAsync(
         { uri: message.voiceUri },
         { shouldPlay: true },
@@ -413,26 +297,20 @@ const Message = ({ route }: { route: any }) => {
       );
 
       setSound(newSound);
-      setCurrentPlayingVoice(message.id);
-      setPlaybackProgress(0);
-      setPlaybackDuration(message.duration || 0);
 
       // Start progress timer
       playbackTimerRef.current = setInterval(() => {
         setPlaybackProgress((prev) => {
           const newProgress = prev + 1;
-          if (newProgress >= (message.duration || 0)) {
-            if (playbackTimerRef.current) {
-              clearInterval(playbackTimerRef.current);
-              playbackTimerRef.current = null;
-            }
-            return message.duration || 0;
+          if (newProgress >= (message.duration || 1)) {
+            clearInterval(playbackTimerRef.current!);
+            playbackTimerRef.current = null;
+            setCurrentPlayingVoice(null);
+            return message.duration || 1;
           }
           return newProgress;
         });
       }, 1000);
-
-      console.log("Voice message playback started");
     } catch (error) {
       console.error("Error playing voice message:", error);
       setCurrentPlayingVoice(null);
@@ -440,24 +318,25 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Playback status update callback
+  // Playback status update
   const onPlaybackStatusUpdate = (status: any) => {
-    if (status.didJustFinish) {
-      // Playback finished
-      setCurrentPlayingVoice(null);
-      setPlaybackProgress(0);
-      if (playbackTimerRef.current) {
-        clearInterval(playbackTimerRef.current);
-        playbackTimerRef.current = null;
-      }
-      if (sound) {
-        sound.unloadAsync();
-        setSound(null);
+    if (status.isLoaded) {
+      setPlaybackPosition(status.positionMillis);
+
+      if (status.didJustFinish) {
+        // Playback finished
+        setCurrentPlayingVoice(null);
+        setPlaybackProgress(0);
+        setPlaybackPosition(0);
+        if (playbackTimerRef.current) {
+          clearInterval(playbackTimerRef.current);
+          playbackTimerRef.current = null;
+        }
       }
     }
   };
 
-  // Stop playing voice message
+  // Stop all playback
   const stopPlayingVoice = async () => {
     try {
       if (sound) {
@@ -467,6 +346,7 @@ const Message = ({ route }: { route: any }) => {
       }
       setCurrentPlayingVoice(null);
       setPlaybackProgress(0);
+      setPlaybackPosition(0);
 
       if (playbackTimerRef.current) {
         clearInterval(playbackTimerRef.current);
@@ -494,7 +374,6 @@ const Message = ({ route }: { route: any }) => {
       setMessages((prev) => [...prev, newMessage]);
       setMessageText("");
 
-      // Scroll to bottom when new message is added
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
@@ -506,6 +385,67 @@ const Message = ({ route }: { route: any }) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  // Waveform Component - SIMPLIFIED AND WORKING
+  const VoiceWaveform = ({
+    duration,
+    progress,
+    isPlaying,
+    isUser,
+  }: {
+    duration: number;
+    progress: number;
+    isPlaying: boolean;
+    isUser: boolean;
+  }) => {
+    const bars = 20;
+    const progressPercent = progress / duration;
+
+    return (
+      <View style={[styles.waveformContainer, { width: 120, height: 30 }]}>
+        {Array.from({ length: bars }).map((_, index) => {
+          const barProgress = index / bars;
+          const isActive = barProgress <= progressPercent;
+
+          // Varying heights for visual effect
+          const height = Math.max(6, (Math.sin(index * 0.5) * 0.5 + 0.7) * 25);
+
+          return (
+            <View
+              key={index}
+              style={[
+                styles.waveformBar,
+                {
+                  height,
+                  backgroundColor: isActive
+                    ? isUser
+                      ? "#ff3b30"
+                      : "#ffd700"
+                    : isUser
+                    ? "#2623D2"
+                    : "#ffffff",
+                  opacity: isActive ? 1 : 0.6,
+                },
+              ]}
+            />
+          );
+        })}
+
+        {/* Progress line */}
+        {isPlaying && (
+          <View
+            style={[
+              styles.progressIndicator,
+              {
+                left: `${progressPercent * 100}%`,
+                backgroundColor: isUser ? "#ff3b30" : "#ffd700",
+              },
+            ]}
+          />
+        )}
+      </View>
+    );
   };
 
   const renderMessage = (message: Message) => {
@@ -532,26 +472,20 @@ const Message = ({ route }: { route: any }) => {
           >
             <TouchableOpacity
               style={styles.voiceMessageContainer}
-              onPress={() =>
-                isPlaying ? stopPlayingVoice() : playVoiceMessage(message)
-              }
+              onPress={() => playVoiceMessage(message)}
               activeOpacity={0.7}
             >
               <Ionicons
-                name={isPlaying ? "pause-circle" : "play-circle"}
-                size={28}
+                name={isPlaying ? "pause" : "play"}
+                size={24}
                 color={message.isUser ? "#2623D2" : "#fff"}
               />
 
-              {/* Custom Waveform Component with real progress */}
-              <CustomWaveform
+              <VoiceWaveform
                 duration={duration}
                 progress={currentProgress}
-                width={120}
-                height={30}
-                waveColor={message.isUser ? "#2623D2" : "#ffffff"}
-                progressColor={message.isUser ? "#ff3b30" : "#ffd700"}
                 isPlaying={isPlaying}
+                isUser={message.isUser}
               />
 
               <Text
@@ -562,9 +496,10 @@ const Message = ({ route }: { route: any }) => {
                     : styles.voiceDurationHR,
                 ]}
               >
-                {isPlaying ? formatTime(currentProgress) : formatTime(duration)}
+                {formatTime(isPlaying ? currentProgress : duration)}
               </Text>
             </TouchableOpacity>
+
             <View style={styles.messageSentTimeAndSeenBlock}>
               <Text
                 style={
@@ -589,6 +524,7 @@ const Message = ({ route }: { route: any }) => {
       );
     }
 
+    // Text message rendering remains the same
     return (
       <View
         style={
@@ -644,9 +580,7 @@ const Message = ({ route }: { route: any }) => {
             name="arrow-back-sharp"
             size={31}
             color="black"
-            onPress={() => {
-              navigation.goBack();
-            }}
+            onPress={() => navigation.goBack()}
           />
           <Image
             source={require("../../assets/tajjob/messages/hr.jpg")}
@@ -672,7 +606,7 @@ const Message = ({ route }: { route: any }) => {
           contentContainerStyle={styles.scrollViewContent}
         >
           <View style={styles.messagesContainer}>
-            <Text style={styles.messagesSentDay}>Yesterday</Text>
+            <Text style={styles.messagesSentDay}>Today</Text>
             <View style={styles.messagesBlockOfThisDay}>
               {messages.map(renderMessage)}
             </View>
@@ -690,7 +624,7 @@ const Message = ({ route }: { route: any }) => {
                       {
                         scale: recordingAnimation.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [1, 1.2],
+                          outputRange: [1, 1.3],
                         }),
                       },
                     ],
@@ -707,14 +641,14 @@ const Message = ({ route }: { route: any }) => {
                 onPress={stopRecording}
                 activeOpacity={0.7}
               >
-                <Ionicons name="stop" size={24} color="#fff" />
+                <Ionicons name="send" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.inputMessageAndIconBlock}>
               <TextInput
                 style={styles.inputMessage}
-                placeholder="Messages"
+                placeholder="Message"
                 placeholderTextColor={"#9E9E9E"}
                 value={messageText}
                 onChangeText={setMessageText}
@@ -727,7 +661,6 @@ const Message = ({ route }: { route: any }) => {
                 size={25}
                 color="black"
                 style={styles.iconStckersFooter}
-                onPress={() => setPickerVisible(true)}
               />
 
               {messageText.trim() ? (
@@ -899,25 +832,21 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   waveformContainer: {
-    position: "relative",
-    overflow: "hidden",
-    justifyContent: "center",
-  },
-  waveformBackground: {
     flexDirection: "row",
     alignItems: "flex-end",
-    height: "100%",
+    justifyContent: "space-between",
+    position: "relative",
   },
   waveformBar: {
-    width: 3,
-    borderRadius: 1.5,
+    width: 4,
+    borderRadius: 2,
+    marginHorizontal: 1,
   },
   progressIndicator: {
     position: "absolute",
     top: 0,
     width: 2,
     height: "100%",
-    zIndex: 10,
   },
   voiceDuration: {
     fontSize: 14,
