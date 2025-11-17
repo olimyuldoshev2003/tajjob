@@ -20,7 +20,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  PanResponder,
+  Dimensions,
+  Alert,
+  Vibration,
+  Easing,
 } from "react-native";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface Message {
   id: string;
@@ -30,7 +37,27 @@ interface Message {
   type: "text" | "voice";
   voiceUri?: string;
   duration?: number;
+  waveformData?: number[]; // Array of amplitude values for waveform
 }
+
+// Generate realistic waveform data based on voice amplitude
+const generateWaveformData = (
+  duration: number,
+  complexity: number = 50
+): number[] => {
+  const data: number[] = [];
+  const segments = Math.min(complexity, duration * 10); // More segments for longer durations
+
+  for (let i = 0; i < segments; i++) {
+    // Create natural-looking waveform with some randomness
+    const baseHeight = 0.3 + Math.random() * 0.4;
+    const variation = Math.sin(i * 0.5) * 0.3 + Math.cos(i * 0.2) * 0.2;
+    const height = Math.max(0.1, Math.min(1, baseHeight + variation));
+    data.push(height);
+  }
+
+  return data;
+};
 
 const Message = ({ route }: { route: any }) => {
   const navigation: any = useNavigation();
@@ -63,37 +90,161 @@ const Message = ({ route }: { route: any }) => {
   const [recordingAnimation] = useState(new Animated.Value(0));
   const [playbackProgress, setPlaybackProgress] = useState<number>(0);
   const [playbackPosition, setPlaybackPosition] = useState<number>(0);
+  const [isSeeking, setIsSeeking] = useState<boolean>(false);
+  const [seekPosition, setSeekPosition] = useState<number>(0);
+  const [recordingWaveformData, setRecordingWaveformData] = useState<number[]>(
+    []
+  );
+
+  // Cancellation states
+  const [slideToCancelVisible, setSlideToCancelVisible] =
+    useState<boolean>(false);
+  const [swipeTranslate] = useState(new Animated.Value(0));
 
   const recordingRef = useRef<Audio.Recording | null>(null);
   const recordingTimerRef = useRef<any>(null);
   const playbackTimerRef = useRef<any>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+  const waveformUpdateRef = useRef<any>(null);
+  const recordingStartTimeRef = useRef<number>(0);
 
-  // Recording animation
+  // Animation values for waveform
+  const [waveformAnimations] = useState<Animated.Value[]>([]);
+  const pulseAnimation = useRef(new Animated.Value(1)).current;
+
+  // Progress animation for smooth seek indicator movement
+  const progressAnimations = useRef<Map<string, Animated.Value>>(new Map());
+  const animationRefs = useRef<Map<string, Animated.CompositeAnimation>>(
+    new Map()
+  );
+
+  // PanResponder for swipe to cancel
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        if (isRecording) {
+          swipeTranslate.setValue(gestureState.dx);
+
+          // Show cancel if swiped left enough
+          if (gestureState.dx < -100) {
+            setSlideToCancelVisible(true);
+          } else {
+            setSlideToCancelVisible(false);
+          }
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (isRecording) {
+          // If swiped left enough, cancel recording
+          if (gestureState.dx < -100) {
+            cancelRecording();
+          } else {
+            // If not swiped enough, reset position
+            Animated.spring(swipeTranslate, {
+              toValue: 0,
+              useNativeDriver: true,
+            }).start();
+            setSlideToCancelVisible(false);
+          }
+        }
+      },
+    })
+  ).current;
+
+  // Get or create progress animation for a message
+  const getProgressAnimation = (messageId: string) => {
+    if (!progressAnimations.current.has(messageId)) {
+      progressAnimations.current.set(messageId, new Animated.Value(0));
+    }
+    return progressAnimations.current.get(messageId)!;
+  };
+
+  // Stop animation for a specific message
+  const stopProgressAnimation = (messageId: string) => {
+    const animation = animationRefs.current.get(messageId);
+    if (animation) {
+      animation.stop();
+      animationRefs.current.delete(messageId);
+    }
+  };
+
+  // Recording animation with pulse effect
   useEffect(() => {
     if (isRecording) {
+      // Main recording pulse animation
       Animated.loop(
         Animated.sequence([
           Animated.timing(recordingAnimation, {
             toValue: 1,
-            duration: 1000,
+            duration: 1500,
+            easing: Easing.bezier(0.4, 0, 0.2, 1),
             useNativeDriver: true,
           }),
           Animated.timing(recordingAnimation, {
             toValue: 0,
-            duration: 1000,
+            duration: 1500,
+            easing: Easing.bezier(0.4, 0, 0.2, 1),
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Secondary pulse animation for microphone icon
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnimation, {
+            toValue: 1.2,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnimation, {
+            toValue: 1,
+            duration: 800,
             useNativeDriver: true,
           }),
         ])
       ).start();
     } else {
       recordingAnimation.setValue(0);
+      pulseAnimation.setValue(1);
       Animated.timing(recordingAnimation, {
         toValue: 0,
         duration: 0,
         useNativeDriver: true,
       }).stop();
     }
+  }, [isRecording]);
+
+  // Simulate waveform updates during recording
+  useEffect(() => {
+    if (isRecording) {
+      // Start generating waveform data
+      waveformUpdateRef.current = setInterval(() => {
+        setRecordingWaveformData((prev) => {
+          const newData = [...prev];
+          // Generate random amplitude for waveform visualization
+          const amplitude = 0.2 + Math.random() * 0.8;
+          newData.push(amplitude);
+
+          // Keep only last 50 data points for performance
+          return newData.slice(-50);
+        });
+      }, 100);
+    } else {
+      if (waveformUpdateRef.current) {
+        clearInterval(waveformUpdateRef.current);
+        waveformUpdateRef.current = null;
+      }
+      setRecordingWaveformData([]);
+    }
+
+    return () => {
+      if (waveformUpdateRef.current) {
+        clearInterval(waveformUpdateRef.current);
+      }
+    };
   }, [isRecording]);
 
   // Audio permissions and setup
@@ -117,36 +268,39 @@ const Message = ({ route }: { route: any }) => {
         console.log("Audio setup error:", error);
       }
     };
+
     setupAudio();
 
     return () => {
-      if (recordingTimerRef.current) {
-        clearInterval(recordingTimerRef.current);
-      }
-      if (playbackTimerRef.current) {
-        clearInterval(playbackTimerRef.current);
-      }
+      // Cleanup
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+      if (playbackTimerRef.current) clearInterval(playbackTimerRef.current);
+      if (waveformUpdateRef.current) clearInterval(waveformUpdateRef.current);
       if (sound) {
         sound.unloadAsync();
       }
       if (recordingRef.current) {
         recordingRef.current.stopAndUnloadAsync();
       }
+
+      // Clean up all animations
+      animationRefs.current.forEach((animation) => animation.stop());
+      animationRefs.current.clear();
     };
   }, []);
 
-  // Start recording - FIXED VERSION
+  // Start recording
   const startRecording = async () => {
     try {
-      console.log("Starting recording...");
+      console.log("🟢 Starting recording...");
 
-      // Stop any existing recording
+      // Clean up any existing recording
       if (recordingRef.current) {
         await recordingRef.current.stopAndUnloadAsync();
         recordingRef.current = null;
       }
 
-      // Configure audio for recording
+      // Configure for recording
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
@@ -155,53 +309,65 @@ const Message = ({ route }: { route: any }) => {
         playThroughEarpieceAndroid: false,
       });
 
-      // Create and start new recording
+      // Create new recording
       const recording = new Audio.Recording();
       await recording.prepareToRecordAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
+
       await recording.startAsync();
+      recordingStartTimeRef.current = Date.now();
 
       recordingRef.current = recording;
       setIsRecording(true);
       setRecordingTime(0);
+      setRecordingWaveformData([]);
+      setSlideToCancelVisible(false);
+      swipeTranslate.setValue(0);
 
       // Start recording timer
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
 
-      console.log("Recording started successfully");
+      console.log("✅ Recording started successfully");
     } catch (error) {
-      console.error("Failed to start recording:", error);
+      console.error("❌ Failed to start recording:", error);
       setIsRecording(false);
+      Alert.alert(
+        "Recording Error",
+        "Failed to start recording. Please try again."
+      );
     }
   };
 
-  // Stop recording and send - FIXED VERSION
+  // Stop recording and send
   const stopRecording = async () => {
     try {
-      console.log("Stopping recording...");
+      console.log("🟢 Stopping recording...");
 
       if (!recordingRef.current) {
         console.log("No recording in progress");
         return;
       }
 
-      // Clear timer
+      // Stop timer
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
       }
 
-      // Stop and get recording
+      // Stop recording and get URI
       await recordingRef.current.stopAndUnloadAsync();
       const uri = recordingRef.current.getURI();
 
-      console.log("Recording stopped, URI:", uri);
-      console.log("Recording duration:", recordingTime);
+      console.log("🎵 Recording URI:", uri);
+      console.log("⏱️ Recording duration:", recordingTime);
 
       if (uri && recordingTime >= 1) {
+        // Generate waveform data for the recording
+        const waveformData = generateWaveformData(recordingTime);
+
         // Create voice message
         const newVoiceMessage: Message = {
           id: Date.now().toString(),
@@ -214,27 +380,38 @@ const Message = ({ route }: { route: any }) => {
           type: "voice",
           voiceUri: uri,
           duration: recordingTime,
+          waveformData: waveformData,
         };
 
         setMessages((prev) => [...prev, newVoiceMessage]);
-        console.log("Voice message sent successfully");
+        console.log("✅ Voice message sent successfully");
 
         // Scroll to bottom
         setTimeout(() => {
           scrollViewRef.current?.scrollToEnd({ animated: true });
         }, 100);
       } else {
-        console.log("Recording too short or no URI");
+        console.log("❌ Recording too short or no URI");
+        if (recordingTime < 1) {
+          Alert.alert(
+            "Recording too short",
+            "Please record for at least 1 second."
+          );
+        }
       }
     } catch (error) {
-      console.error("Failed to stop recording:", error);
+      console.error("❌ Failed to stop recording:", error);
+      Alert.alert("Recording Error", "Failed to stop recording.");
     } finally {
       // Reset states
       setIsRecording(false);
+      setSlideToCancelVisible(false);
       recordingRef.current = null;
       setRecordingTime(0);
+      setRecordingWaveformData([]);
+      swipeTranslate.setValue(0);
 
-      // Reset audio mode for playback
+      // Switch back to playback mode
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
@@ -245,10 +422,91 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Play voice message - FIXED VERSION
+  // Cancel recording (swipe to cancel)
+  const cancelRecording = async () => {
+    try {
+      console.log("🟡 Canceling recording...");
+
+      if (!recordingRef.current) {
+        console.log("No recording in progress");
+        return;
+      }
+
+      // Stop timer
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+
+      // Stop and delete recording
+      await recordingRef.current.stopAndUnloadAsync();
+
+      console.log("✅ Recording canceled");
+
+      // Show cancel feedback with vibration
+      Vibration.vibrate(100);
+    } catch (error) {
+      console.error("❌ Failed to cancel recording:", error);
+    } finally {
+      // Reset states
+      setIsRecording(false);
+      setSlideToCancelVisible(false);
+      recordingRef.current = null;
+      setRecordingTime(0);
+      setRecordingWaveformData([]);
+      swipeTranslate.setValue(0);
+
+      // Reset audio mode
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false,
+      });
+    }
+  };
+
+  // Voice message handling
+  const handleVoiceButtonPress = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  // Delete existing voice message
+  const deleteVoiceMessage = (messageId: string) => {
+    Alert.alert(
+      "Delete Voice Message",
+      "Are you sure you want to delete this voice message?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+            if (currentPlayingVoice === messageId) {
+              stopPlayingVoice();
+            }
+            // Clean up animation
+            progressAnimations.current.delete(messageId);
+            stopProgressAnimation(messageId);
+          },
+        },
+      ]
+    );
+  };
+
+  // Play voice message
   const playVoiceMessage = async (message: Message) => {
     try {
-      console.log("Playing voice message:", message.id);
+      console.log("🟢 Playing voice message:", message.id);
 
       // If already playing this message, pause it
       if (currentPlayingVoice === message.id) {
@@ -259,6 +517,8 @@ const Message = ({ route }: { route: any }) => {
             clearInterval(playbackTimerRef.current);
             playbackTimerRef.current = null;
           }
+          // Stop the progress animation when pausing
+          stopProgressAnimation(message.id);
         }
         return;
       }
@@ -271,7 +531,8 @@ const Message = ({ route }: { route: any }) => {
       }
 
       if (!message.voiceUri) {
-        console.log("No voice URI found");
+        console.log("❌ No voice URI found");
+        Alert.alert("Playback Error", "Voice message not found.");
         return;
       }
 
@@ -279,6 +540,10 @@ const Message = ({ route }: { route: any }) => {
       setCurrentPlayingVoice(message.id);
       setPlaybackProgress(0);
       setPlaybackPosition(0);
+
+      // Reset progress animation
+      const progressAnim = getProgressAnimation(message.id);
+      progressAnim.setValue(0);
 
       // Configure audio for playback
       await Audio.setAudioModeAsync({
@@ -289,6 +554,8 @@ const Message = ({ route }: { route: any }) => {
         playThroughEarpieceAndroid: false,
       });
 
+      console.log("🎵 Loading sound from:", message.voiceUri);
+
       // Load and play the sound
       const { sound: newSound } = await Audio.Sound.createAsync(
         { uri: message.voiceUri },
@@ -298,40 +565,64 @@ const Message = ({ route }: { route: any }) => {
 
       setSound(newSound);
 
+      // Start smooth progress animation
+      const duration = message.duration || 1;
+      const animation = Animated.timing(progressAnim, {
+        toValue: 1,
+        duration: duration * 1000, // Convert to milliseconds
+        easing: Easing.linear,
+        useNativeDriver: false, // We need to use false for left property
+      });
+
+      // Store the animation reference so we can stop it later
+      animationRefs.current.set(message.id, animation);
+      animation.start();
+
       // Start progress timer
       playbackTimerRef.current = setInterval(() => {
         setPlaybackProgress((prev) => {
           const newProgress = prev + 1;
-          if (newProgress >= (message.duration || 1)) {
+          if (newProgress >= duration) {
             clearInterval(playbackTimerRef.current!);
             playbackTimerRef.current = null;
             setCurrentPlayingVoice(null);
-            return message.duration || 1;
+            setPlaybackPosition(0);
+            progressAnim.setValue(0);
+            stopProgressAnimation(message.id);
+            return duration;
           }
+          setPlaybackPosition(newProgress);
           return newProgress;
         });
       }, 1000);
+
+      console.log("✅ Playback started");
     } catch (error) {
-      console.error("Error playing voice message:", error);
+      console.error("❌ Error playing voice message:", error);
+      Alert.alert(
+        "Playback Error",
+        "Cannot play voice message. The file might be corrupted."
+      );
       setCurrentPlayingVoice(null);
       setPlaybackProgress(0);
+      setPlaybackPosition(0);
+      const progressAnim = getProgressAnimation(message.id);
+      progressAnim.setValue(0);
+      stopProgressAnimation(message.id);
     }
   };
 
   // Playback status update
   const onPlaybackStatusUpdate = (status: any) => {
-    if (status.isLoaded) {
-      setPlaybackPosition(status.positionMillis);
-
-      if (status.didJustFinish) {
-        // Playback finished
-        setCurrentPlayingVoice(null);
-        setPlaybackProgress(0);
-        setPlaybackPosition(0);
-        if (playbackTimerRef.current) {
-          clearInterval(playbackTimerRef.current);
-          playbackTimerRef.current = null;
-        }
+    if (status.didJustFinish) {
+      console.log("🎵 Playback finished");
+      // Clean up when finished
+      setCurrentPlayingVoice(null);
+      setPlaybackProgress(0);
+      setPlaybackPosition(0);
+      if (playbackTimerRef.current) {
+        clearInterval(playbackTimerRef.current);
+        playbackTimerRef.current = null;
       }
     }
   };
@@ -352,8 +643,85 @@ const Message = ({ route }: { route: any }) => {
         clearInterval(playbackTimerRef.current);
         playbackTimerRef.current = null;
       }
+
+      // Stop all progress animations
+      animationRefs.current.forEach((animation) => {
+        animation.stop();
+      });
+      animationRefs.current.clear();
+
+      // Reset all progress values
+      progressAnimations.current.forEach((anim) => {
+        anim.setValue(0);
+      });
     } catch (error) {
       console.error("Error stopping voice message:", error);
+    }
+  };
+
+  // Seek to position in voice message - FIXED VERSION
+  const seekToPosition = async (message: Message, position: number) => {
+    try {
+      if (!sound || !message.duration) return;
+
+      const newPosition = Math.max(0, Math.min(position, message.duration));
+      console.log("🎯 Seeking to:", newPosition, "seconds");
+
+      // Stop the current timer
+      if (playbackTimerRef.current) {
+        clearInterval(playbackTimerRef.current);
+        playbackTimerRef.current = null;
+      }
+
+      // Stop current animation
+      stopProgressAnimation(message.id);
+
+      // Set the new position
+      await sound.setPositionAsync(newPosition * 1000); // Convert to milliseconds
+
+      setPlaybackProgress(newPosition);
+      setPlaybackPosition(newPosition);
+
+      // Calculate remaining time and restart animation
+      const remainingTime = (message.duration! - newPosition) * 1000;
+      const newProgressValue = newPosition / message.duration!;
+
+      const progressAnim = getProgressAnimation(message.id);
+      progressAnim.setValue(newProgressValue);
+
+      // Resume smooth animation if still playing
+      if (currentPlayingVoice === message.id && remainingTime > 0) {
+        const animation = Animated.timing(progressAnim, {
+          toValue: 1,
+          duration: remainingTime,
+          easing: Easing.linear,
+          useNativeDriver: false,
+        });
+
+        // Store the animation reference
+        animationRefs.current.set(message.id, animation);
+        animation.start();
+
+        // Resume timer
+        playbackTimerRef.current = setInterval(() => {
+          setPlaybackProgress((prev) => {
+            const newProgress = prev + 1;
+            if (newProgress >= message.duration!) {
+              clearInterval(playbackTimerRef.current!);
+              playbackTimerRef.current = null;
+              setCurrentPlayingVoice(null);
+              setPlaybackPosition(0);
+              progressAnim.setValue(0);
+              stopProgressAnimation(message.id);
+              return message.duration!;
+            }
+            setPlaybackPosition(newProgress);
+            return newProgress;
+          });
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("❌ Error seeking:", error);
     }
   };
 
@@ -387,63 +755,167 @@ const Message = ({ route }: { route: any }) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  // Waveform Component - SIMPLIFIED AND WORKING
+  // Enhanced Voice Waveform Component with SMOOTH ANIMATED seek functionality
   const VoiceWaveform = ({
-    duration,
-    progress,
+    message,
     isPlaying,
-    isUser,
+    progress,
+    onSeek,
   }: {
-    duration: number;
-    progress: number;
+    message: Message;
     isPlaying: boolean;
-    isUser: boolean;
+    progress: number;
+    onSeek: (position: number) => void;
   }) => {
-    const bars = 20;
+    const waveformData =
+      message.waveformData || generateWaveformData(message.duration || 1);
+    const duration = message.duration || 1;
     const progressPercent = progress / duration;
+    const barCount = Math.min(waveformData.length, 25); // Limit to 25 bars for better fit
+
+    const waveformRef = useRef<View>(null);
+    const [layoutWidth, setLayoutWidth] = useState(140);
+
+    // Get the animated progress value for this message
+    const progressAnim = getProgressAnimation(message.id);
+
+    const handleWaveformPress = (event: any) => {
+      if (!waveformRef.current) return;
+
+      const touchX = event.nativeEvent.locationX;
+      const progressPercentage = Math.max(0, Math.min(1, touchX / layoutWidth));
+      const newPosition = Math.floor(progressPercentage * duration);
+
+      console.log(
+        "🎯 Waveform pressed at:",
+        touchX,
+        "progress:",
+        progressPercentage,
+        "position:",
+        newPosition
+      );
+      onSeek(newPosition);
+    };
+
+    const handleWaveformLayout = (event: any) => {
+      const { width } = event.nativeEvent.layout;
+      setLayoutWidth(width);
+    };
 
     return (
-      <View style={[styles.waveformContainer, { width: 120, height: 30 }]}>
-        {Array.from({ length: bars }).map((_, index) => {
-          const barProgress = index / bars;
-          const isActive = barProgress <= progressPercent;
+      <View
+        style={[styles.waveformContainer]}
+        ref={waveformRef}
+        onLayout={handleWaveformLayout}
+      >
+        <TouchableOpacity
+          style={styles.waveformTouchArea}
+          onPress={handleWaveformPress}
+          activeOpacity={1}
+        >
+          <View style={styles.waveformBarsContainer}>
+            {waveformData.slice(0, barCount).map((amplitude, index) => {
+              const barProgress = index / barCount;
+              const isActive = barProgress <= progressPercent;
 
-          // Varying heights for visual effect
-          const height = Math.max(6, (Math.sin(index * 0.5) * 0.5 + 0.7) * 25);
+              // Calculate bar height based on amplitude
+              const maxHeight = 24;
+              const height = Math.max(4, amplitude * maxHeight);
 
-          return (
-            <View
-              key={index}
-              style={[
-                styles.waveformBar,
-                {
-                  height,
-                  backgroundColor: isActive
-                    ? isUser
-                      ? "#ff3b30"
-                      : "#ffd700"
-                    : isUser
-                    ? "#2623D2"
-                    : "#ffffff",
-                  opacity: isActive ? 1 : 0.6,
-                },
-              ]}
-            />
-          );
-        })}
+              return (
+                <View
+                  key={index}
+                  style={[
+                    styles.waveformBar,
+                    {
+                      width: 3,
+                      height: height,
+                      marginHorizontal: 1,
+                      backgroundColor: isActive
+                        ? message.isUser
+                          ? "#ff3b30"
+                          : "#ffd700"
+                        : message.isUser
+                        ? "rgba(38, 35, 210, 0.4)"
+                        : "rgba(255, 255, 255, 0.4)",
+                      borderRadius: 1.5,
+                    },
+                  ]}
+                />
+              );
+            })}
 
-        {/* Progress line */}
-        {isPlaying && (
-          <View
-            style={[
-              styles.progressIndicator,
-              {
-                left: `${progressPercent * 100}%`,
-                backgroundColor: isUser ? "#ff3b30" : "#ffd700",
-              },
-            ]}
-          />
-        )}
+            {/* Progress overlay - only show when playing */}
+            {isPlaying && (
+              <Animated.View
+                style={[
+                  styles.waveformProgressOverlay,
+                  {
+                    width: progressAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ["0%", "100%"],
+                    }),
+                    backgroundColor: message.isUser
+                      ? "rgba(255, 59, 48, 0.1)"
+                      : "rgba(255, 215, 0, 0.1)",
+                  },
+                ]}
+              />
+            )}
+
+            {/* Smooth animated seek indicator - only show when playing */}
+            {isPlaying && (
+              <Animated.View
+                style={[
+                  styles.seekIndicator,
+                  {
+                    left: progressAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ["0%", "100%"],
+                    }),
+                    backgroundColor: message.isUser ? "#ff3b30" : "#ffd700",
+                  },
+                ]}
+              />
+            )}
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  // Live recording waveform component
+  const RecordingWaveform = () => {
+    const data =
+      recordingWaveformData.length > 0
+        ? recordingWaveformData
+        : Array(15).fill(0.3); // Reduced number of bars
+
+    return (
+      <View style={styles.recordingWaveformContainer}>
+        <View style={styles.recordingWaveformBars}>
+          {data.slice(0, 15).map((amplitude, index) => {
+            const height = Math.max(6, amplitude * 20);
+            const isRecent = index >= data.length - 3;
+
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.recordingWaveformBar,
+                  {
+                    width: 2,
+                    height: height,
+                    marginHorizontal: 1,
+                    backgroundColor: isRecent ? "#ff3b30" : "#ff6b6b",
+                    borderRadius: 1,
+                    opacity: isRecent ? 1 : 0.7,
+                  },
+                ]}
+              />
+            );
+          })}
+        </View>
       </View>
     );
   };
@@ -451,7 +923,7 @@ const Message = ({ route }: { route: any }) => {
   const renderMessage = (message: Message) => {
     if (message.type === "voice") {
       const isPlaying = currentPlayingVoice === message.id;
-      const currentProgress = isPlaying ? playbackProgress : 0;
+      const currentProgress = isPlaying ? playbackPosition : 0;
       const duration = message.duration || 1;
 
       return (
@@ -470,22 +942,36 @@ const Message = ({ route }: { route: any }) => {
                 : styles.voiceMessageOfHRBlock
             }
           >
-            <TouchableOpacity
-              style={styles.voiceMessageContainer}
-              onPress={() => playVoiceMessage(message)}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name={isPlaying ? "pause" : "play"}
-                size={24}
-                color={message.isUser ? "#2623D2" : "#fff"}
-              />
+            <View style={styles.voiceMessageContainer}>
+              <TouchableOpacity
+                style={styles.playButtonContainer}
+                onPress={() => playVoiceMessage(message)}
+                onLongPress={() => deleteVoiceMessage(message.id)}
+                activeOpacity={0.7}
+                delayLongPress={500}
+              >
+                <Animated.View
+                  style={[
+                    styles.playButton,
+                    isPlaying && styles.playingButton,
+                    {
+                      transform: [{ scale: isPlaying ? pulseAnimation : 1 }],
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name={isPlaying ? "pause" : "play"}
+                    size={16}
+                    color={message.isUser ? "#2623D2" : "#fff"}
+                  />
+                </Animated.View>
+              </TouchableOpacity>
 
               <VoiceWaveform
-                duration={duration}
-                progress={currentProgress}
+                message={message}
                 isPlaying={isPlaying}
-                isUser={message.isUser}
+                progress={currentProgress}
+                onSeek={(position) => seekToPosition(message, position)}
               />
 
               <Text
@@ -494,11 +980,12 @@ const Message = ({ route }: { route: any }) => {
                   message.isUser
                     ? styles.voiceDurationUser
                     : styles.voiceDurationHR,
+                  isPlaying && styles.playingDuration,
                 ]}
               >
                 {formatTime(isPlaying ? currentProgress : duration)}
               </Text>
-            </TouchableOpacity>
+            </View>
 
             <View style={styles.messageSentTimeAndSeenBlock}>
               <Text
@@ -513,7 +1000,7 @@ const Message = ({ route }: { route: any }) => {
               {message.isUser && (
                 <MaterialCommunityIcons
                   name="check-all"
-                  size={20}
+                  size={16}
                   color="#00b7ff"
                   style={styles.messageSeenIcon}
                 />
@@ -524,7 +1011,7 @@ const Message = ({ route }: { route: any }) => {
       );
     }
 
-    // Text message rendering remains the same
+    // Text message
     return (
       <View
         style={
@@ -557,7 +1044,7 @@ const Message = ({ route }: { route: any }) => {
             {message.isUser && (
               <MaterialCommunityIcons
                 name="check-all"
-                size={20}
+                size={16}
                 color="#00b7ff"
                 style={styles.messageSeenIcon}
               />
@@ -616,35 +1103,58 @@ const Message = ({ route }: { route: any }) => {
         <View style={styles.footerMessagesComponentBlock}>
           {isRecording ? (
             <View style={styles.recordingContainer}>
+              {/* Swipe to Cancel Indicator */}
+              {slideToCancelVisible && (
+                <View style={styles.cancelIndicator}>
+                  <Ionicons name="close-circle" size={20} color="#ff3b30" />
+                  <Text style={styles.cancelText}>Release to cancel</Text>
+                </View>
+              )}
+
               <Animated.View
                 style={[
                   styles.recordingIndicator,
                   {
                     transform: [
                       {
-                        scale: recordingAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [1, 1.3],
-                        }),
+                        scale: pulseAnimation,
                       },
+                      { translateX: swipeTranslate },
                     ],
                   },
                 ]}
+                {...panResponder.panHandlers}
               >
-                <Ionicons name="mic" size={30} color="#ff3b30" />
+                <Ionicons name="mic" size={20} color="#ff3b30" />
               </Animated.View>
+
+              {/* Live recording waveform */}
+              <RecordingWaveform />
+
               <Text style={styles.recordingTime}>
                 {formatTime(recordingTime)}
               </Text>
+
+              {/* Cancel Button */}
+              <TouchableOpacity
+                style={styles.cancelRecordingButton}
+                onPress={cancelRecording}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="close" size={20} color="#ff3b30" />
+              </TouchableOpacity>
+
+              {/* Stop/Send Button */}
               <TouchableOpacity
                 style={styles.stopRecordingButton}
                 onPress={stopRecording}
                 activeOpacity={0.7}
               >
-                <Ionicons name="send" size={20} color="#fff" />
+                <Ionicons name="send" size={16} color="#fff" />
               </TouchableOpacity>
             </View>
           ) : (
+            // Normal input
             <View style={styles.inputMessageAndIconBlock}>
               <TextInput
                 style={styles.inputMessage}
@@ -658,7 +1168,7 @@ const Message = ({ route }: { route: any }) => {
               />
               <FontAwesome5
                 name="smile"
-                size={25}
+                size={22}
                 color="black"
                 style={styles.iconStckersFooter}
               />
@@ -669,17 +1179,17 @@ const Message = ({ route }: { route: any }) => {
                   onPress={sendTextMessage}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name="send" size={22} color="#2623D2" />
+                  <Ionicons name="send" size={20} color="#2623D2" />
                 </TouchableOpacity>
               ) : (
-                <Pressable
+                // Voice button
+                <TouchableOpacity
                   style={styles.btnVoiceToText}
-                  onPressIn={startRecording}
-                  onPressOut={stopRecording}
-                  delayLongPress={0}
+                  onPress={handleVoiceButtonPress}
+                  activeOpacity={0.7}
                 >
-                  <Ionicons name="mic" size={25} color="#2623D2" />
-                </Pressable>
+                  <Ionicons name="mic" size={22} color="#2623D2" />
+                </TouchableOpacity>
               )}
             </View>
           )}
@@ -806,7 +1316,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#fff",
   },
-  // Voice message styles
+  // Voice message styles - FIXED WIDTH
   voiceMessageOfUserBlock: {
     maxWidth: "70%",
     backgroundColor: "#fff",
@@ -829,29 +1339,77 @@ const styles = StyleSheet.create({
   voiceMessageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
+    minHeight: 32,
   },
+  playButtonContainer: {
+    // Separate container for play button to avoid conflict with waveform touch
+  },
+  playButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(38, 35, 210, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  playingButton: {
+    backgroundColor: "rgba(255, 59, 48, 0.1)",
+  },
+  // Waveform styles - FIXED with proper touch handling
   waveformContainer: {
+    width: 140, // Fixed width to fit container
+    height: 32,
+  },
+  waveformTouchArea: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+  },
+  waveformBarsContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
+    width: "100%",
+    height: "100%",
     position: "relative",
   },
   waveformBar: {
-    width: 4,
-    borderRadius: 2,
-    marginHorizontal: 1,
+    alignSelf: "flex-end",
   },
-  progressIndicator: {
+  waveformProgressOverlay: {
     position: "absolute",
-    top: 0,
-    width: 2,
+    height: "100%",
+    borderRadius: 8,
+  },
+  seekIndicator: {
+    position: "absolute",
+    top: -2,
+    width: 3, // Slightly wider for better visibility
+    height: "120%", // Slightly taller
+    borderRadius: 1.5,
+    zIndex: 10, // Ensure it's above other elements
+  },
+  // Recording waveform styles
+  recordingWaveformContainer: {
+    width: 100, // Reduced width
+    height: 32,
+    justifyContent: "center",
+  },
+  recordingWaveformBars: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
     height: "100%",
   },
+  recordingWaveformBar: {
+    alignSelf: "flex-end",
+  },
   voiceDuration: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "500",
-    minWidth: 40,
+    minWidth: 35,
+    textAlign: "center",
   },
   voiceDurationUser: {
     color: "#2623D2",
@@ -859,21 +1417,24 @@ const styles = StyleSheet.create({
   voiceDurationHR: {
     color: "#fff",
   },
+  playingDuration: {
+    fontWeight: "700",
+  },
   messageSentTimeAndSeenBlock: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    gap: 5,
-    marginTop: 5,
+    gap: 4,
+    marginTop: 4,
   },
   messageSentTimeUser: {
     color: "#9E9E9E",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "400",
   },
   messageSentTimeHR: {
     color: "rgba(255,255,255,0.7)",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "400",
   },
   messageSeenIcon: {},
@@ -919,7 +1480,7 @@ const styles = StyleSheet.create({
     right: 8,
     padding: 5,
   },
-  // Recording styles
+  // Recording styles - UPDATED WITH CANCEL BUTTON
   recordingContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -931,24 +1492,68 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
     borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    position: "relative",
   },
   recordingIndicator: {
     alignItems: "center",
     justifyContent: "center",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(255, 59, 48, 0.1)",
   },
   recordingTime: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     color: "#ff3b30",
+    minWidth: 40,
+    textAlign: "center",
+  },
+  // ADDED CANCEL BUTTON STYLES
+  cancelRecordingButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 59, 48, 0.1)",
+    marginRight: 8,
   },
   stopRecordingButton: {
     backgroundColor: "#ff3b30",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#ff3b30",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  // Swipe to cancel styles
+  cancelIndicator: {
+    position: "absolute",
+    left: -110,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 59, 48, 0.1)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  cancelText: {
+    color: "#ff3b30",
+    fontSize: 11,
+    fontWeight: "600",
+    marginLeft: 4,
   },
 });
