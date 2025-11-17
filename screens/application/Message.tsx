@@ -9,28 +9,28 @@ import { Audio } from "expo-av";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
+  Dimensions,
+  Easing,
   Image,
   KeyboardAvoidingView,
+  PanResponder,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-  PanResponder,
-  Dimensions,
-  Alert,
   Vibration,
-  Easing,
-  TouchableWithoutFeedback,
+  View,
+  Modal,
 } from "react-native";
 
+// // Fixed Agora import - using the correct package
+// import AgoraUIKit from "agora-rn-uikit";
 
 const Message = ({ route }: { route: any }) => {
-  
   interface Message {
     id: string;
     text: string;
@@ -41,7 +41,7 @@ const Message = ({ route }: { route: any }) => {
     duration?: number;
     waveformData?: number[]; // Array of amplitude values for waveform
   }
-  
+
   const navigation: any = useNavigation();
   const { width: SCREEN_WIDTH } = Dimensions.get("window");
   const [messageText, setMessageText] = useState<string>("");
@@ -90,6 +90,34 @@ const Message = ({ route }: { route: any }) => {
   const waveformUpdateRef = useRef<any>(null);
   const recordingStartTimeRef = useRef<number>(0);
 
+  // Video Call State
+  const [videoCall, setVideoCall] = useState<boolean>(false);
+  const [voiceCall, setVoiceCall] = useState<boolean>(false);
+
+  // Fixed Agora UIKit Props - using correct prop structure
+  const [agoraProps, setAgoraProps] = useState({
+    connectionData: {
+      appId: "e7f6e9aeecf14b2ba10e3f40be9f56e7", // Replace with your Agora App ID
+      channel: "test",
+      token: null, // Optional: Add your token if using secured channels
+    },
+    settings: {
+      displayUsername: true,
+      enableVideo: true, // Enable video for video calls
+    },
+    styleProps: {
+      theme: "#2623D2",
+      localBtnContainer: { backgroundColor: "#fff" },
+    },
+  });
+
+  const callbacks = {
+    EndCall: () => {
+      setVideoCall(false);
+      setVoiceCall(false);
+    },
+  };
+
   // Animation values for waveform
   const [waveformAnimations] = useState<Animated.Value[]>([]);
   const pulseAnimation = useRef(new Animated.Value(1)).current;
@@ -135,8 +163,6 @@ const Message = ({ route }: { route: any }) => {
     })
   ).current;
 
-
-
   // Generate realistic waveform data based on voice amplitude
   const generateWaveformData = (
     duration: number,
@@ -144,7 +170,7 @@ const Message = ({ route }: { route: any }) => {
   ): number[] => {
     const data: number[] = [];
     const segments = Math.min(complexity, duration * 10); // More segments for longer durations
-  
+
     for (let i = 0; i < segments; i++) {
       // Create natural-looking waveform with some randomness
       const baseHeight = 0.3 + Math.random() * 0.4;
@@ -152,10 +178,10 @@ const Message = ({ route }: { route: any }) => {
       const height = Math.max(0.1, Math.min(1, baseHeight + variation));
       data.push(height);
     }
-  
+
     return data;
   };
-  
+
   // Get or create progress animation for a message
   const getProgressAnimation = (messageId: string) => {
     if (!progressAnimations.current.has(messageId)) {
@@ -275,10 +301,19 @@ const Message = ({ route }: { route: any }) => {
     setupAudio();
 
     return () => {
-      // Cleanup
-      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-      if (playbackTimerRef.current) clearInterval(playbackTimerRef.current);
-      if (waveformUpdateRef.current) clearInterval(waveformUpdateRef.current);
+      // Cleanup - FIXED: Only clear timers if they exist
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+      if (playbackTimerRef.current) {
+        clearInterval(playbackTimerRef.current);
+        playbackTimerRef.current = null;
+      }
+      if (waveformUpdateRef.current) {
+        clearInterval(waveformUpdateRef.current);
+        waveformUpdateRef.current = null;
+      }
       if (sound) {
         sound.unloadAsync();
       }
@@ -292,7 +327,7 @@ const Message = ({ route }: { route: any }) => {
     };
   }, []);
 
-  // Start recording
+  // Start recording - FIXED VERSION
   const startRecording = async () => {
     try {
       console.log("🟢 Starting recording...");
@@ -301,6 +336,12 @@ const Message = ({ route }: { route: any }) => {
       if (recordingRef.current) {
         await recordingRef.current.stopAndUnloadAsync();
         recordingRef.current = null;
+      }
+
+      // Clear any existing timer - FIXED
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
       }
 
       // Configure for recording
@@ -328,15 +369,24 @@ const Message = ({ route }: { route: any }) => {
       setSlideToCancelVisible(false);
       swipeTranslate.setValue(0);
 
-      // Start recording timer
+      // Start recording timer - FIXED: Use proper interval
       recordingTimerRef.current = setInterval(() => {
-        setRecordingTime((prev) => prev + 1);
+        setRecordingTime((prev) => {
+          const newTime = prev + 1;
+          console.log("⏱️ Recording time:", newTime); // Debug log
+          return newTime;
+        });
       }, 1000);
 
       console.log("✅ Recording started successfully");
     } catch (error) {
       console.error("❌ Failed to start recording:", error);
       setIsRecording(false);
+      // Clear timer on error - FIXED
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
       Alert.alert(
         "Recording Error",
         "Failed to start recording. Please try again."
@@ -344,7 +394,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Stop recording and send
+  // Stop recording and send - FIXED VERSION
   const stopRecording = async () => {
     try {
       console.log("🟢 Stopping recording...");
@@ -354,7 +404,7 @@ const Message = ({ route }: { route: any }) => {
         return;
       }
 
-      // Stop timer
+      // Stop timer - FIXED: Only clear if it exists
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -365,7 +415,7 @@ const Message = ({ route }: { route: any }) => {
       const uri = recordingRef.current.getURI();
 
       console.log("🎵 Recording URI:", uri);
-      console.log("⏱️ Recording duration:", recordingTime);
+      console.log("⏱️ Final recording duration:", recordingTime);
 
       if (uri && recordingTime >= 1) {
         // Generate waveform data for the recording
@@ -410,7 +460,10 @@ const Message = ({ route }: { route: any }) => {
       setIsRecording(false);
       setSlideToCancelVisible(false);
       recordingRef.current = null;
-      setRecordingTime(0);
+
+      // Don't reset recordingTime here - we need it for the message duration
+      // setRecordingTime(0); // REMOVED: This was causing the issue
+
       setRecordingWaveformData([]);
       swipeTranslate.setValue(0);
 
@@ -425,7 +478,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Cancel recording (swipe to cancel)
+  // Cancel recording (swipe to cancel) - FIXED VERSION
   const cancelRecording = async () => {
     try {
       console.log("🟡 Canceling recording...");
@@ -435,7 +488,7 @@ const Message = ({ route }: { route: any }) => {
         return;
       }
 
-      // Stop timer
+      // Stop timer - FIXED
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -455,7 +508,7 @@ const Message = ({ route }: { route: any }) => {
       setIsRecording(false);
       setSlideToCancelVisible(false);
       recordingRef.current = null;
-      setRecordingTime(0);
+      setRecordingTime(0); // Reset time when canceling
       setRecordingWaveformData([]);
       swipeTranslate.setValue(0);
 
@@ -468,6 +521,11 @@ const Message = ({ route }: { route: any }) => {
         playThroughEarpieceAndroid: false,
       });
     }
+  };
+
+  // Reset recording time when not recording - FIXED: Added this function
+  const resetRecordingTime = () => {
+    setRecordingTime(0);
   };
 
   // Voice message handling
@@ -1059,12 +1117,68 @@ const Message = ({ route }: { route: any }) => {
     );
   };
 
+  // Handle voice call - disable video for voice call
+  const handleVoiceCall = () => {
+    setAgoraProps((prev) => ({
+      ...prev,
+      settings: {
+        ...prev.settings,
+        enableVideo: false, // Disable video for voice call
+      },
+    }));
+    setVoiceCall(true);
+  };
+
+  // Handle video call - enable video for video call
+  const handleVideoCall = () => {
+    setAgoraProps((prev) => ({
+      ...prev,
+      settings: {
+        ...prev.settings,
+        enableVideo: true, // Enable video for video call
+      },
+    }));
+    setVideoCall(true);
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.messageComponent}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
+      {/* Video Call Modal */}
+      {/* <Modal
+        visible={videoCall}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <View style={styles.videoCallContainer}>
+          <AgoraUIKit
+            connectionData={agoraProps.connectionData}
+            settings={agoraProps.settings}
+            styleProps={agoraProps.styleProps}
+            rtcCallbacks={callbacks}
+          />
+        </View>
+      </Modal> */}
+
+      {/* Voice Call Modal */}
+      {/* <Modal
+        visible={voiceCall}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <View style={styles.videoCallContainer}>
+          <AgoraUIKit
+            connectionData={agoraProps.connectionData}
+            settings={agoraProps.settings}
+            styleProps={agoraProps.styleProps}
+            rtcCallbacks={callbacks}
+          />
+        </View>
+      </Modal> */}
+
       <View style={styles.headerMessagesComponentBlock}>
         <View style={styles.headerBlock1}>
           <Ionicons
@@ -1083,8 +1197,12 @@ const Message = ({ route }: { route: any }) => {
           </View>
         </View>
         <View style={styles.headerBlock2}>
-          <FontAwesome5 name="phone-alt" size={31} color="black" />
-          <FontAwesome name="video-camera" size={31} color="black" />
+          <TouchableOpacity onPress={handleVoiceCall}>
+            <FontAwesome5 name="phone-alt" size={31} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleVideoCall}>
+            <FontAwesome name="video-camera" size={31} color="black" />
+          </TouchableOpacity>
           <Entypo name="dots-three-vertical" size={31} color="black" />
         </View>
       </View>
@@ -1186,10 +1304,13 @@ const Message = ({ route }: { route: any }) => {
                   <Ionicons name="send" size={20} color="#2623D2" />
                 </TouchableOpacity>
               ) : (
-                // Voice button
+                // Voice button - FIXED: Reset recording time when starting new recording
                 <TouchableOpacity
                   style={styles.btnVoiceToText}
-                  onPress={handleVoiceButtonPress}
+                  onPress={() => {
+                    resetRecordingTime(); // Reset time before starting
+                    handleVoiceButtonPress();
+                  }}
                   activeOpacity={0.7}
                 >
                   <Ionicons name="mic" size={22} color="#2623D2" />
@@ -1209,6 +1330,10 @@ const styles = StyleSheet.create({
   messageComponent: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  videoCallContainer: {
+    flex: 1,
+    backgroundColor: "#000",
   },
   headerMessagesComponentBlock: {
     flexDirection: "row",

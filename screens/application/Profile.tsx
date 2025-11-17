@@ -12,13 +12,13 @@ import {
   View,
 } from "react-native";
 
+import AgoraUIKit from "agora-rn-uikit"
+
 // Define your navigation types
 type RootStackParamList = {
   EditUser: undefined;
-  // Add other screens here as needed
-  // SignIn: undefined;
-  // Home: undefined;
-  // etc.
+  CreateResume: undefined;
+  Settings: undefined;
 };
 
 type ProfileNavigationProp = StackNavigationProp<RootStackParamList>;
@@ -138,6 +138,9 @@ const Profile = () => {
                   <TouchableHighlight
                     style={[styles.settingsBtn, styles.btnFunc]}
                     underlayColor="#f0f0f0"
+                    onPress={() => {
+                      navigation.navigate("Settings");
+                    }}
                   >
                     <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={styles.iconAndFuncTypeBlock}>
