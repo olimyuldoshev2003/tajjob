@@ -25,43 +25,25 @@ import {
   Alert,
   Vibration,
   Easing,
+  TouchableWithoutFeedback,
 } from "react-native";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-interface Message {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: string;
-  type: "text" | "voice";
-  voiceUri?: string;
-  duration?: number;
-  waveformData?: number[]; // Array of amplitude values for waveform
-}
-
-// Generate realistic waveform data based on voice amplitude
-const generateWaveformData = (
-  duration: number,
-  complexity: number = 50
-): number[] => {
-  const data: number[] = [];
-  const segments = Math.min(complexity, duration * 10); // More segments for longer durations
-
-  for (let i = 0; i < segments; i++) {
-    // Create natural-looking waveform with some randomness
-    const baseHeight = 0.3 + Math.random() * 0.4;
-    const variation = Math.sin(i * 0.5) * 0.3 + Math.cos(i * 0.2) * 0.2;
-    const height = Math.max(0.1, Math.min(1, baseHeight + variation));
-    data.push(height);
-  }
-
-  return data;
-};
 
 const Message = ({ route }: { route: any }) => {
+  
+  interface Message {
+    id: string;
+    text: string;
+    isUser: boolean;
+    timestamp: string;
+    type: "text" | "voice";
+    voiceUri?: string;
+    duration?: number;
+    waveformData?: number[]; // Array of amplitude values for waveform
+  }
+  
   const navigation: any = useNavigation();
-
+  const { width: SCREEN_WIDTH } = Dimensions.get("window");
   const [messageText, setMessageText] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -153,6 +135,27 @@ const Message = ({ route }: { route: any }) => {
     })
   ).current;
 
+
+
+  // Generate realistic waveform data based on voice amplitude
+  const generateWaveformData = (
+    duration: number,
+    complexity: number = 50
+  ): number[] => {
+    const data: number[] = [];
+    const segments = Math.min(complexity, duration * 10); // More segments for longer durations
+  
+    for (let i = 0; i < segments; i++) {
+      // Create natural-looking waveform with some randomness
+      const baseHeight = 0.3 + Math.random() * 0.4;
+      const variation = Math.sin(i * 0.5) * 0.3 + Math.cos(i * 0.2) * 0.2;
+      const height = Math.max(0.1, Math.min(1, baseHeight + variation));
+      data.push(height);
+    }
+  
+    return data;
+  };
+  
   // Get or create progress animation for a message
   const getProgressAnimation = (messageId: string) => {
     if (!progressAnimations.current.has(messageId)) {
@@ -748,10 +751,12 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Format time for display
+  // Format time for display - FIXED VERSION
   const formatTime = (seconds: number) => {
+    if (seconds < 0) return "0:00";
+
     const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
@@ -946,7 +951,6 @@ const Message = ({ route }: { route: any }) => {
               <TouchableOpacity
                 style={styles.playButtonContainer}
                 onPress={() => playVoiceMessage(message)}
-                onLongPress={() => deleteVoiceMessage(message.id)}
                 activeOpacity={0.7}
                 delayLongPress={500}
               >
