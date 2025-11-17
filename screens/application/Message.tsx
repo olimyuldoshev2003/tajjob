@@ -29,6 +29,10 @@ import {
 
 // // Fixed Agora import - using the correct package
 // import AgoraUIKit from "agora-rn-uikit";
+import {
+  ZegoUIKitPrebuiltCall,
+  ONE_ON_ONE_VIDEO_CALL_CONFIG,
+} from "@zegocloud/zego-uikit-prebuilt-call-rn";
 
 const Message = ({ route }: { route: any }) => {
   interface Message {
@@ -1318,6 +1322,25 @@ const Message = ({ route }: { route: any }) => {
               )}
             </View>
           )}
+          <ZegoUIKitPrebuiltCall
+            appID={434563306}
+            appSign={
+              "31f5dbed0175b8703004ba53dd42d83bb23acdba6bcd8872a135e0798b2376d2"
+            }
+            userID={"1911"} // userID can be something like a phone number or the user id on your own user system.
+            userName={"olim_yuldoshev"}
+            callID={"1111"} // callID can be any unique string.
+            config={{
+              // You can also use ONE_ON_ONE_VOICE_CALL_CONFIG/GROUP_VIDEO_CALL_CONFIG/GROUP_VOICE_CALL_CONFIG to make more types of calls.
+              ...ONE_ON_ONE_VIDEO_CALL_CONFIG,
+              onOnlySelfInRoom: () => {
+                navigation.navigate("Message");
+              },
+              onHangUp: () => {
+                navigation.navigate("Message");
+              },
+            }}
+          />
         </View>
       </View>
     </KeyboardAvoidingView>

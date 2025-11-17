@@ -27,6 +27,7 @@
     "@react-navigation/stack": "^7.4.8",
     "@reduxjs/toolkit": "^2.9.0",
     "@simform_solutions/react-native-audio-waveform": "^2.1.6",
+    "@zegocloud/zego-uikit-prebuilt-call-rn": "^6.6.2",
     "agora-react-native-rtm": "^1.5.1",
     "agora-rn-uikit": "^5.0.2",
     "country-telephone-data": "^0.6.3",
