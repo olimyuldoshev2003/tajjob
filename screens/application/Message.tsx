@@ -27,12 +27,23 @@ import {
   Modal,
 } from "react-native";
 
-// // Fixed Agora import - using the correct package
-// import AgoraUIKit from "agora-rn-uikit";
-import {
-  ZegoUIKitPrebuiltCall,
-  ONE_ON_ONE_VIDEO_CALL_CONFIG,
-} from "@zegocloud/zego-uikit-prebuilt-call-rn";
+// Import ConnectyCube
+import ConnectyCube from "react-native-connectycube";
+
+// Types for ConnectyCube
+interface ConnectyCubeUser {
+  id: number;
+  login?: string;
+  full_name?: string;
+  email?: string;
+}
+
+interface CallSession {
+  id: string;
+  opponentsIds: number[];
+  callerId: number;
+  state: string;
+}
 
 const Message = ({ route }: { route: any }) => {
   interface Message {
@@ -43,7 +54,7 @@ const Message = ({ route }: { route: any }) => {
     type: "text" | "voice";
     voiceUri?: string;
     duration?: number;
-    waveformData?: number[]; // Array of amplitude values for waveform
+    waveformData?: number[];
   }
 
   const navigation: any = useNavigation();
@@ -65,6 +76,22 @@ const Message = ({ route }: { route: any }) => {
       type: "text",
     },
   ]);
+
+  // ConnectyCube States
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<ConnectyCubeUser | null>(null);
+  const [opponentUser, setOpponentUser] = useState<ConnectyCubeUser | null>(
+    null
+  );
+  const [callSession, setCallSession] = useState<CallSession | null>(null);
+  const [localStream, setLocalStream] = useState<any>(null);
+  const [remoteStream, setRemoteStream] = useState<any>(null);
+
+  // Call States
+  const [videoCall, setVideoCall] = useState<boolean>(false);
+  const [voiceCall, setVoiceCall] = useState<boolean>(false);
+  const [incomingCall, setIncomingCall] = useState<boolean>(false);
+  const [incomingCallData, setIncomingCallData] = useState<any>(null);
 
   // Voice recording states
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -93,34 +120,6 @@ const Message = ({ route }: { route: any }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const waveformUpdateRef = useRef<any>(null);
   const recordingStartTimeRef = useRef<number>(0);
-
-  // Video Call State
-  const [videoCall, setVideoCall] = useState<boolean>(false);
-  const [voiceCall, setVoiceCall] = useState<boolean>(false);
-
-  // Fixed Agora UIKit Props - using correct prop structure
-  const [agoraProps, setAgoraProps] = useState({
-    connectionData: {
-      appId: "e7f6e9aeecf14b2ba10e3f40be9f56e7", // Replace with your Agora App ID
-      channel: "test",
-      token: null, // Optional: Add your token if using secured channels
-    },
-    settings: {
-      displayUsername: true,
-      enableVideo: true, // Enable video for video calls
-    },
-    styleProps: {
-      theme: "#2623D2",
-      localBtnContainer: { backgroundColor: "#fff" },
-    },
-  });
-
-  const callbacks = {
-    EndCall: () => {
-      setVideoCall(false);
-      setVoiceCall(false);
-    },
-  };
 
   // Animation values for waveform
   const [waveformAnimations] = useState<Animated.Value[]>([]);
@@ -167,41 +166,21 @@ const Message = ({ route }: { route: any }) => {
     })
   ).current;
 
-  // Generate realistic waveform data based on voice amplitude
-  const generateWaveformData = (
-    duration: number,
-    complexity: number = 50
-  ): number[] => {
-    const data: number[] = [];
-    const segments = Math.min(complexity, duration * 10); // More segments for longer durations
-
-    for (let i = 0; i < segments; i++) {
-      // Create natural-looking waveform with some randomness
-      const baseHeight = 0.3 + Math.random() * 0.4;
-      const variation = Math.sin(i * 0.5) * 0.3 + Math.cos(i * 0.2) * 0.2;
-      const height = Math.max(0.1, Math.min(1, baseHeight + variation));
-      data.push(height);
-    }
-
-    return data;
+  // ConnectyCube Configuration
+  const CONFIG = {
+    appId: "YOUR_APP_ID",
+    authKey: "YOUR_AUTH_KEY",
+    authSecret: "YOUR_AUTH_SECRET",
   };
 
-  // Get or create progress animation for a message
-  const getProgressAnimation = (messageId: string) => {
-    if (!progressAnimations.current.has(messageId)) {
-      progressAnimations.current.set(messageId, new Animated.Value(0));
-    }
-    return progressAnimations.current.get(messageId)!;
-  };
+  // Initialize ConnectyCube
+  useEffect(() => {
+    initializeConnectyCube();
 
-  // Stop animation for a specific message
-  const stopProgressAnimation = (messageId: string) => {
-    const animation = animationRefs.current.get(messageId);
-    if (animation) {
-      animation.stop();
-      animationRefs.current.delete(messageId);
-    }
-  };
+    return () => {
+      cleanupConnectyCube();
+    };
+  }, []);
 
   // Recording animation with pulse effect
   useEffect(() => {
@@ -305,7 +284,7 @@ const Message = ({ route }: { route: any }) => {
     setupAudio();
 
     return () => {
-      // Cleanup - FIXED: Only clear timers if they exist
+      // Cleanup
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -331,7 +310,333 @@ const Message = ({ route }: { route: any }) => {
     };
   }, []);
 
-  // Start recording - FIXED VERSION
+  const initializeConnectyCube = async () => {
+    try {
+      console.log("🔄 Initializing ConnectyCube...");
+
+      // Initialize SDK
+      await ConnectyCube.init(CONFIG);
+      console.log("✅ ConnectyCube SDK initialized");
+
+      // Setup demo users
+      await setupDemoUsers();
+
+      console.log("✅ ConnectyCube setup completed successfully");
+    } catch (error) {
+      console.error("❌ ConnectyCube initialization failed:", error);
+      // Continue in offline mode
+      await setupDemoUsersOffline();
+    }
+  };
+
+  const setupDemoUsers = async () => {
+    try {
+      console.log("🔄 Setting up demo users...");
+
+      // For demo purposes, create mock users without API calls
+      const mockCurrentUser: ConnectyCubeUser = {
+        id: 12345,
+        login: "user1_demo",
+        full_name: "Current User",
+        email: "user1@demo.com",
+      };
+
+      const mockOpponentUser: ConnectyCubeUser = {
+        id: 67890,
+        login: "hr_demo",
+        full_name: "Danny H.",
+        email: "hr@demo.com",
+      };
+
+      setCurrentUser(mockCurrentUser);
+      setOpponentUser(mockOpponentUser);
+      setIsConnected(true);
+
+      console.log("✅ Demo users setup completed");
+    } catch (error) {
+      console.error("❌ User setup failed:", error);
+      // Fallback to offline mode
+      await setupDemoUsersOffline();
+    }
+  };
+
+  const setupDemoUsersOffline = async () => {
+    console.log("🔄 Setting up offline demo users...");
+
+    const mockCurrentUser: ConnectyCubeUser = {
+      id: 12345,
+      login: "user1_demo",
+      full_name: "Current User",
+      email: "user1@demo.com",
+    };
+
+    const mockOpponentUser: ConnectyCubeUser = {
+      id: 67890,
+      login: "hr_demo",
+      full_name: "Danny H.",
+      email: "hr@demo.com",
+    };
+
+    setCurrentUser(mockCurrentUser);
+    setOpponentUser(mockOpponentUser);
+    setIsConnected(true);
+
+    console.log("✅ Offline demo users setup completed");
+  };
+
+  // Safe call listener setup
+  const setupCallListeners = () => {
+    if (!ConnectyCube.videochat) {
+      console.warn("⚠️ ConnectyCube videochat module not available");
+      return;
+    }
+
+    try {
+      // Use the correct event listener names for the current ConnectyCube version
+      if (ConnectyCube.videochat.onCall) {
+        ConnectyCube.videochat.onCall = (session: any, extension: any) => {
+          console.log("📞 Incoming call:", session);
+          setIncomingCall(true);
+          setIncomingCallData({ session, extension });
+          setCallSession(session);
+        };
+      }
+
+      if (ConnectyCube.videochat.onAcceptCall) {
+        ConnectyCube.videochat.onAcceptCall = (
+          session: any,
+          extension: any
+        ) => {
+          console.log("✅ Call accepted:", session);
+          setCallSession(session);
+        };
+      }
+
+      if (ConnectyCube.videochat.onRejectCall) {
+        ConnectyCube.videochat.onRejectCall = (
+          session: any,
+          extension: any
+        ) => {
+          console.log("❌ Call rejected:", session);
+          endCall();
+        };
+      }
+
+      if (ConnectyCube.videochat.onStopCall) {
+        ConnectyCube.videochat.onStopCall = (session: any, extension: any) => {
+          console.log("📞 Call ended:", session);
+          endCall();
+        };
+      }
+
+      if (ConnectyCube.videochat.onRemoteStream) {
+        ConnectyCube.videochat.onRemoteStream = (
+          session: any,
+          userID: number,
+          stream: any
+        ) => {
+          console.log("📹 Remote stream received:", stream);
+          setRemoteStream(stream);
+        };
+      }
+
+      if (ConnectyCube.videochat.onUserNotAnswer) {
+        ConnectyCube.videochat.onUserNotAnswer = (
+          session: any,
+          userID: number
+        ) => {
+          console.log("❌ User not answering:", userID);
+          Alert.alert("Call Failed", "The user is not answering.");
+          endCall();
+        };
+      }
+
+      console.log("✅ Call listeners setup completed");
+    } catch (error) {
+      console.error("❌ Error setting up call listeners:", error);
+    }
+  };
+
+  const cleanupConnectyCube = async () => {
+    try {
+      // Use session destruction instead of stopCall
+      if (callSession) {
+        // Clean up call session properly
+        setCallSession(null);
+      }
+    } catch (error) {
+      console.error("Error during cleanup:", error);
+    }
+  };
+
+  // Start Video Call (Enhanced Mock implementation)
+  const startVideoCall = async () => {
+    if (!opponentUser || !currentUser) {
+      Alert.alert("Error", "User not ready for calling");
+      return;
+    }
+
+    try {
+      console.log("🎥 Starting video call...");
+
+      // Mock call session
+      const mockSession: CallSession = {
+        id: "mock_session_" + Date.now(),
+        opponentsIds: [opponentUser.id],
+        callerId: currentUser.id,
+        state: "active",
+      };
+
+      setCallSession(mockSession);
+      setVideoCall(true);
+
+      console.log("✅ Video call started (mock)");
+
+      // Show call interface directly since we're in mock mode
+      // Alert.alert(
+      //   "Video Call Started",
+      //   "Video call with Danny H. has started (Demo Mode)",
+      //   [{ text: "OK" }]
+      // );
+    } catch (error) {
+      console.error("❌ Failed to start video call:", error);
+      Alert.alert(
+        "Call Failed",
+        "Could not start video call. Please try again."
+      );
+    }
+  };
+
+  // Start Voice Call (Enhanced Mock implementation)
+  const startVoiceCall = async () => {
+    if (!opponentUser || !currentUser) {
+      Alert.alert("Error", "User not ready for calling");
+      return;
+    }
+
+    try {
+      console.log("🎙️ Starting voice call...");
+
+      // Mock call session
+      const mockSession: CallSession = {
+        id: "mock_session_" + Date.now(),
+        opponentsIds: [opponentUser.id],
+        callerId: currentUser.id,
+        state: "active",
+      };
+
+      setCallSession(mockSession);
+      setVoiceCall(true);
+
+      console.log("✅ Voice call started (mock)");
+
+      // Show call interface directly since we're in mock mode
+      // Alert.alert(
+      //   "Voice Call Started",
+      //   "Voice call with Danny H. has started (Demo Mode)",
+      //   [{ text: "OK" }]
+      // );
+    } catch (error) {
+      console.error("❌ Failed to start voice call:", error);
+      Alert.alert(
+        "Call Failed",
+        "Could not start voice call. Please try again."
+      );
+    }
+  };
+
+  // Accept Incoming Call (Mock implementation)
+  const acceptCall = async () => {
+    if (!incomingCallData) return;
+
+    try {
+      console.log("✅ Accepting incoming call...");
+
+      setIncomingCall(false);
+
+      const isVideoCall = incomingCallData.extension.callType === 1;
+      setVideoCall(isVideoCall);
+      setVoiceCall(!isVideoCall);
+
+      console.log("✅ Call accepted successfully (mock)");
+    } catch (error) {
+      console.error("❌ Failed to accept call:", error);
+      Alert.alert("Call Failed", "Could not accept the call.");
+      endCall();
+    }
+  };
+
+  // Reject Incoming Call (Mock implementation)
+  const rejectCall = async () => {
+    try {
+      console.log("❌ Call rejected");
+    } catch (error) {
+      console.error("❌ Failed to reject call:", error);
+    } finally {
+      setIncomingCall(false);
+      setIncomingCallData(null);
+      setCallSession(null);
+    }
+  };
+
+  // End Current Call
+  const endCall = async () => {
+    try {
+      console.log("📞 Call ended");
+
+      // Clean up any active call sessions
+      if (callSession) {
+        console.log("Cleaning up call session:", callSession.id);
+      }
+    } catch (error) {
+      console.error("❌ Error ending call:", error);
+    } finally {
+      setVideoCall(false);
+      setVoiceCall(false);
+      setIncomingCall(false);
+      setIncomingCallData(null);
+      setCallSession(null);
+      setLocalStream(null);
+      setRemoteStream(null);
+    }
+  };
+
+  // Generate realistic waveform data based on voice amplitude
+  const generateWaveformData = (
+    duration: number,
+    complexity: number = 50
+  ): number[] => {
+    const data: number[] = [];
+    const segments = Math.min(complexity, duration * 10);
+
+    for (let i = 0; i < segments; i++) {
+      const baseHeight = 0.3 + Math.random() * 0.4;
+      const variation = Math.sin(i * 0.5) * 0.3 + Math.cos(i * 0.2) * 0.2;
+      const height = Math.max(0.1, Math.min(1, baseHeight + variation));
+      data.push(height);
+    }
+
+    return data;
+  };
+
+  // Get or create progress animation for a message
+  const getProgressAnimation = (messageId: string) => {
+    if (!progressAnimations.current.has(messageId)) {
+      progressAnimations.current.set(messageId, new Animated.Value(0));
+    }
+    return progressAnimations.current.get(messageId)!;
+  };
+
+  // Stop animation for a specific message
+  const stopProgressAnimation = (messageId: string) => {
+    const animation = animationRefs.current.get(messageId);
+    if (animation) {
+      animation.stop();
+      animationRefs.current.delete(messageId);
+    }
+  };
+
+  // Start recording
   const startRecording = async () => {
     try {
       console.log("🟢 Starting recording...");
@@ -342,7 +647,7 @@ const Message = ({ route }: { route: any }) => {
         recordingRef.current = null;
       }
 
-      // Clear any existing timer - FIXED
+      // Clear any existing timer
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -373,12 +678,13 @@ const Message = ({ route }: { route: any }) => {
       setSlideToCancelVisible(false);
       swipeTranslate.setValue(0);
 
-      // Start recording timer - FIXED: Use proper interval
+      // Start recording timer
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => {
           const newTime = prev + 1;
-          console.log("⏱️ Recording time:", newTime); // Debug log
+          console.log(newTime);
           return newTime;
+          
         });
       }, 1000);
 
@@ -386,7 +692,6 @@ const Message = ({ route }: { route: any }) => {
     } catch (error) {
       console.error("❌ Failed to start recording:", error);
       setIsRecording(false);
-      // Clear timer on error - FIXED
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -398,7 +703,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Stop recording and send - FIXED VERSION
+  // Stop recording and send
   const stopRecording = async () => {
     try {
       console.log("🟢 Stopping recording...");
@@ -408,7 +713,7 @@ const Message = ({ route }: { route: any }) => {
         return;
       }
 
-      // Stop timer - FIXED: Only clear if it exists
+      // Stop timer
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -464,10 +769,6 @@ const Message = ({ route }: { route: any }) => {
       setIsRecording(false);
       setSlideToCancelVisible(false);
       recordingRef.current = null;
-
-      // Don't reset recordingTime here - we need it for the message duration
-      // setRecordingTime(0); // REMOVED: This was causing the issue
-
       setRecordingWaveformData([]);
       swipeTranslate.setValue(0);
 
@@ -482,7 +783,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Cancel recording (swipe to cancel) - FIXED VERSION
+  // Cancel recording (swipe to cancel)
   const cancelRecording = async () => {
     try {
       console.log("🟡 Canceling recording...");
@@ -492,7 +793,7 @@ const Message = ({ route }: { route: any }) => {
         return;
       }
 
-      // Stop timer - FIXED
+      // Stop timer
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
@@ -512,7 +813,7 @@ const Message = ({ route }: { route: any }) => {
       setIsRecording(false);
       setSlideToCancelVisible(false);
       recordingRef.current = null;
-      setRecordingTime(0); // Reset time when canceling
+      setRecordingTime(0);
       setRecordingWaveformData([]);
       swipeTranslate.setValue(0);
 
@@ -527,7 +828,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Reset recording time when not recording - FIXED: Added this function
+  // Reset recording time when not recording
   const resetRecordingTime = () => {
     setRecordingTime(0);
   };
@@ -539,33 +840,6 @@ const Message = ({ route }: { route: any }) => {
     } else {
       startRecording();
     }
-  };
-
-  // Delete existing voice message
-  const deleteVoiceMessage = (messageId: string) => {
-    Alert.alert(
-      "Delete Voice Message",
-      "Are you sure you want to delete this voice message?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
-            if (currentPlayingVoice === messageId) {
-              stopPlayingVoice();
-            }
-            // Clean up animation
-            progressAnimations.current.delete(messageId);
-            stopProgressAnimation(messageId);
-          },
-        },
-      ]
-    );
   };
 
   // Play voice message
@@ -582,7 +856,6 @@ const Message = ({ route }: { route: any }) => {
             clearInterval(playbackTimerRef.current);
             playbackTimerRef.current = null;
           }
-          // Stop the progress animation when pausing
           stopProgressAnimation(message.id);
         }
         return;
@@ -634,12 +907,11 @@ const Message = ({ route }: { route: any }) => {
       const duration = message.duration || 1;
       const animation = Animated.timing(progressAnim, {
         toValue: 1,
-        duration: duration * 1000, // Convert to milliseconds
+        duration: duration * 1000,
         easing: Easing.linear,
-        useNativeDriver: false, // We need to use false for left property
+        useNativeDriver: false,
       });
 
-      // Store the animation reference so we can stop it later
       animationRefs.current.set(message.id, animation);
       animation.start();
 
@@ -681,7 +953,6 @@ const Message = ({ route }: { route: any }) => {
   const onPlaybackStatusUpdate = (status: any) => {
     if (status.didJustFinish) {
       console.log("🎵 Playback finished");
-      // Clean up when finished
       setCurrentPlayingVoice(null);
       setPlaybackProgress(0);
       setPlaybackPosition(0);
@@ -709,13 +980,11 @@ const Message = ({ route }: { route: any }) => {
         playbackTimerRef.current = null;
       }
 
-      // Stop all progress animations
       animationRefs.current.forEach((animation) => {
         animation.stop();
       });
       animationRefs.current.clear();
 
-      // Reset all progress values
       progressAnimations.current.forEach((anim) => {
         anim.setValue(0);
       });
@@ -724,7 +993,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Seek to position in voice message - FIXED VERSION
+  // Seek to position in voice message
   const seekToPosition = async (message: Message, position: number) => {
     try {
       if (!sound || !message.duration) return;
@@ -732,29 +1001,24 @@ const Message = ({ route }: { route: any }) => {
       const newPosition = Math.max(0, Math.min(position, message.duration));
       console.log("🎯 Seeking to:", newPosition, "seconds");
 
-      // Stop the current timer
       if (playbackTimerRef.current) {
         clearInterval(playbackTimerRef.current);
         playbackTimerRef.current = null;
       }
 
-      // Stop current animation
       stopProgressAnimation(message.id);
 
-      // Set the new position
-      await sound.setPositionAsync(newPosition * 1000); // Convert to milliseconds
+      await sound.setPositionAsync(newPosition * 1000);
 
       setPlaybackProgress(newPosition);
       setPlaybackPosition(newPosition);
 
-      // Calculate remaining time and restart animation
       const remainingTime = (message.duration! - newPosition) * 1000;
       const newProgressValue = newPosition / message.duration!;
 
       const progressAnim = getProgressAnimation(message.id);
       progressAnim.setValue(newProgressValue);
 
-      // Resume smooth animation if still playing
       if (currentPlayingVoice === message.id && remainingTime > 0) {
         const animation = Animated.timing(progressAnim, {
           toValue: 1,
@@ -763,11 +1027,9 @@ const Message = ({ route }: { route: any }) => {
           useNativeDriver: false,
         });
 
-        // Store the animation reference
         animationRefs.current.set(message.id, animation);
         animation.start();
 
-        // Resume timer
         playbackTimerRef.current = setInterval(() => {
           setPlaybackProgress((prev) => {
             const newProgress = prev + 1;
@@ -813,7 +1075,7 @@ const Message = ({ route }: { route: any }) => {
     }
   };
 
-  // Format time for display - FIXED VERSION
+  // Format time for display
   const formatTime = (seconds: number) => {
     if (seconds < 0) return "0:00";
 
@@ -822,7 +1084,7 @@ const Message = ({ route }: { route: any }) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  // Enhanced Voice Waveform Component with SMOOTH ANIMATED seek functionality
+  // Enhanced Voice Waveform Component
   const VoiceWaveform = ({
     message,
     isPlaying,
@@ -838,12 +1100,11 @@ const Message = ({ route }: { route: any }) => {
       message.waveformData || generateWaveformData(message.duration || 1);
     const duration = message.duration || 1;
     const progressPercent = progress / duration;
-    const barCount = Math.min(waveformData.length, 25); // Limit to 25 bars for better fit
+    const barCount = Math.min(waveformData.length, 25);
 
     const waveformRef = useRef<View>(null);
     const [layoutWidth, setLayoutWidth] = useState(140);
 
-    // Get the animated progress value for this message
     const progressAnim = getProgressAnimation(message.id);
 
     const handleWaveformPress = (event: any) => {
@@ -853,14 +1114,6 @@ const Message = ({ route }: { route: any }) => {
       const progressPercentage = Math.max(0, Math.min(1, touchX / layoutWidth));
       const newPosition = Math.floor(progressPercentage * duration);
 
-      console.log(
-        "🎯 Waveform pressed at:",
-        touchX,
-        "progress:",
-        progressPercentage,
-        "position:",
-        newPosition
-      );
       onSeek(newPosition);
     };
 
@@ -884,8 +1137,6 @@ const Message = ({ route }: { route: any }) => {
             {waveformData.slice(0, barCount).map((amplitude, index) => {
               const barProgress = index / barCount;
               const isActive = barProgress <= progressPercent;
-
-              // Calculate bar height based on amplitude
               const maxHeight = 24;
               const height = Math.max(4, amplitude * maxHeight);
 
@@ -912,7 +1163,6 @@ const Message = ({ route }: { route: any }) => {
               );
             })}
 
-            {/* Progress overlay - only show when playing */}
             {isPlaying && (
               <Animated.View
                 style={[
@@ -930,7 +1180,6 @@ const Message = ({ route }: { route: any }) => {
               />
             )}
 
-            {/* Smooth animated seek indicator - only show when playing */}
             {isPlaying && (
               <Animated.View
                 style={[
@@ -956,7 +1205,7 @@ const Message = ({ route }: { route: any }) => {
     const data =
       recordingWaveformData.length > 0
         ? recordingWaveformData
-        : Array(15).fill(0.3); // Reduced number of bars
+        : Array(15).fill(0.3);
 
     return (
       <View style={styles.recordingWaveformContainer}>
@@ -987,6 +1236,7 @@ const Message = ({ route }: { route: any }) => {
     );
   };
 
+  // Render message function
   const renderMessage = (message: Message) => {
     if (message.type === "voice") {
       const isPlaying = currentPlayingVoice === message.id;
@@ -1121,28 +1371,200 @@ const Message = ({ route }: { route: any }) => {
     );
   };
 
-  // Handle voice call - disable video for voice call
+  // Call handlers
   const handleVoiceCall = () => {
-    setAgoraProps((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        enableVideo: false, // Disable video for voice call
-      },
-    }));
-    setVoiceCall(true);
+    if (!isConnected) {
+      Alert.alert(
+        "Not Connected",
+        "Please wait while we connect to the call service."
+      );
+      return;
+    }
+    startVoiceCall();
   };
 
-  // Handle video call - enable video for video call
   const handleVideoCall = () => {
-    setAgoraProps((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        enableVideo: true, // Enable video for video call
-      },
-    }));
-    setVideoCall(true);
+    if (!isConnected) {
+      Alert.alert(
+        "Not Connected",
+        "Please wait while we connect to the call service."
+      );
+      return;
+    }
+    startVideoCall();
+  };
+
+  // Render Video Call Screen
+  const renderVideoCallScreen = () => {
+    return (
+      <View style={styles.videoCallContainer}>
+        {/* Background with garden image */}
+        <Image
+          source={require("../../assets/tajjob/messages/garden-bg.png")}
+          style={styles.videoCallBackground}
+          blurRadius={2}
+        />
+
+        {/* Remote Video Stream - Mock */}
+        <View style={styles.remoteVideoContainer}>
+          <View style={styles.remoteVideo}>
+            <Ionicons name="videocam" size={60} color="#fff" />
+            <Text style={styles.mockVideoText}>Danny H.</Text>
+            <Text style={styles.mockVideoSubtext}>Video Call</Text>
+          </View>
+        </View>
+
+        {/* Local Video Stream - Mock */}
+        <View style={styles.localVideoContainer}>
+          <View style={styles.localVideo}>
+            <Ionicons name="person" size={30} color="#fff" />
+            <Text style={styles.mockLocalVideoText}>You</Text>
+          </View>
+        </View>
+
+        {/* Call Info */}
+        <View style={styles.callInfo}>
+          <Text style={styles.callInfoText}>Video Call with Danny H.</Text>
+          <Text style={styles.callDuration}>00:00</Text>
+        </View>
+
+        {/* Call Controls */}
+        <View style={styles.callControls}>
+          <TouchableOpacity style={styles.callButton}>
+            <View style={[styles.callButtonIcon, { backgroundColor: "#666" }]}>
+              <Ionicons name="volume-high" size={24} color="#fff" />
+            </View>
+            <Text style={styles.callButtonText}>Speaker</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.callButton}>
+            <View style={[styles.callButtonIcon, { backgroundColor: "#666" }]}>
+              <Ionicons name="mic" size={24} color="#fff" />
+            </View>
+            <Text style={styles.callButtonText}>Mute</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.callButton}>
+            <View style={[styles.callButtonIcon, { backgroundColor: "#666" }]}>
+              <Ionicons name="videocam" size={24} color="#fff" />
+            </View>
+            <Text style={styles.callButtonText}>Video</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.callButton} onPress={endCall}>
+            <View
+              style={[styles.callButtonIcon, { backgroundColor: "#ff3b30" }]}
+            >
+              <Ionicons name="call" size={24} color="#fff" />
+            </View>
+            <Text style={styles.callButtonText}>End</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  // Render Voice Call Screen
+  const renderVoiceCallScreen = () => {
+    return (
+      <View style={styles.voiceCallContainer}>
+        {/* Background with man image */}
+        <Image
+          source={require("../../assets/tajjob/messages/man-bg.png")}
+          style={styles.voiceCallBackground}
+          blurRadius={2}
+        />
+
+        <View style={styles.voiceCallContent}>
+          <View style={styles.voiceCallAvatar}>
+            <Image
+              source={require("../../assets/tajjob/messages/hr.jpg")}
+              style={styles.callAvatar}
+            />
+            <Text style={styles.callUserName}>Danny H.</Text>
+            <Text style={styles.callStatus}>Calling...</Text>
+          </View>
+
+          {/* Call Info */}
+          <View style={styles.callInfo}>
+            <Text style={styles.callInfoText}>Voice Call with Danny H.</Text>
+            <Text style={styles.callDuration}>00:00</Text>
+          </View>
+
+          {/* Call Controls */}
+          <View style={styles.callControls}>
+            <TouchableOpacity style={styles.callButton}>
+              <View
+                style={[styles.callButtonIcon, { backgroundColor: "#666" }]}
+              >
+                <Ionicons name="volume-high" size={24} color="#fff" />
+              </View>
+              <Text style={styles.callButtonText}>Speaker</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.callButton}>
+              <View
+                style={[styles.callButtonIcon, { backgroundColor: "#666" }]}
+              >
+                <Ionicons name="mic" size={24} color="#fff" />
+              </View>
+              <Text style={styles.callButtonText}>Mute</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.callButton} onPress={endCall}>
+              <View
+                style={[styles.callButtonIcon, { backgroundColor: "#ff3b30" }]}
+              >
+                <Ionicons name="call" size={24} color="#fff" />
+              </View>
+              <Text style={styles.callButtonText}>End</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  // Render Incoming Call Modal
+  const renderIncomingCallModal = () => {
+    if (!incomingCall) return null;
+
+    const isVideoCall = incomingCallData?.extension?.callType === 1;
+
+    return (
+      <Modal visible={incomingCall} transparent={true} animationType="slide">
+        <View style={styles.incomingCallContainer}>
+          <View style={styles.incomingCallContent}>
+            <Image
+              source={require("../../assets/tajjob/messages/hr.jpg")}
+              style={styles.incomingCallAvatar}
+            />
+            <Text style={styles.incomingCallTitle}>
+              Incoming {isVideoCall ? "Video" : "Voice"} Call
+            </Text>
+            <Text style={styles.incomingCallSubtitle}>Danny H.</Text>
+
+            <View style={styles.incomingCallButtons}>
+              <TouchableOpacity
+                style={[styles.incomingCallButton, styles.rejectButton]}
+                onPress={rejectCall}
+              >
+                <Ionicons name="call" size={24} color="#fff" />
+                <Text style={styles.rejectButtonText}>Decline</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.incomingCallButton, styles.acceptButton]}
+                onPress={acceptCall}
+              >
+                <Ionicons name="call" size={24} color="#fff" />
+                <Text style={styles.acceptButtonText}>Accept</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   return (
@@ -1151,212 +1573,170 @@ const Message = ({ route }: { route: any }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
-      {/* Video Call Modal */}
-      {/* <Modal
-        visible={videoCall}
-        animationType="slide"
-        presentationStyle="fullScreen"
-      >
-        <View style={styles.videoCallContainer}>
-          <AgoraUIKit
-            connectionData={agoraProps.connectionData}
-            settings={agoraProps.settings}
-            styleProps={agoraProps.styleProps}
-            rtcCallbacks={callbacks}
-          />
-        </View>
-      </Modal> */}
+      {/* Show call screens when in call */}
+      {videoCall && renderVideoCallScreen()}
+      {voiceCall && !videoCall && renderVoiceCallScreen()}
 
-      {/* Voice Call Modal */}
-      {/* <Modal
-        visible={voiceCall}
-        animationType="slide"
-        presentationStyle="fullScreen"
-      >
-        <View style={styles.videoCallContainer}>
-          <AgoraUIKit
-            connectionData={agoraProps.connectionData}
-            settings={agoraProps.settings}
-            styleProps={agoraProps.styleProps}
-            rtcCallbacks={callbacks}
-          />
-        </View>
-      </Modal> */}
-
-      <View style={styles.headerMessagesComponentBlock}>
-        <View style={styles.headerBlock1}>
-          <Ionicons
-            name="arrow-back-sharp"
-            size={31}
-            color="black"
-            onPress={() => navigation.goBack()}
-          />
-          <Image
-            source={require("../../assets/tajjob/messages/hr.jpg")}
-            style={styles.HRImg}
-          />
-          <View style={styles.fullnameAndStatusBlockHeaderBlock1}>
-            <Text style={styles.HRFullname}>Danny H.</Text>
-            <Text style={styles.HRStatus}>Online</Text>
-          </View>
-        </View>
-        <View style={styles.headerBlock2}>
-          <TouchableOpacity onPress={handleVoiceCall}>
-            <FontAwesome5 name="phone-alt" size={31} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleVideoCall}>
-            <FontAwesome name="video-camera" size={31} color="black" />
-          </TouchableOpacity>
-          <Entypo name="dots-three-vertical" size={31} color="black" />
-        </View>
-      </View>
-
-      <View style={styles.sectionAndFooterMessagesComponentBlock}>
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.sectionMessagesComponentBlock}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollViewContent}
-        >
-          <View style={styles.messagesContainer}>
-            <Text style={styles.messagesSentDay}>Today</Text>
-            <View style={styles.messagesBlockOfThisDay}>
-              {messages.map(renderMessage)}
+      {/* Show chat when not in call */}
+      {!videoCall && !voiceCall && (
+        <>
+          <View style={styles.headerMessagesComponentBlock}>
+            <View style={styles.headerBlock1}>
+              <Ionicons
+                name="arrow-back-sharp"
+                size={31}
+                color="black"
+                onPress={() => navigation.goBack()}
+              />
+              <Image
+                source={require("../../assets/tajjob/messages/hr.jpg")}
+                style={styles.HRImg}
+              />
+              <View style={styles.fullnameAndStatusBlockHeaderBlock1}>
+                <Text style={styles.HRFullname}>Danny H.</Text>
+                <Text style={styles.HRStatus}>
+                  {isConnected ? "Online" : "Connecting..."}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.headerBlock2}>
+              <TouchableOpacity onPress={handleVoiceCall}>
+                <FontAwesome5 name="phone-alt" size={31} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleVideoCall}>
+                <FontAwesome name="video-camera" size={31} color="black" />
+              </TouchableOpacity>
+              <Entypo name="dots-three-vertical" size={31} color="black" />
             </View>
           </View>
-        </ScrollView>
 
-        <View style={styles.footerMessagesComponentBlock}>
-          {isRecording ? (
-            <View style={styles.recordingContainer}>
-              {/* Swipe to Cancel Indicator */}
-              {slideToCancelVisible && (
-                <View style={styles.cancelIndicator}>
-                  <Ionicons name="close-circle" size={20} color="#ff3b30" />
-                  <Text style={styles.cancelText}>Release to cancel</Text>
+          <View style={styles.sectionAndFooterMessagesComponentBlock}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={styles.sectionMessagesComponentBlock}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scrollViewContent}
+            >
+              <View style={styles.messagesContainer}>
+                <Text style={styles.messagesSentDay}>Today</Text>
+                <View style={styles.messagesBlockOfThisDay}>
+                  {messages.map(renderMessage)}
+                </View>
+              </View>
+            </ScrollView>
+
+            {/* Message input footer */}
+            <View style={styles.footerMessagesComponentBlock}>
+              {isRecording ? (
+                <View style={styles.recordingContainer}>
+                  {/* Swipe to Cancel Indicator */}
+                  {slideToCancelVisible && (
+                    <View style={styles.cancelIndicator}>
+                      <Ionicons name="close-circle" size={20} color="#ff3b30" />
+                      <Text style={styles.cancelText}>Release to cancel</Text>
+                    </View>
+                  )}
+
+                  <Animated.View
+                    style={[
+                      styles.recordingIndicator,
+                      {
+                        transform: [
+                          {
+                            scale: pulseAnimation,
+                          },
+                          { translateX: swipeTranslate },
+                        ],
+                      },
+                    ]}
+                    {...panResponder.panHandlers}
+                  >
+                    <Ionicons name="mic" size={20} color="#ff3b30" />
+                  </Animated.View>
+
+                  {/* Live recording waveform */}
+                  <RecordingWaveform />
+
+                  <Text style={styles.recordingTime}>
+                    {formatTime(recordingTime)}
+                  </Text>
+
+                  {/* Cancel Button */}
+                  <TouchableOpacity
+                    style={styles.cancelRecordingButton}
+                    onPress={cancelRecording}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons name="close" size={20} color="#ff3b30" />
+                  </TouchableOpacity>
+
+                  {/* Stop/Send Button */}
+                  <TouchableOpacity
+                    style={styles.stopRecordingButton}
+                    onPress={stopRecording}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons name="send" size={16} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                // Normal input
+                <View style={styles.inputMessageAndIconBlock}>
+                  <TextInput
+                    style={styles.inputMessage}
+                    placeholder="Message"
+                    placeholderTextColor={"#9E9E9E"}
+                    value={messageText}
+                    onChangeText={setMessageText}
+                    multiline
+                    onSubmitEditing={sendTextMessage}
+                    returnKeyType="send"
+                  />
+                  <FontAwesome5
+                    name="smile"
+                    size={22}
+                    color="black"
+                    style={styles.iconStckersFooter}
+                  />
+
+                  {messageText.trim() ? (
+                    <TouchableOpacity
+                      style={styles.sendButton}
+                      onPress={sendTextMessage}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="send" size={20} color="#2623D2" />
+                    </TouchableOpacity>
+                  ) : (
+                    // Voice button
+                    <TouchableOpacity
+                      style={styles.btnVoiceToText}
+                      onPress={() => {
+                        resetRecordingTime();
+                        handleVoiceButtonPress();
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="mic" size={22} color="#2623D2" />
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
-
-              <Animated.View
-                style={[
-                  styles.recordingIndicator,
-                  {
-                    transform: [
-                      {
-                        scale: pulseAnimation,
-                      },
-                      { translateX: swipeTranslate },
-                    ],
-                  },
-                ]}
-                {...panResponder.panHandlers}
-              >
-                <Ionicons name="mic" size={20} color="#ff3b30" />
-              </Animated.View>
-
-              {/* Live recording waveform */}
-              <RecordingWaveform />
-
-              <Text style={styles.recordingTime}>
-                {formatTime(recordingTime)}
-              </Text>
-
-              {/* Cancel Button */}
-              <TouchableOpacity
-                style={styles.cancelRecordingButton}
-                onPress={cancelRecording}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="close" size={20} color="#ff3b30" />
-              </TouchableOpacity>
-
-              {/* Stop/Send Button */}
-              <TouchableOpacity
-                style={styles.stopRecordingButton}
-                onPress={stopRecording}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="send" size={16} color="#fff" />
-              </TouchableOpacity>
             </View>
-          ) : (
-            // Normal input
-            <View style={styles.inputMessageAndIconBlock}>
-              <TextInput
-                style={styles.inputMessage}
-                placeholder="Message"
-                placeholderTextColor={"#9E9E9E"}
-                value={messageText}
-                onChangeText={setMessageText}
-                multiline
-                onSubmitEditing={sendTextMessage}
-                returnKeyType="send"
-              />
-              <FontAwesome5
-                name="smile"
-                size={22}
-                color="black"
-                style={styles.iconStckersFooter}
-              />
+          </View>
+        </>
+      )}
 
-              {messageText.trim() ? (
-                <TouchableOpacity
-                  style={styles.sendButton}
-                  onPress={sendTextMessage}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="send" size={20} color="#2623D2" />
-                </TouchableOpacity>
-              ) : (
-                // Voice button - FIXED: Reset recording time when starting new recording
-                <TouchableOpacity
-                  style={styles.btnVoiceToText}
-                  onPress={() => {
-                    resetRecordingTime(); // Reset time before starting
-                    handleVoiceButtonPress();
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="mic" size={22} color="#2623D2" />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          <ZegoUIKitPrebuiltCall
-            appID={434563306}
-            appSign={
-              "31f5dbed0175b8703004ba53dd42d83bb23acdba6bcd8872a135e0798b2376d2"
-            }
-            userID={"1911"} // userID can be something like a phone number or the user id on your own user system.
-            userName={"olim_yuldoshev"}
-            callID={"1111"} // callID can be any unique string.
-            config={{
-              // You can also use ONE_ON_ONE_VOICE_CALL_CONFIG/GROUP_VIDEO_CALL_CONFIG/GROUP_VOICE_CALL_CONFIG to make more types of calls.
-              ...ONE_ON_ONE_VIDEO_CALL_CONFIG,
-              onOnlySelfInRoom: () => {
-                navigation.navigate("Message");
-              },
-              onHangUp: () => {
-                navigation.navigate("Message");
-              },
-            }}
-          />
-        </View>
-      </View>
+      {/* Incoming Call Modal */}
+      {renderIncomingCallModal()}
     </KeyboardAvoidingView>
   );
 };
-
-export default Message;
 
 const styles = StyleSheet.create({
   messageComponent: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  videoCallContainer: {
-    flex: 1,
-    backgroundColor: "#000",
   },
   headerMessagesComponentBlock: {
     flexDirection: "row",
@@ -1468,7 +1848,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#fff",
   },
-  // Voice message styles - FIXED WIDTH
+  // Voice message styles
   voiceMessageOfUserBlock: {
     maxWidth: "70%",
     backgroundColor: "#fff",
@@ -1494,9 +1874,7 @@ const styles = StyleSheet.create({
     gap: 8,
     minHeight: 32,
   },
-  playButtonContainer: {
-    // Separate container for play button to avoid conflict with waveform touch
-  },
+  playButtonContainer: {},
   playButton: {
     width: 28,
     height: 28,
@@ -1508,9 +1886,9 @@ const styles = StyleSheet.create({
   playingButton: {
     backgroundColor: "rgba(255, 59, 48, 0.1)",
   },
-  // Waveform styles - FIXED with proper touch handling
+  // Waveform styles
   waveformContainer: {
-    width: 140, // Fixed width to fit container
+    width: 140,
     height: 32,
   },
   waveformTouchArea: {
@@ -1537,14 +1915,14 @@ const styles = StyleSheet.create({
   seekIndicator: {
     position: "absolute",
     top: -2,
-    width: 3, // Slightly wider for better visibility
-    height: "120%", // Slightly taller
+    width: 3,
+    height: "120%",
     borderRadius: 1.5,
-    zIndex: 10, // Ensure it's above other elements
+    zIndex: 10,
   },
   // Recording waveform styles
   recordingWaveformContainer: {
-    width: 100, // Reduced width
+    width: 100,
     height: 32,
     justifyContent: "center",
   },
@@ -1632,7 +2010,7 @@ const styles = StyleSheet.create({
     right: 8,
     padding: 5,
   },
-  // Recording styles - UPDATED WITH CANCEL BUTTON
+  // Recording styles
   recordingContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -1663,7 +2041,6 @@ const styles = StyleSheet.create({
     minWidth: 40,
     textAlign: "center",
   },
-  // ADDED CANCEL BUTTON STYLES
   cancelRecordingButton: {
     width: 32,
     height: 32,
@@ -1708,4 +2085,221 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 4,
   },
+
+  // Video Call Styles
+  videoCallContainer: {
+    flex: 1,
+    backgroundColor: "#000",
+  },
+  videoCallBackground: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  remoteVideoContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  remoteVideo: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  localVideoContainer: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    width: 120,
+    height: 160,
+    borderRadius: 10,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 5,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  localVideo: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  mockVideoText: {
+    color: "#fff",
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 10,
+    fontWeight: "600",
+  },
+  mockVideoSubtext: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 5,
+  },
+  mockLocalVideoText: {
+    color: "#fff",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 5,
+  },
+
+  // Voice Call Styles
+  voiceCallContainer: {
+    flex: 1,
+    backgroundColor: "#000",
+  },
+  voiceCallBackground: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  voiceCallContent: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "space-between",
+    paddingVertical: 80,
+  },
+  voiceCallAvatar: {
+    alignItems: "center",
+    marginTop: 40,
+  },
+  callAvatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+    borderWidth: 3,
+    borderColor: "#fff",
+  },
+  callUserName: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#fff",
+    marginBottom: 8,
+  },
+  callStatus: {
+    fontSize: 16,
+    color: "rgba(255,255,255,0.8)",
+  },
+
+  // Call Controls
+  callControls: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingHorizontal: 20,
+  },
+  callButton: {
+    alignItems: "center",
+  },
+  callButtonIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  callButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    marginTop: 5,
+    fontWeight: "500",
+  },
+
+  // Call Info
+  callInfo: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  callInfoText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  callDuration: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 16,
+    marginTop: 5,
+  },
+
+  // Incoming Call Styles
+  incomingCallContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  incomingCallContent: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 30,
+    alignItems: "center",
+    margin: 20,
+  },
+  incomingCallAvatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  incomingCallTitle: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  incomingCallSubtitle: {
+    fontSize: 18,
+    color: "#666",
+    marginBottom: 30,
+  },
+  incomingCallButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  incomingCallButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginHorizontal: 10,
+  },
+  rejectButton: {
+    backgroundColor: "#ff3b30",
+  },
+  acceptButton: {
+    backgroundColor: "#4CD964",
+  },
+  rejectButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 5,
+  },
+  acceptButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 5,
+  },
 });
+
+export default Message;
