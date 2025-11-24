@@ -12,8 +12,6 @@ import {
   View,
 } from "react-native";
 
-import AgoraUIKit from "agora-rn-uikit"
-
 // Define your navigation types
 type RootStackParamList = {
   EditUser: undefined;
