@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flex: 1,
-    marginTop: 145, // Space for the absolutely positioned user info
+    marginTop: 145,
   },
   scrollView: {
     flex: 1,
