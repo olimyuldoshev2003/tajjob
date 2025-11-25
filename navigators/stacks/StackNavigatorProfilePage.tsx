@@ -1,6 +1,8 @@
 import EditUser from "@/screens/application/EditUser";
+import Language from "@/screens/application/Language";
 import Profile from "@/screens/application/Profile";
 import Settings from "@/screens/application/Settings";
+import Theme from "@/screens/application/Theme";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { StyleSheet } from "react-native";
@@ -31,6 +33,22 @@ const StackNavigatorProfilePage = () => {
       <Stack.Screen
         name="Settings"
         component={Settings}
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="Language"
+        component={Language}
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="Theme"
+        component={Theme}
         options={{
           headerShown: true,
           animation: "slide_from_right",
