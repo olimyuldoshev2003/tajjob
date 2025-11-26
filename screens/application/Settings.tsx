@@ -6,6 +6,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
 import React from "react";
 import {
   ScrollView,
@@ -16,6 +17,8 @@ import {
 } from "react-native";
 
 const Settings = () => {
+  const navigation: any = useNavigation();
+
   return (
     <View style={styles.settingsComponent}>
       <ScrollView
@@ -35,8 +38,11 @@ const Settings = () => {
             ]}
           >
             <TouchableHighlight
-              style={[styles.btnFuncShownType, styles.themeBtn]}
+              style={[styles.btnFuncShownType, styles.languageBtn]}
               underlayColor="#f0f0f0"
+              onPress={() => {
+                navigation.navigate("Language");
+              }}
             >
               <View
                 style={
@@ -66,8 +72,11 @@ const Settings = () => {
               </View>
             </TouchableHighlight>
             <TouchableHighlight
-              style={[styles.btnFuncShownType, styles.languageBtn]}
+              style={[styles.btnFuncShownType, styles.themeBtn]}
               underlayColor="#f0f0f0"
+              onPress={() => {
+                navigation.navigate("Theme");
+              }}
             >
               <View
                 style={
