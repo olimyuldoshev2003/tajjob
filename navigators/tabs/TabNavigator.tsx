@@ -7,6 +7,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useNavigation } from "expo-router";
 import JobDetailModal from "../../components/home/JobDetailModal";
 import StackNavigatorHistoryPage from "../stacks/StackNavigatorHistoryPage";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
@@ -15,6 +16,9 @@ import StackNavigatorProfilePage from "../stacks/StackNavigatorProfilePage";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
+
+  const navigation: any = useNavigation();
+  console.log(navigation);
 
   const modalizeRef = useRef<any>(null);
   const [selectedJob, setSelectedJob] = useState<any>(null);
