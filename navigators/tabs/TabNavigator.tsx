@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Icons
@@ -7,7 +7,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useNavigation } from "expo-router";
+import { useNavigation, usePathname, useRouter, useSegments } from "expo-router";
 import JobDetailModal from "../../components/home/JobDetailModal";
 import StackNavigatorHistoryPage from "../stacks/StackNavigatorHistoryPage";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
@@ -17,18 +17,26 @@ import StackNavigatorProfilePage from "../stacks/StackNavigatorProfilePage";
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
 
-  const navigation: any = useNavigation();
-  console.log(navigation);
-
+  const pathName: any = usePathname();
+  const segments:any = useSegments();
+  
+  
+  
+  
   const modalizeRef = useRef<any>(null);
   const [selectedJob, setSelectedJob] = useState<any>(null);
-
+  
   // Function to open modal with job data
   function openJobModal(jobData: any) {
     setSelectedJob(jobData);
     modalizeRef.current?.open();
   }
-
+  
+  
+  useEffect(() => {
+    console.log(segments);
+  }, [pathName]);
+  
   const StackNavigatorHomePageWithFunctionOpenJobModal = () => (
     <StackNavigatorHomePage openJobModal={openJobModal} />
   );
