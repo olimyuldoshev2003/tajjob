@@ -108,6 +108,10 @@ const Settings = () => {
 
             <TouchableHighlight
               style={[styles.btnFunc, styles.gestureControlBtn]}
+              onPress={() => {
+                navigation.navigate("GestureControl");
+              }}
+              underlayColor="#f0f0f0"
             >
               <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                 <View style={styles.iconAndFuncTypeBlock}>
@@ -315,7 +319,9 @@ const styles = StyleSheet.create({
   },
 
   // Styles with the same properties for buttons, which showed selected type of functionality
-  btnFuncShownType: {},
+  btnFuncShownType: {
+    borderRadius: 12,
+  },
   iconFuncTypeShownSelectedFuncAndIconRightSideBlock: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -349,7 +355,9 @@ const styles = StyleSheet.create({
   rightSideIcon: {},
 
   // Styles with the same properties for buttons, which didn't show selected type of functionality
-  btnFunc: {},
+  btnFunc: {
+    borderRadius: 12,
+  },
   iconFuncTypeAndIconRightSideBlock: {
     flexDirection: "row",
     justifyContent: "space-between",

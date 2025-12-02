@@ -16,7 +16,11 @@ const Theme = () => {
         <View style={styles.themeChangeBtnBlock}>
           <SegmentedControl
             style={styles.themeChangeBtn}
-            values={["Systemic", "Light", "Dark"]}
+            values={[
+              // "Systemic",
+              "Light",
+              "Dark",
+            ]}
             selectedIndex={selectedIndex}
             onChange={(event) => {
               setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
@@ -38,16 +42,28 @@ const Theme = () => {
           <View style={styles.swiperContainer}>
             <Carousel style={{}} showsControls={false}>
               <View style={[styles.slide, styles.slide1]}>
-                <Image source={require("../../assets/tajjob/profile/light-mode-img-1.jpg")} style={styles.imgPreviewPageLightMode} />
+                <Image
+                  source={require("../../assets/tajjob/profile/light-mode-img-1.jpg")}
+                  style={styles.imgPreviewPageLightMode}
+                />
               </View>
               <View style={[styles.slide, styles.slide2]}>
-                <Image source={require("../../assets/tajjob/profile/light-mode-img-2.jpg")} style={styles.imgPreviewPageLightMode} />
+                <Image
+                  source={require("../../assets/tajjob/profile/light-mode-img-2.jpg")}
+                  style={styles.imgPreviewPageLightMode}
+                />
               </View>
               <View style={[styles.slide, styles.slide3]}>
-                <Image source={require("../../assets/tajjob/profile/light-mode-img-3.jpg")} style={styles.imgPreviewPageLightMode} />
+                <Image
+                  source={require("../../assets/tajjob/profile/light-mode-img-3.jpg")}
+                  style={styles.imgPreviewPageLightMode}
+                />
               </View>
               <View style={[styles.slide, styles.slide3]}>
-                <Image source={require("../../assets/tajjob/profile/light-mode-img-4.jpg")} style={styles.imgPreviewPageLightMode} />
+                <Image
+                  source={require("../../assets/tajjob/profile/light-mode-img-4.jpg")}
+                  style={styles.imgPreviewPageLightMode}
+                />
               </View>
             </Carousel>
           </View>
@@ -96,12 +112,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 400,
   },
-  slide1: {
-  },
-  slide2: {
-  },
-  slide3: {
-  },
+  slide1: {},
+  slide2: {},
+  slide3: {},
   slideContent: {},
   imgPreviewPageLightMode: {
     width: "100%",
