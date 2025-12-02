@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -111,7 +112,13 @@ const Language = () => {
                 onChangeText={setSearchQuery}
               />
             </View>
-            <View style={styles.allLanguagesBlock}>
+            <ScrollView
+              contentContainerStyle={styles.allLanguagesBlockScrollView}
+              style={styles.allLanguagesBlock}
+
+                
+              
+            >
               {filteredLanguages.map((language) => (
                 <TouchableHighlight
                   style={styles.btnSelectLanguage}
@@ -144,7 +151,7 @@ const Language = () => {
                   </View>
                 </TouchableHighlight>
               ))}
-            </View>
+            </ScrollView>
           </View>
         </View>
         <View style={styles.blockBtnApply}>
@@ -248,7 +255,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
 
-  allLanguagesBlock: {},
+  allLanguagesBlockScrollView: {},
+
+  allLanguagesBlock: {
+    maxHeight: 250,
+  },
   btnSelectLanguage: {
     padding: 10,
   },
