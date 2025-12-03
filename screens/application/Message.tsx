@@ -15,6 +15,7 @@ import {
   Easing,
   Image,
   KeyboardAvoidingView,
+  Modal,
   PanResponder,
   Platform,
   ScrollView,
@@ -24,7 +25,6 @@ import {
   TouchableOpacity,
   Vibration,
   View,
-  Modal,
 } from "react-native";
 
 // Import ConnectyCube
@@ -684,7 +684,6 @@ const Message = ({ route }: { route: any }) => {
           const newTime = prev + 1;
           console.log(newTime);
           return newTime;
-          
         });
       }, 1000);
 

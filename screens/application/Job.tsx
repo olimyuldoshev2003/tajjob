@@ -179,7 +179,7 @@ const Job = ({ route }: { route: any }) => {
         <Pressable
           style={styles.closePageBtn}
           onPress={() => {
-            navigation.navigate("Home");
+            navigation.goBack();
           }}
         >
           <FontAwesome name="close" size={32} color="black" />

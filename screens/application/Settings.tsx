@@ -143,13 +143,19 @@ const Settings = () => {
               styles.appearanceAndHelpFunctionalitiesBlock,
             ]}
           >
-            <TouchableHighlight style={[styles.btnFunc, styles.aboutAppBtn]}>
+            <TouchableHighlight
+              style={[styles.btnFunc, styles.aboutAppBtn]}
+              onPress={() => {
+                navigation.navigate("AboutApp");
+              }}
+              underlayColor="#f0f0f0"
+            >
               <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                 <View style={styles.iconAndFuncTypeBlock}>
                   <View style={styles.iconBlock}>
                     <Entypo
                       name="info"
-                      size={31}
+                      size={32}
                       color="black"
                       style={styles.icon}
                     />
