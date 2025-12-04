@@ -170,7 +170,13 @@ const Settings = () => {
                 />
               </View>
             </TouchableHighlight>
-            <TouchableHighlight style={[styles.btnFunc, styles.FAQBtn]}>
+            <TouchableHighlight
+              style={[styles.btnFunc, styles.FAQBtn]}
+              onPress={() => {
+                navigation.navigate("FAQ");
+              }}  
+              underlayColor="#f0f0f0"
+            >
               <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                 <View style={styles.iconAndFuncTypeBlock}>
                   <View style={styles.iconBlock}>
