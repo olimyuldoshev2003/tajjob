@@ -404,6 +404,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: 57,
+    paddingBottom: 50,
   },
   employerImgEmplyerNameAndJobBlock: {
     alignItems: "center",

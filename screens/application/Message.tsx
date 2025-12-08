@@ -5,7 +5,7 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackStatus } from "expo-av";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -45,22 +45,37 @@ interface CallSession {
   state: string;
 }
 
-const Message = ({ route }: { route: any }) => {
-  interface Message {
-    id: string;
-    text: string;
-    isUser: boolean;
-    timestamp: string;
-    type: "text" | "voice";
-    voiceUri?: string;
-    duration?: number;
-    waveformData?: number[];
-  }
+interface MessageType {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: string;
+  type: "text" | "voice";
+  voiceUri?: string;
+  duration?: number;
+  waveformData?: number[];
+}
 
+interface VoiceCallScreenProps {
+  onEndCall: () => void;
+}
+
+interface VideoCallScreenProps {
+  onEndCall: () => void;
+}
+
+interface IncomingCallModalProps {
+  visible: boolean;
+  onAccept: () => void;
+  onReject: () => void;
+  isVideoCall: boolean;
+}
+
+const Message = ({ route }: { route: any }) => {
   const navigation: any = useNavigation();
   const { width: SCREEN_WIDTH } = Dimensions.get("window");
   const [messageText, setMessageText] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<MessageType[]>([
     {
       id: "1",
       text: "Hello",
@@ -115,10 +130,10 @@ const Message = ({ route }: { route: any }) => {
   const [swipeTranslate] = useState(new Animated.Value(0));
 
   const recordingRef = useRef<Audio.Recording | null>(null);
-  const recordingTimerRef = useRef<any>(null);
-  const playbackTimerRef = useRef<any>(null);
+  const recordingTimerRef:any = useRef<NodeJS.Timeout | null>(null);
+  const playbackTimerRef:any = useRef<NodeJS.Timeout | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
-  const waveformUpdateRef = useRef<any>(null);
+  const waveformUpdateRef:any = useRef<NodeJS.Timeout | null>(null);
   const recordingStartTimeRef = useRef<number>(0);
 
   // Animation values for waveform
@@ -168,9 +183,9 @@ const Message = ({ route }: { route: any }) => {
 
   // ConnectyCube Configuration
   const CONFIG = {
-    appId: "YOUR_APP_ID",
-    authKey: "YOUR_AUTH_KEY",
-    authSecret: "YOUR_AUTH_SECRET",
+    appId: "YOUR_APP_ID", // Replace with your actual App ID
+    authKey: "YOUR_AUTH_KEY", // Replace with your actual Auth Key
+    authSecret: "YOUR_AUTH_SECRET", // Replace with your actual Auth Secret
   };
 
   // Initialize ConnectyCube
@@ -221,12 +236,12 @@ const Message = ({ route }: { route: any }) => {
     } else {
       recordingAnimation.setValue(0);
       pulseAnimation.setValue(1);
-      Animated.timing(recordingAnimation, {
-        toValue: 0,
-        duration: 0,
-        useNativeDriver: true,
-      }).stop();
     }
+
+    return () => {
+      recordingAnimation.stopAnimation();
+      pulseAnimation.stopAnimation();
+    };
   }, [isRecording]);
 
   // Simulate waveform updates during recording
@@ -297,16 +312,37 @@ const Message = ({ route }: { route: any }) => {
         clearInterval(waveformUpdateRef.current);
         waveformUpdateRef.current = null;
       }
-      if (sound) {
-        sound.unloadAsync();
-      }
-      if (recordingRef.current) {
-        recordingRef.current.stopAndUnloadAsync();
-      }
+
+      // Unload sound
+      const unloadSound = async () => {
+        if (sound) {
+          try {
+            await sound.unloadAsync();
+          } catch (error) {
+            console.log("Error unloading sound:", error);
+          }
+        }
+      };
+      unloadSound();
+
+      // Stop recording if active
+      const stopRecording = async () => {
+        if (recordingRef.current) {
+          try {
+            await recordingRef.current.stopAndUnloadAsync();
+          } catch (error) {
+            console.log("Error stopping recording:", error);
+          }
+        }
+      };
+      stopRecording();
 
       // Clean up all animations
       animationRefs.current.forEach((animation) => animation.stop());
       animationRefs.current.clear();
+
+      // Reset animations
+      progressAnimations.current.forEach((anim) => anim.setValue(0));
     };
   }, []);
 
@@ -320,6 +356,9 @@ const Message = ({ route }: { route: any }) => {
 
       // Setup demo users
       await setupDemoUsers();
+
+      // Setup call listeners
+      setupCallListeners();
 
       console.log("✅ ConnectyCube setup completed successfully");
     } catch (error) {
@@ -459,11 +498,17 @@ const Message = ({ route }: { route: any }) => {
 
   const cleanupConnectyCube = async () => {
     try {
-      // Use session destruction instead of stopCall
-      if (callSession) {
-        // Clean up call session properly
-        setCallSession(null);
+      // Clean up any active calls
+      if (videoCall || voiceCall) {
+        await endCall();
       }
+
+      // Clear call session
+      setCallSession(null);
+      setIncomingCall(false);
+      setIncomingCallData(null);
+
+      console.log("✅ ConnectyCube cleanup completed");
     } catch (error) {
       console.error("Error during cleanup:", error);
     }
@@ -489,21 +534,37 @@ const Message = ({ route }: { route: any }) => {
 
       setCallSession(mockSession);
       setVideoCall(true);
+      setVoiceCall(false);
 
       console.log("✅ Video call started (mock)");
 
-      // Show call interface directly since we're in mock mode
-      // Alert.alert(
-      //   "Video Call Started",
-      //   "Video call with Danny H. has started (Demo Mode)",
-      //   [{ text: "OK" }]
-      // );
+      // Simulate incoming call for demo
+      setTimeout(() => {
+        if (Math.random() > 0.3) {
+          // 70% chance of "answering"
+          // Simulate answered call
+          Alert.alert(
+            "Video Call Connected",
+            "Video call with Danny H. has started (Demo Mode)",
+            [{ text: "OK" }]
+          );
+        } else {
+          // Simulate no answer
+          Alert.alert(
+            "Call Failed",
+            "Danny H. is not answering. Please try again later.",
+            [{ text: "OK", onPress: endCall }]
+          );
+          endCall();
+        }
+      }, 2000);
     } catch (error) {
       console.error("❌ Failed to start video call:", error);
       Alert.alert(
         "Call Failed",
         "Could not start video call. Please try again."
       );
+      endCall();
     }
   };
 
@@ -527,21 +588,37 @@ const Message = ({ route }: { route: any }) => {
 
       setCallSession(mockSession);
       setVoiceCall(true);
+      setVideoCall(false);
 
       console.log("✅ Voice call started (mock)");
 
-      // Show call interface directly since we're in mock mode
-      // Alert.alert(
-      //   "Voice Call Started",
-      //   "Voice call with Danny H. has started (Demo Mode)",
-      //   [{ text: "OK" }]
-      // );
+      // Simulate incoming call for demo
+      setTimeout(() => {
+        if (Math.random() > 0.3) {
+          // 70% chance of "answering"
+          // Simulate answered call
+          Alert.alert(
+            "Voice Call Connected",
+            "Voice call with Danny H. has started (Demo Mode)",
+            [{ text: "OK" }]
+          );
+        } else {
+          // Simulate no answer
+          Alert.alert(
+            "Call Failed",
+            "Danny H. is not answering. Please try again later.",
+            [{ text: "OK", onPress: endCall }]
+          );
+          endCall();
+        }
+      }, 2000);
     } catch (error) {
       console.error("❌ Failed to start voice call:", error);
       Alert.alert(
         "Call Failed",
         "Could not start voice call. Please try again."
       );
+      endCall();
     }
   };
 
@@ -554,11 +631,20 @@ const Message = ({ route }: { route: any }) => {
 
       setIncomingCall(false);
 
-      const isVideoCall = incomingCallData.extension.callType === 1;
+      const isVideoCall = incomingCallData.extension?.callType === 1;
       setVideoCall(isVideoCall);
       setVoiceCall(!isVideoCall);
 
       console.log("✅ Call accepted successfully (mock)");
+
+      // Show success message
+      Alert.alert(
+        "Call Connected",
+        `You are now in a ${
+          isVideoCall ? "video" : "voice"
+        } call with Danny H.`,
+        [{ text: "OK" }]
+      );
     } catch (error) {
       console.error("❌ Failed to accept call:", error);
       Alert.alert("Call Failed", "Could not accept the call.");
@@ -570,6 +656,8 @@ const Message = ({ route }: { route: any }) => {
   const rejectCall = async () => {
     try {
       console.log("❌ Call rejected");
+      // Show rejection feedback
+      Vibration.vibrate(100);
     } catch (error) {
       console.error("❌ Failed to reject call:", error);
     } finally {
@@ -588,6 +676,16 @@ const Message = ({ route }: { route: any }) => {
       if (callSession) {
         console.log("Cleaning up call session:", callSession.id);
       }
+
+      // Unload sound if playing
+      if (sound) {
+        await sound.stopAsync();
+        await sound.unloadAsync();
+        setSound(null);
+      }
+
+      // Show call ended message
+      Alert.alert("Call Ended", "The call has been ended.", [{ text: "OK" }]);
     } catch (error) {
       console.error("❌ Error ending call:", error);
     } finally {
@@ -643,7 +741,11 @@ const Message = ({ route }: { route: any }) => {
 
       // Clean up any existing recording
       if (recordingRef.current) {
-        await recordingRef.current.stopAndUnloadAsync();
+        try {
+          await recordingRef.current.stopAndUnloadAsync();
+        } catch (error) {
+          console.log("Error stopping previous recording:", error);
+        }
         recordingRef.current = null;
       }
 
@@ -682,7 +784,11 @@ const Message = ({ route }: { route: any }) => {
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => {
           const newTime = prev + 1;
-          console.log(newTime);
+          // Auto-stop at 60 seconds
+          if (newTime >= 60) {
+            stopRecording();
+            return 60;
+          }
           return newTime;
         });
       }, 1000);
@@ -730,7 +836,7 @@ const Message = ({ route }: { route: any }) => {
         const waveformData = generateWaveformData(recordingTime);
 
         // Create voice message
-        const newVoiceMessage: Message = {
+        const newVoiceMessage: MessageType = {
           id: Date.now().toString(),
           text: "Voice message",
           isUser: true,
@@ -772,13 +878,17 @@ const Message = ({ route }: { route: any }) => {
       swipeTranslate.setValue(0);
 
       // Switch back to playback mode
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: false,
-      });
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (error) {
+        console.log("Error resetting audio mode:", error);
+      }
     }
   };
 
@@ -817,13 +927,17 @@ const Message = ({ route }: { route: any }) => {
       swipeTranslate.setValue(0);
 
       // Reset audio mode
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: false,
-      });
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (error) {
+        console.log("Error resetting audio mode:", error);
+      }
     }
   };
 
@@ -842,7 +956,7 @@ const Message = ({ route }: { route: any }) => {
   };
 
   // Play voice message
-  const playVoiceMessage = async (message: Message) => {
+  const playVoiceMessage = async (message: MessageType) => {
     try {
       console.log("🟢 Playing voice message:", message.id);
 
@@ -919,8 +1033,10 @@ const Message = ({ route }: { route: any }) => {
         setPlaybackProgress((prev) => {
           const newProgress = prev + 1;
           if (newProgress >= duration) {
-            clearInterval(playbackTimerRef.current!);
-            playbackTimerRef.current = null;
+            if (playbackTimerRef.current) {
+              clearInterval(playbackTimerRef.current);
+              playbackTimerRef.current = null;
+            }
             setCurrentPlayingVoice(null);
             setPlaybackPosition(0);
             progressAnim.setValue(0);
@@ -949,8 +1065,8 @@ const Message = ({ route }: { route: any }) => {
   };
 
   // Playback status update
-  const onPlaybackStatusUpdate = (status: any) => {
-    if (status.didJustFinish) {
+  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    if (status.isLoaded && status.didJustFinish) {
       console.log("🎵 Playback finished");
       setCurrentPlayingVoice(null);
       setPlaybackProgress(0);
@@ -993,7 +1109,7 @@ const Message = ({ route }: { route: any }) => {
   };
 
   // Seek to position in voice message
-  const seekToPosition = async (message: Message, position: number) => {
+  const seekToPosition = async (message: MessageType, position: number) => {
     try {
       if (!sound || !message.duration) return;
 
@@ -1033,8 +1149,10 @@ const Message = ({ route }: { route: any }) => {
           setPlaybackProgress((prev) => {
             const newProgress = prev + 1;
             if (newProgress >= message.duration!) {
-              clearInterval(playbackTimerRef.current!);
-              playbackTimerRef.current = null;
+              if (playbackTimerRef.current) {
+                clearInterval(playbackTimerRef.current);
+                playbackTimerRef.current = null;
+              }
               setCurrentPlayingVoice(null);
               setPlaybackPosition(0);
               progressAnim.setValue(0);
@@ -1053,10 +1171,11 @@ const Message = ({ route }: { route: any }) => {
 
   // Send text message
   const sendTextMessage = () => {
-    if (messageText.trim()) {
-      const newMessage: Message = {
+    const trimmedText = messageText.trim();
+    if (trimmedText) {
+      const newMessage: MessageType = {
         id: Date.now().toString(),
-        text: messageText,
+        text: trimmedText,
         isUser: true,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
@@ -1067,6 +1186,26 @@ const Message = ({ route }: { route: any }) => {
 
       setMessages((prev) => [...prev, newMessage]);
       setMessageText("");
+
+      // Simulate reply after 1 second
+      setTimeout(() => {
+        const replyMessage: MessageType = {
+          id: (Date.now() + 1).toString(),
+          text: "Thanks for your message!",
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          type: "text",
+        };
+        setMessages((prev) => [...prev, replyMessage]);
+
+        // Scroll to bottom
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }, 1000);
 
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -1090,7 +1229,7 @@ const Message = ({ route }: { route: any }) => {
     progress,
     onSeek,
   }: {
-    message: Message;
+    message: MessageType;
     isPlaying: boolean;
     progress: number;
     onSeek: (position: number) => void;
@@ -1130,7 +1269,7 @@ const Message = ({ route }: { route: any }) => {
         <TouchableOpacity
           style={styles.waveformTouchArea}
           onPress={handleWaveformPress}
-          activeOpacity={1}
+          activeOpacity={0.8}
         >
           <View style={styles.waveformBarsContainer}>
             {waveformData.slice(0, barCount).map((amplitude, index) => {
@@ -1214,7 +1353,7 @@ const Message = ({ route }: { route: any }) => {
             const isRecent = index >= data.length - 3;
 
             return (
-              <View
+              <Animated.View
                 key={index}
                 style={[
                   styles.recordingWaveformBar,
@@ -1225,6 +1364,14 @@ const Message = ({ route }: { route: any }) => {
                     backgroundColor: isRecent ? "#ff3b30" : "#ff6b6b",
                     borderRadius: 1,
                     opacity: isRecent ? 1 : 0.7,
+                    transform: [
+                      {
+                        scaleY: pulseAnimation.interpolate({
+                          inputRange: [1, 1.2],
+                          outputRange: [1, 1.1],
+                        }),
+                      },
+                    ],
                   },
                 ]}
               />
@@ -1236,7 +1383,7 @@ const Message = ({ route }: { route: any }) => {
   };
 
   // Render message function
-  const renderMessage = (message: Message) => {
+  const renderMessage = (message: MessageType) => {
     if (message.type === "voice") {
       const isPlaying = currentPlayingVoice === message.id;
       const currentProgress = isPlaying ? playbackPosition : 0;
@@ -1263,7 +1410,6 @@ const Message = ({ route }: { route: any }) => {
                 style={styles.playButtonContainer}
                 onPress={() => playVoiceMessage(message)}
                 activeOpacity={0.7}
-                delayLongPress={500}
               >
                 <Animated.View
                   style={[
@@ -1393,8 +1539,29 @@ const Message = ({ route }: { route: any }) => {
     startVideoCall();
   };
 
-  // Render Video Call Screen
-  const renderVideoCallScreen = () => {
+  // Video Call Screen Component
+  const VideoCallScreen: React.FC<VideoCallScreenProps> = ({ onEndCall }) => {
+    const [callDuration, setCallDuration] = useState<number>(0);
+    const [isMuted, setIsMuted] = useState<boolean>(false);
+    const [isVideoOn, setIsVideoOn] = useState<boolean>(true);
+    const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(true);
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }, []);
+
+    const formatCallDuration = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, "0")}:${secs
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
     return (
       <View style={styles.videoCallContainer}>
         {/* Background with garden image */}
@@ -1418,39 +1585,90 @@ const Message = ({ route }: { route: any }) => {
           <View style={styles.localVideo}>
             <Ionicons name="person" size={30} color="#fff" />
             <Text style={styles.mockLocalVideoText}>You</Text>
+            {!isVideoOn && (
+              <View style={styles.videoOffOverlay}>
+                <Ionicons name="videocam-off" size={20} color="#fff" />
+              </View>
+            )}
           </View>
         </View>
 
         {/* Call Info */}
         <View style={styles.callInfo}>
           <Text style={styles.callInfoText}>Video Call with Danny H.</Text>
-          <Text style={styles.callDuration}>00:00</Text>
+          <Text style={styles.callDuration}>
+            {formatCallDuration(callDuration)}
+          </Text>
         </View>
 
         {/* Call Controls */}
         <View style={styles.callControls}>
-          <TouchableOpacity style={styles.callButton}>
-            <View style={[styles.callButtonIcon, { backgroundColor: "#666" }]}>
+          <TouchableOpacity
+            style={styles.callButton}
+            onPress={() => setIsSpeakerOn(!isSpeakerOn)}
+          >
+            <View
+              style={[
+                styles.callButtonIcon,
+                {
+                  backgroundColor: isSpeakerOn ? "#4CD964" : "#666",
+                },
+              ]}
+            >
               <Ionicons name="volume-high" size={24} color="#fff" />
             </View>
-            <Text style={styles.callButtonText}>Speaker</Text>
+            <Text style={styles.callButtonText}>
+              {isSpeakerOn ? "Speaker" : "Phone"}
+            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.callButton}>
-            <View style={[styles.callButtonIcon, { backgroundColor: "#666" }]}>
-              <Ionicons name="mic" size={24} color="#fff" />
+          <TouchableOpacity
+            style={styles.callButton}
+            onPress={() => setIsMuted(!isMuted)}
+          >
+            <View
+              style={[
+                styles.callButtonIcon,
+                {
+                  backgroundColor: isMuted ? "#ff3b30" : "#666",
+                },
+              ]}
+            >
+              <Ionicons
+                name={isMuted ? "mic-off" : "mic"}
+                size={24}
+                color="#fff"
+              />
             </View>
-            <Text style={styles.callButtonText}>Mute</Text>
+            <Text style={styles.callButtonText}>
+              {isMuted ? "Muted" : "Mute"}
+            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.callButton}>
-            <View style={[styles.callButtonIcon, { backgroundColor: "#666" }]}>
-              <Ionicons name="videocam" size={24} color="#fff" />
+          <TouchableOpacity
+            style={styles.callButton}
+            onPress={() => setIsVideoOn(!isVideoOn)}
+          >
+            <View
+              style={[
+                styles.callButtonIcon,
+                {
+                  backgroundColor: isVideoOn ? "#007AFF" : "#666",
+                },
+              ]}
+            >
+              <Ionicons
+                name={isVideoOn ? "videocam" : "videocam-off"}
+                size={24}
+                color="#fff"
+              />
             </View>
-            <Text style={styles.callButtonText}>Video</Text>
+            <Text style={styles.callButtonText}>
+              {isVideoOn ? "Video" : "Off"}
+            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.callButton} onPress={endCall}>
+          <TouchableOpacity style={styles.callButton} onPress={onEndCall}>
             <View
               style={[styles.callButtonIcon, { backgroundColor: "#ff3b30" }]}
             >
@@ -1463,8 +1681,28 @@ const Message = ({ route }: { route: any }) => {
     );
   };
 
-  // Render Voice Call Screen
-  const renderVoiceCallScreen = () => {
+  // Voice Call Screen Component
+  const VoiceCallScreen: React.FC<VoiceCallScreenProps> = ({ onEndCall }) => {
+    const [callDuration, setCallDuration] = useState<number>(0);
+    const [isMuted, setIsMuted] = useState<boolean>(false);
+    const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(true);
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }, []);
+
+    const formatCallDuration = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, "0")}:${secs
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
     return (
       <View style={styles.voiceCallContainer}>
         {/* Background with man image */}
@@ -1481,36 +1719,62 @@ const Message = ({ route }: { route: any }) => {
               style={styles.callAvatar}
             />
             <Text style={styles.callUserName}>Danny H.</Text>
-            <Text style={styles.callStatus}>Calling...</Text>
+            <Text style={styles.callStatus}>Connected</Text>
           </View>
 
           {/* Call Info */}
           <View style={styles.callInfo}>
             <Text style={styles.callInfoText}>Voice Call with Danny H.</Text>
-            <Text style={styles.callDuration}>00:00</Text>
+            <Text style={styles.callDuration}>
+              {formatCallDuration(callDuration)}
+            </Text>
           </View>
 
           {/* Call Controls */}
           <View style={styles.callControls}>
-            <TouchableOpacity style={styles.callButton}>
+            <TouchableOpacity
+              style={styles.callButton}
+              onPress={() => setIsSpeakerOn(!isSpeakerOn)}
+            >
               <View
-                style={[styles.callButtonIcon, { backgroundColor: "#666" }]}
+                style={[
+                  styles.callButtonIcon,
+                  {
+                    backgroundColor: isSpeakerOn ? "#4CD964" : "#666",
+                  },
+                ]}
               >
                 <Ionicons name="volume-high" size={24} color="#fff" />
               </View>
-              <Text style={styles.callButtonText}>Speaker</Text>
+              <Text style={styles.callButtonText}>
+                {isSpeakerOn ? "Speaker" : "Phone"}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.callButton}>
+            <TouchableOpacity
+              style={styles.callButton}
+              onPress={() => setIsMuted(!isMuted)}
+            >
               <View
-                style={[styles.callButtonIcon, { backgroundColor: "#666" }]}
+                style={[
+                  styles.callButtonIcon,
+                  {
+                    backgroundColor: isMuted ? "#ff3b30" : "#666",
+                  },
+                ]}
               >
-                <Ionicons name="mic" size={24} color="#fff" />
+                <Ionicons
+                  name={isMuted ? "mic-off" : "mic"}
+                  size={24}
+                  color="#fff"
+                />
               </View>
-              <Text style={styles.callButtonText}>Mute</Text>
+              <Text style={styles.callButtonText}>
+                {isMuted ? "Muted" : "Mute"}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.callButton} onPress={endCall}>
+            <TouchableOpacity style={styles.callButton} onPress={onEndCall}>
               <View
                 style={[styles.callButtonIcon, { backgroundColor: "#ff3b30" }]}
               >
@@ -1524,14 +1788,15 @@ const Message = ({ route }: { route: any }) => {
     );
   };
 
-  // Render Incoming Call Modal
-  const renderIncomingCallModal = () => {
-    if (!incomingCall) return null;
-
-    const isVideoCall = incomingCallData?.extension?.callType === 1;
-
+  // Incoming Call Modal Component
+  const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
+    visible,
+    onAccept,
+    onReject,
+    isVideoCall,
+  }) => {
     return (
-      <Modal visible={incomingCall} transparent={true} animationType="slide">
+      <Modal visible={visible} transparent={true} animationType="slide">
         <View style={styles.incomingCallContainer}>
           <View style={styles.incomingCallContent}>
             <Image
@@ -1546,7 +1811,7 @@ const Message = ({ route }: { route: any }) => {
             <View style={styles.incomingCallButtons}>
               <TouchableOpacity
                 style={[styles.incomingCallButton, styles.rejectButton]}
-                onPress={rejectCall}
+                onPress={onReject}
               >
                 <Ionicons name="call" size={24} color="#fff" />
                 <Text style={styles.rejectButtonText}>Decline</Text>
@@ -1554,7 +1819,7 @@ const Message = ({ route }: { route: any }) => {
 
               <TouchableOpacity
                 style={[styles.incomingCallButton, styles.acceptButton]}
-                onPress={acceptCall}
+                onPress={onAccept}
               >
                 <Ionicons name="call" size={24} color="#fff" />
                 <Text style={styles.acceptButtonText}>Accept</Text>
@@ -1573,20 +1838,17 @@ const Message = ({ route }: { route: any }) => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
       {/* Show call screens when in call */}
-      {videoCall && renderVideoCallScreen()}
-      {voiceCall && !videoCall && renderVoiceCallScreen()}
+      {videoCall && <VideoCallScreen onEndCall={endCall} />}
+      {voiceCall && !videoCall && <VoiceCallScreen onEndCall={endCall} />}
 
       {/* Show chat when not in call */}
       {!videoCall && !voiceCall && (
         <>
           <View style={styles.headerMessagesComponentBlock}>
             <View style={styles.headerBlock1}>
-              <Ionicons
-                name="arrow-back-sharp"
-                size={31}
-                color="black"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back-sharp" size={31} color="black" />
+              </TouchableOpacity>
               <Image
                 source={require("../../assets/tajjob/messages/hr.jpg")}
                 style={styles.HRImg}
@@ -1605,7 +1867,9 @@ const Message = ({ route }: { route: any }) => {
               <TouchableOpacity onPress={handleVideoCall}>
                 <FontAwesome name="video-camera" size={31} color="black" />
               </TouchableOpacity>
-              <Entypo name="dots-three-vertical" size={31} color="black" />
+              <TouchableOpacity>
+                <Entypo name="dots-three-vertical" size={31} color="black" />
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -1615,6 +1879,9 @@ const Message = ({ route }: { route: any }) => {
               style={styles.sectionMessagesComponentBlock}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.scrollViewContent}
+              onContentSizeChange={() =>
+                scrollViewRef.current?.scrollToEnd({ animated: true })
+              }
             >
               <View style={styles.messagesContainer}>
                 <Text style={styles.messagesSentDay}>Today</Text>
@@ -1690,13 +1957,11 @@ const Message = ({ route }: { route: any }) => {
                     multiline
                     onSubmitEditing={sendTextMessage}
                     returnKeyType="send"
+                    blurOnSubmit={false}
                   />
-                  <FontAwesome5
-                    name="smile"
-                    size={22}
-                    color="black"
-                    style={styles.iconStckersFooter}
-                  />
+                  <TouchableOpacity style={styles.iconStckersFooter}>
+                    <FontAwesome5 name="smile" size={22} color="black" />
+                  </TouchableOpacity>
 
                   {messageText.trim() ? (
                     <TouchableOpacity
@@ -1727,7 +1992,12 @@ const Message = ({ route }: { route: any }) => {
       )}
 
       {/* Incoming Call Modal */}
-      {renderIncomingCallModal()}
+      <IncomingCallModal
+        visible={incomingCall}
+        onAccept={acceptCall}
+        onReject={rejectCall}
+        isVideoCall={incomingCallData?.extension?.callType === 1}
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -1744,12 +2014,14 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 6,
+    elevation: 4,
     backgroundColor: "#fff",
     paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
   },
   headerBlock1: {
     flexDirection: "row",
@@ -1760,30 +2032,37 @@ const styles = StyleSheet.create({
     width: 55,
     height: 55,
     borderRadius: 50,
+    borderWidth: 2,
+    borderColor: "#2623D2",
   },
-  fullnameAndStatusBlockHeaderBlock1: {},
+  fullnameAndStatusBlockHeaderBlock1: {
+    gap: 2,
+  },
   HRFullname: {
     fontSize: 23,
-    fontWeight: "500",
+    fontWeight: "600",
+    color: "#333",
   },
   HRStatus: {
-    color: "#A2A2A2",
-    fontSize: 16,
-    fontWeight: "400",
+    color: "#4CD964",
+    fontSize: 14,
+    fontWeight: "500",
   },
   headerBlock2: {
     flexDirection: "row",
-    gap: 10,
+    gap: 15,
+    alignItems: "center",
   },
   sectionAndFooterMessagesComponentBlock: {
     flex: 1,
+    paddingBottom: 42,
   },
   sectionMessagesComponentBlock: {
     flex: 1,
   },
   scrollViewContent: {
     flexGrow: 1,
-    paddingBottom: 10,
+    paddingBottom: 20,
   },
   messagesContainer: {
     flex: 1,
@@ -1791,81 +2070,94 @@ const styles = StyleSheet.create({
   messagesSentDay: {
     alignSelf: "center",
     color: "#9E9E9E",
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "500",
-    marginTop: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-    backgroundColor: "#fff",
-    paddingVertical: 1,
-    paddingHorizontal: 5,
-    borderRadius: 5,
+    marginTop: 15,
+    marginBottom: 10,
+    backgroundColor: "#f8f8f8",
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    borderRadius: 15,
   },
   messagesBlockOfThisDay: {
     gap: 12,
     paddingVertical: 10,
     paddingHorizontal: 10,
-    marginTop: 5,
   },
   messageOfUserMainBlock: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    marginBottom: 5,
   },
   messageOfUserBlock: {
-    maxWidth: "70%",
+    maxWidth: "75%",
     backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
     padding: 12,
-    borderRadius: 15,
-    borderBottomRightRadius: 5,
+    borderRadius: 18,
+    borderBottomRightRadius: 4,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
   },
   messageOfUser: {
     fontSize: 16,
     fontWeight: "400",
-    color: "#000",
+    color: "#333",
+    lineHeight: 22,
   },
   messageOfHRMainBlock: {
     flexDirection: "row",
     justifyContent: "flex-start",
+    marginBottom: 5,
   },
   messageOfHRBlock: {
-    maxWidth: "70%",
+    maxWidth: "75%",
     backgroundColor: "#2623D2",
     padding: 12,
-    borderRadius: 15,
-    borderBottomLeftRadius: 5,
+    borderRadius: 18,
+    borderBottomLeftRadius: 4,
+    shadowColor: "#2623D2",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   messageOfHR: {
     fontSize: 16,
     fontWeight: "400",
     color: "#fff",
+    lineHeight: 22,
   },
   // Voice message styles
   voiceMessageOfUserBlock: {
-    maxWidth: "70%",
+    maxWidth: "75%",
     backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
     padding: 12,
-    borderRadius: 15,
-    borderBottomRightRadius: 5,
+    borderRadius: 18,
+    borderBottomRightRadius: 4,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
   },
   voiceMessageOfHRBlock: {
-    maxWidth: "70%",
+    maxWidth: "75%",
     backgroundColor: "#2623D2",
     padding: 12,
-    borderRadius: 15,
-    borderBottomLeftRadius: 5,
+    borderRadius: 18,
+    borderBottomLeftRadius: 4,
+    shadowColor: "#2623D2",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   voiceMessageContainer: {
     flexDirection: "row",
@@ -1881,9 +2173,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(38, 35, 210, 0.1)",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(38, 35, 210, 0.2)",
   },
   playingButton: {
     backgroundColor: "rgba(255, 59, 48, 0.1)",
+    borderColor: "rgba(255, 59, 48, 0.2)",
   },
   // Waveform styles
   waveformContainer: {
@@ -1902,6 +2197,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     position: "relative",
+    paddingHorizontal: 2,
   },
   waveformBar: {
     alignSelf: "flex-end",
@@ -1910,6 +2206,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     height: "100%",
     borderRadius: 8,
+    left: 0,
+    top: 0,
   },
   seekIndicator: {
     position: "absolute",
@@ -1930,6 +2228,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     height: "100%",
+    paddingHorizontal: 5,
   },
   recordingWaveformBar: {
     alignSelf: "flex-end",
@@ -1954,7 +2253,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
     gap: 4,
-    marginTop: 4,
+    marginTop: 6,
   },
   messageSentTimeUser: {
     color: "#9E9E9E",
@@ -1966,12 +2265,16 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "400",
   },
-  messageSeenIcon: {},
+  messageSeenIcon: {
+    marginLeft: 2,
+  },
   footerMessagesComponentBlock: {
     paddingHorizontal: 10,
     paddingBottom: 10,
     paddingTop: 10,
     backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
   },
   inputMessageAndIconBlock: {
     position: "relative",
@@ -1996,6 +2299,7 @@ const styles = StyleSheet.create({
     top: 10.5,
     left: 12,
     zIndex: 1,
+    padding: 5,
   },
   sendButton: {
     position: "absolute",
@@ -2015,15 +2319,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 10,
     position: "relative",
+    borderWidth: 1,
+    borderColor: "#ff3b30",
+    shadowColor: "#ff3b30",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   recordingIndicator: {
     alignItems: "center",
@@ -2032,6 +2338,8 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: "rgba(255, 59, 48, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 59, 48, 0.3)",
   },
   recordingTime: {
     fontSize: 14,
@@ -2048,6 +2356,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(255, 59, 48, 0.1)",
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 59, 48, 0.2)",
   },
   stopRecordingButton: {
     backgroundColor: "#ff3b30",
@@ -2072,17 +2382,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "rgba(255, 59, 48, 0.2)",
   },
   cancelText: {
     color: "#ff3b30",
     fontSize: 11,
     fontWeight: "600",
     marginLeft: 4,
+  },
+
+  // Video Off Overlay
+  videoOffOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // Video Call Styles
@@ -2122,8 +2441,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "center",
-    alignItems: "center",
     borderWidth: 2,
     borderColor: "#fff",
   },
@@ -2190,7 +2507,8 @@ const styles = StyleSheet.create({
   },
   callStatus: {
     fontSize: 16,
-    color: "rgba(255,255,255,0.8)",
+    color: "#4CD964",
+    fontWeight: "500",
   },
 
   // Call Controls
@@ -2241,7 +2559,7 @@ const styles = StyleSheet.create({
   // Incoming Call Styles
   incomingCallContainer: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.8)",
+    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -2251,18 +2569,26 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: "center",
     margin: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
   },
   incomingCallAvatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
     marginBottom: 20,
+    borderWidth: 3,
+    borderColor: "#2623D2",
   },
   incomingCallTitle: {
     fontSize: 22,
     fontWeight: "600",
     marginBottom: 10,
     textAlign: "center",
+    color: "#333",
   },
   incomingCallSubtitle: {
     fontSize: 18,
@@ -2280,6 +2606,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   rejectButton: {
     backgroundColor: "#ff3b30",

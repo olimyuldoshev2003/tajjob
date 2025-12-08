@@ -73,10 +73,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 16,
+    
   },
   suggestions: {
     paddingHorizontal: 7,
-    paddingBottom: 15,
+    paddingBottom: 55,
   },
   suggestionsContainer: {},
   suggestionsSentDay: {

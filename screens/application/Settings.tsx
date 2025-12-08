@@ -174,7 +174,7 @@ const Settings = () => {
               style={[styles.btnFunc, styles.FAQBtn]}
               onPress={() => {
                 navigation.navigate("FAQ");
-              }}  
+              }}
               underlayColor="#f0f0f0"
             >
               <View style={styles.iconFuncTypeAndIconRightSideBlock}>
@@ -197,7 +197,13 @@ const Settings = () => {
                 />
               </View>
             </TouchableHighlight>
-            <TouchableHighlight style={[styles.btnFunc, styles.feedbackBtn]}>
+            <TouchableHighlight
+              style={[styles.btnFunc, styles.feedbackBtn]}
+              onPress={() => {
+                navigation.navigate("FeedbackForApp");
+              }}
+              underlayColor="#f0f0f0"
+            >
               <View style={styles.iconFuncTypeAndIconRightSideBlock}>
                 <View style={styles.iconAndFuncTypeBlock}>
                   <View style={styles.iconBlock}>

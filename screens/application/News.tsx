@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   newsBlock: {
     paddingHorizontal: 7,
-    paddingBottom: 15,
+    paddingBottom: 55,
   },
   newsContainer: {},
   newsSentDay: {
