@@ -1,6 +1,7 @@
 import AboutApp from "@/screens/application/AboutApp";
 import EditUser from "@/screens/application/EditUser";
 import FAQ from "@/screens/application/FAQ";
+import FeedbackForApp from "@/screens/application/FeedbackForApp";
 import GestureControl from "@/screens/application/GestureControl";
 import Language from "@/screens/application/Language";
 import Profile from "@/screens/application/Profile";
@@ -66,17 +67,25 @@ const StackNavigatorProfilePage = () => {
           title: "Gesture control",
           animation: "slide_from_right",
         }}
-        />
+      />
       <Stack.Screen
         name="AboutApp"
         component={AboutApp}
         options={{
           animation: "slide_from_right",
         }}
-        />
+      />
       <Stack.Screen
         name="FAQ"
         component={FAQ}
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="FeedbackForApp"
+        component={FeedbackForApp}
         options={{
           headerShown: true,
           animation: "slide_from_right",

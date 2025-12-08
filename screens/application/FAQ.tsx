@@ -3,10 +3,13 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 const FAQ = () => {
+  const Tab = createMaterialTopTabNavigator();
+
   return (
     <View style={styles.FAQComponent}>
       <View style={styles.FAQComponentBlock}>
