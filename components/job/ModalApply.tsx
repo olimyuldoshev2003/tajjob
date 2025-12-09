@@ -581,7 +581,7 @@ const ModalApply = ({
     <Modal
       visible={modalApply}
       animationType="slide"
-      transparent={true}
+      transparent
       onRequestClose={() => {
         setModalApply(false);
       }}

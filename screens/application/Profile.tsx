@@ -16,6 +16,7 @@ import {
 type RootStackParamList = {
   EditUser: undefined;
   CreateResume: undefined;
+  SavedJobs: undefined;
   Settings: undefined;
 };
 
@@ -105,6 +106,9 @@ const Profile = () => {
                   {/* Saved Jobs */}
                   <TouchableHighlight
                     style={[styles.savedJobsBtn, styles.btnFunc]}
+                    onPress={() => {
+                      navigation.navigate("SavedJobs");
+                    }}
                     underlayColor="#f0f0f0"
                   >
                     <View style={styles.iconFuncTypeAndIconRightSideBlock}>

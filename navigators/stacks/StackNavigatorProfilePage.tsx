@@ -5,6 +5,7 @@ import FeedbackForApp from "@/screens/application/FeedbackForApp";
 import GestureControl from "@/screens/application/GestureControl";
 import Language from "@/screens/application/Language";
 import Profile from "@/screens/application/Profile";
+import SavedJobs from "@/screens/application/SavedJobs";
 import Settings from "@/screens/application/Settings";
 import Theme from "@/screens/application/Theme";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -32,6 +33,13 @@ const StackNavigatorProfilePage = () => {
             backgroundColor: "#fff",
           },
           headerShadowVisible: true,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="SavedJobs"
+        component={SavedJobs}
+        options={{
           animation: "slide_from_right",
         }}
       />

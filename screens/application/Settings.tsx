@@ -1,3 +1,4 @@
+import ModalAddFeedbackForApp from "@/components/profile/ModalAddFeedbackForApp";
 import {
   AntDesign,
   Entypo,
@@ -7,7 +8,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -18,6 +19,9 @@ import {
 
 const Settings = () => {
   const navigation: any = useNavigation();
+
+  const [modalAddFeedbackForApp, setModalAddFeedbackForApp] =
+    useState<boolean>(false);
 
   return (
     <View style={styles.settingsComponent}>
@@ -200,7 +204,8 @@ const Settings = () => {
             <TouchableHighlight
               style={[styles.btnFunc, styles.feedbackBtn]}
               onPress={() => {
-                navigation.navigate("FeedbackForApp");
+                // navigation.navigate("FeedbackForApp");
+                setModalAddFeedbackForApp(true);
               }}
               underlayColor="#f0f0f0"
             >
@@ -262,6 +267,10 @@ const Settings = () => {
             </TouchableHighlight>
           </View>
         </View>
+        <ModalAddFeedbackForApp
+          modalAddFeedbackForApp={modalAddFeedbackForApp}
+          setModalAddFeedbackForApp={setModalAddFeedbackForApp}
+        />
       </ScrollView>
     </View>
   );
