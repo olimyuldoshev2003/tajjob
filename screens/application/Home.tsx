@@ -1,6 +1,8 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
+  Dimensions,
   Image,
   Modal,
   Pressable,
@@ -9,16 +11,15 @@ import {
   Text,
   TextInput,
   View,
-  Animated,
-  Dimensions,
 } from "react-native";
 
 // import Dropdown from "react-native-input-select";
-import { Selector } from "rn-selector";
 import { AdvancedCheckbox } from "react-native-advanced-checkbox";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { Selector } from "rn-selector";
 
 // Icons
+import EachJob from "@/components/home/EachJob";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -303,25 +304,25 @@ const Home = ({ onJobPress }: HomeProps) => {
   };
 
   // Component for rendering applicant images with dynamic positioning
-  const ApplierImages = ({ applierImgs }: { applierImgs: any }) => {
-    return (
-      <View style={styles.someAppliersImgAndDownIcon}>
-        {applierImgs.map((imgSource: any, index: number) => (
-          <Image
-            key={index}
-            source={imgSource}
-            style={[styles.appliersImg, { left: index * 14 }]}
-          />
-        ))}
-        <Entypo
-          name="chevron-down"
-          size={29}
-          color="black"
-          style={styles.downIcon}
-        />
-      </View>
-    );
-  };
+  // const ApplierImages = ({ applierImgs }: { applierImgs: any }) => {
+  //   return (
+  //     <View style={styles.someAppliersImgAndDownIcon}>
+  //       {applierImgs.map((imgSource: any, index: number) => (
+  //         <Image
+  //           key={index}
+  //           source={imgSource}
+  //           style={[styles.appliersImg, { left: index * 14 }]}
+  //         />
+  //       ))}
+  //       <Entypo
+  //         name="chevron-down"
+  //         size={29}
+  //         color="black"
+  //         style={styles.downIcon}
+  //       />
+  //     </View>
+  //   );
+  // };
 
   return (
     <View style={styles.homeComponent}>
@@ -375,49 +376,18 @@ const Home = ({ onJobPress }: HomeProps) => {
               <Text style={styles.seeAllBtnText}>See all</Text>
             </Pressable>
           </View>
-          {jobs.map((job) => (
-            <Pressable
-              key={job.id}
-              style={styles.container}
-              onPress={() => handleJobPress(job)}
-            >
-              <View style={styles.headerContainerBlock}>
-                <View style={styles.employerImgEmployerNameAndJobBlock}>
-                  <Image source={job.employerImg} style={styles.employerImg} />
-                  <View style={styles.employerNameAndJobBlock}>
-                    <Text style={styles.employerName}>{job.employer}</Text>
-                    <Text style={styles.job}>{job.job}</Text>
-                  </View>
-                </View>
-                <FontAwesome name="bookmark-o" size={36} color="black" />
-              </View>
-              <View style={styles.locationContainerBlock}>
-                <Entypo name="location-pin" size={29} color="black" />
-                <Text style={styles.location}>{job.location}</Text>
-              </View>
-              <View
-                style={
-                  styles.employmentTypeWorkingModelAndJobLevelContainerBlock
-                }
-              >
-                <Text style={styles.employmentType}>{job.employmentType}</Text>
-                <Text style={styles.workingModel}>{job.workingModel}</Text>
-                <Text style={styles.jobLevel}>{job.jobLevel}</Text>
-              </View>
-              <View style={styles.lineContainerBlock} />
-              <View style={styles.appliersAndSalaryContainerBlock}>
-                <View style={styles.someAppliersImgsAndAppliersAmount}>
-                  <ApplierImages applierImgs={job.applierImgs} />
-                  <Text style={styles.aplliersAmount}>
-                    {job.appliers} Appliers
-                  </Text>
-                </View>
-                <Text style={styles.salaryAmount}>
-                  <Text style={styles.salary}>{job.salary}</Text>/month
-                </Text>
-              </View>
-            </Pressable>
-          ))}
+          <View style={styles.suggestedJobsBlock}>
+            {jobs.map((item) => {
+              return (
+                <EachJob
+                  key={item.id}
+                  job={item}
+                  handleJobPress={handleJobPress}
+                />
+              );
+            })}
+          </View>
+
           <View style={styles.recentJobsBlock}>
             <Text style={styles.recentJobsText}>Recent Jobs</Text>
             <ScrollView
@@ -450,71 +420,15 @@ const Home = ({ onJobPress }: HomeProps) => {
               </Pressable>
             </ScrollView>
             <View style={styles.recentJobs}>
-              {jobs.map((job) => (
-                <Pressable
-                  key={job.id}
-                  style={styles.containerRecentJobs}
-                  onPress={() => handleJobPress(job)}
-                >
-                  <View style={styles.headerContainerBlockRecentJobs}>
-                    <View
-                      style={
-                        styles.employerImgEmployerNameAndJobBlockRecentJobs
-                      }
-                    >
-                      <Image
-                        source={job.employerImg}
-                        style={styles.employerImgRecentJobs}
-                      />
-                      <View style={styles.employerNameAndJobBlockRecentJobs}>
-                        <Text style={styles.employerNameRecentJobs}>
-                          {job.employer}
-                        </Text>
-                        <Text style={styles.jobRecentJobs}>{job.job}</Text>
-                      </View>
-                    </View>
-                    <FontAwesome name="bookmark-o" size={36} color="black" />
-                  </View>
-                  <View style={styles.locationContainerBlockRecentJobs}>
-                    <Entypo name="location-pin" size={29} color="black" />
-                    <Text style={styles.locationRecentJobs}>
-                      {job.location}
-                    </Text>
-                  </View>
-                  <View
-                    style={
-                      styles.employmentTypeWorkingModelAndJobLevelContainerBlockRecentJobs
-                    }
-                  >
-                    <Text style={styles.employmentTypeRecentJobs}>
-                      {job.employmentType}
-                    </Text>
-                    <Text style={styles.workingModelRecentJobs}>
-                      {job.workingModel}
-                    </Text>
-                    <Text style={styles.jobLevelRecentJobs}>
-                      {job.jobLevel}
-                    </Text>
-                  </View>
-                  <View style={styles.lineContainerBlockRecentJobs} />
-                  <View
-                    style={styles.appliersAndSalaryContainerBlockRecentJobs}
-                  >
-                    <View
-                      style={styles.someAppliersImgsAndAppliersAmountRecentJobs}
-                    >
-                      <ApplierImages applierImgs={job.applierImgs} />
-                      <Text style={styles.aplliersAmountRecentJobs}>
-                        {job.appliers} Appliers
-                      </Text>
-                    </View>
-                    <Text style={styles.salaryAmountRecentJobs}>
-                      <Text style={styles.salaryRecentJobs}>{job.salary}</Text>
-                      /month
-                    </Text>
-                  </View>
-                </Pressable>
-              ))}
+              {jobs.map((item) => {
+                return (
+                  <EachJob
+                    key={item.id}
+                    job={item}
+                    handleJobPress={handleJobPress}
+                  />
+                );
+              })}
             </View>
           </View>
         </ScrollView>
@@ -999,134 +913,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "400",
   },
-  container: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-    padding: 15,
-    borderRadius: 20,
-    backgroundColor: "#fff",
-    zIndex: 20,
-  },
-  headerContainerBlock: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  employerImgEmployerNameAndJobBlock: {
-    flexDirection: "row",
-    gap: 6,
-  },
-  employerImg: {
-    width: 61,
-    height: 58,
-    borderRadius: 10,
-  },
-  employerNameAndJobBlock: {},
-  employerName: {
-    fontWeight: "bold",
-    fontSize: 22,
-  },
-  job: {
-    color: "#888888",
-    fontSize: 18,
-  },
-  locationContainerBlock: {
-    marginTop: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 10,
-  },
-  location: {
-    color: "#B7B7B7",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  employmentTypeWorkingModelAndJobLevelContainerBlock: {
-    marginTop: 13,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  employmentType: {
-    color: "#616161",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingVertical: 1,
-    paddingHorizontal: 16,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  workingModel: {
-    color: "#616161",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingVertical: 1,
-    paddingHorizontal: 16,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  jobLevel: {
-    color: "#616161",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingVertical: 1,
-    paddingHorizontal: 16,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  lineContainerBlock: {
-    marginTop: 14,
-    backgroundColor: "#D9D9D9",
-    height: 6,
-  },
-  appliersAndSalaryContainerBlock: {
-    marginTop: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  someAppliersImgsAndAppliersAmount: {},
-  someAppliersImgAndDownIcon: {
-    position: "relative",
-    height: 30,
-  },
-  appliersImg: {
-    width: 30,
-    height: 30,
-    position: "absolute",
-    borderRadius: 35,
-    zIndex: 5,
-  },
-  downIcon: {
-    position: "absolute",
-    borderRadius: 35,
-    top: 0,
-    left: 42,
-    zIndex: 5,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  aplliersAmount: {
-    color: "#878787",
-    fontSize: 18,
-    fontWeight: "500",
-    marginTop: 4,
-  },
-  salaryAmount: {
-    fontSize: 23,
-    fontWeight: "700",
-    color: "#7E7E7E",
-  },
-  salary: {
-    color: "#766EAA",
+
+  suggestedJobsBlock: {
+    gap: 15,
   },
   recentJobsBlock: {},
   recentJobsText: {
@@ -1151,132 +940,6 @@ const styles = StyleSheet.create({
   recentJobs: {
     marginTop: 30,
     gap: 15,
-  },
-  containerRecentJobs: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-    padding: 15,
-    borderRadius: 20,
-    backgroundColor: "#fff",
-    zIndex: 20,
-  },
-  headerContainerBlockRecentJobs: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  employerImgEmployerNameAndJobBlockRecentJobs: {
-    flexDirection: "row",
-    gap: 6,
-  },
-  employerImgRecentJobs: {
-    width: 61,
-    height: 58,
-    borderRadius: 50,
-  },
-  employerNameAndJobBlockRecentJobs: {},
-  employerNameRecentJobs: {
-    fontWeight: "bold",
-    fontSize: 22,
-  },
-  jobRecentJobs: {
-    color: "#888888",
-    fontSize: 18,
-  },
-  locationContainerBlockRecentJobs: {
-    marginTop: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 10,
-  },
-  locationRecentJobs: {
-    color: "#B7B7B7",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  employmentTypeWorkingModelAndJobLevelContainerBlockRecentJobs: {
-    marginTop: 13,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  employmentTypeRecentJobs: {
-    color: "#616161",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingVertical: 1,
-    paddingHorizontal: 16,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  workingModelRecentJobs: {
-    color: "#616161",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingVertical: 1,
-    paddingHorizontal: 16,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  jobLevelRecentJobs: {
-    color: "#616161",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingVertical: 1,
-    paddingHorizontal: 16,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  lineContainerBlockRecentJobs: {
-    marginTop: 14,
-    backgroundColor: "#D9D9D9",
-    height: 6,
-  },
-  appliersAndSalaryContainerBlockRecentJobs: {
-    marginTop: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  someAppliersImgsAndAppliersAmountRecentJobs: {},
-  someAppliersImgAndDownIconRecentJobs: {
-    position: "relative",
-    height: 30,
-  },
-  appliersImgRecentJobs: {
-    width: 30,
-    height: 30,
-    position: "absolute",
-    borderRadius: 35,
-    zIndex: 5,
-  },
-  downIconRecentJobs: {
-    position: "absolute",
-    borderRadius: 35,
-    top: 0,
-    left: 42,
-    zIndex: 5,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  aplliersAmountRecentJobs: {
-    color: "#878787",
-    fontSize: 18,
-    fontWeight: "500",
-    marginTop: 4,
-  },
-  salaryAmountRecentJobs: {
-    fontSize: 23,
-    fontWeight: "700",
-    color: "#7E7E7E",
-  },
-  salaryRecentJobs: {
-    color: "#766EAA",
   },
 
   // Modal Filter sliding from top

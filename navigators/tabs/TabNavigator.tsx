@@ -40,6 +40,7 @@ const TabNavigator = () => {
       "Job",
       "Message",
       "EditUser",
+      "SavedJobs",
       "Settings",
       "Language",
       "Theme",
@@ -75,6 +76,9 @@ const TabNavigator = () => {
   const StackNavigatorHomePageWithFunctionOpenJobModal = () => (
     <StackNavigatorHomePage openJobModal={openJobModal} />
   );
+  const StackNavigatorProfilePageWithFunctionOpenJobModal = () => (
+    <StackNavigatorProfilePage openJobModal={openJobModal} />
+  );
 
   // Custom tab bar button component
   const CustomTabBarButton = ({ route, children, onPress, ...props }: any) => {
@@ -104,7 +108,7 @@ const TabNavigator = () => {
             fontWeight: "bold",
           },
           headerShown: false,
-          tabBarButton: (props:any) => (
+          tabBarButton: (props: any) => (
             <CustomTabBarButton route={props.route} {...props} />
           ),
         }}
@@ -152,7 +156,7 @@ const TabNavigator = () => {
         />
         <Tab.Screen
           name="ProfileStack"
-          component={StackNavigatorProfilePage}
+          component={StackNavigatorProfilePageWithFunctionOpenJobModal}
           options={({ route }) => ({
             tabBarLabel: "Profile",
             tabBarStyle: getTabBarStyle(route),

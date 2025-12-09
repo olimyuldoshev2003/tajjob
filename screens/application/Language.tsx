@@ -39,6 +39,7 @@ const Language = () => {
       value: "tj",
       flag: require("../../assets/tajjob/profile/tj-lang.jpg"),
     },
+  
   ];
 
   // Filter languages based on search query

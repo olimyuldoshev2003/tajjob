@@ -12,9 +12,16 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Gesture } from "react-native-gesture-handler";
-
-const StackNavigatorProfilePage = () => {
+interface StackNavigatorProfilePageProps {
+  openJobModal: (job: any) => void;
+}
+const StackNavigatorProfilePage = ({
+  openJobModal,
+}: StackNavigatorProfilePageProps) => {
   const Stack = createNativeStackNavigator();
+
+
+  const SavedJobsWithModal = () => <SavedJobs onJobPress={openJobModal} />;
 
   return (
     <Stack.Navigator
@@ -38,7 +45,7 @@ const StackNavigatorProfilePage = () => {
       />
       <Stack.Screen
         name="SavedJobs"
-        component={SavedJobs}
+        component={SavedJobsWithModal}
         options={{
           animation: "slide_from_right",
         }}
