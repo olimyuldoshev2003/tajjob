@@ -339,6 +339,7 @@ const SignUp = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : -60}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView

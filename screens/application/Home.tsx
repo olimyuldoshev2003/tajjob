@@ -933,7 +933,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     // borderBottomLeftRadius: 20,
     // borderBottomRightRadius: 20,
-    maxHeight: SCREEN_HEIGHT * 1,
+    maxHeight: SCREEN_HEIGHT * 1.03,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

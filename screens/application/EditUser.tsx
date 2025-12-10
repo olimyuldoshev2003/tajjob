@@ -1,5 +1,5 @@
 import * as ImagePicker from "expo-image-picker";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -28,6 +28,7 @@ import { Selector } from "rn-selector";
 import { allCountries } from "country-telephone-data";
 
 const EditUser = () => {
+  const scrollViewRef = useRef<ScrollView>(null);
   const [userImage, setUserImage] = useState<string | null>(
     require("../../assets/tajjob/profile/profileIcon.jpg")
   );
@@ -76,6 +77,42 @@ const EditUser = () => {
     return COUNTRIES_DATA.find(
       (country: any) => country.value === selectedCountry
     );
+  };
+
+  // Function to handle input focus and scroll
+  const handleInputFocus = (inputName: string) => {
+    // Calculate scroll position based on input field
+    let scrollPosition = 0;
+
+    switch (inputName) {
+      case "fullName":
+        scrollPosition = 0;
+        break;
+      case "dateOfBirth":
+        scrollPosition = 100;
+        break;
+      case "phone":
+        scrollPosition = 200;
+        break;
+      case "email":
+        scrollPosition = 300;
+        break;
+      case "location":
+        scrollPosition = 400;
+        break;
+      default:
+        scrollPosition = 0;
+    }
+
+    // Scroll after a small delay to ensure keyboard is open
+    setTimeout(() => {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({
+          y: scrollPosition,
+          animated: true,
+        });
+      }
+    }, 300);
   };
 
   // Full Name validation
@@ -568,13 +605,15 @@ const EditUser = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 20} // Changed from -60 to 20 for Android
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
-          
+          ref={scrollViewRef}
           contentContainerStyle={styles.editUserComponentScrollView}
           style={styles.editUserComponent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.headerEditUserComponentBlock}>
             <View style={styles.imageContainer}>
@@ -647,6 +686,7 @@ const EditUser = () => {
                       setFullName(text);
                       validateFullName(text);
                     }}
+                    onFocus={() => handleInputFocus("fullName")}
                     placeholder="Enter your full name"
                   />
                   <Feather
@@ -666,6 +706,7 @@ const EditUser = () => {
                     style={[styles.input, dateError && styles.inputError]}
                     value={dateOfBirth}
                     onChangeText={handleDateChange}
+                    onFocus={() => handleInputFocus("dateOfBirth")}
                     placeholder="DD/MM/YYYY"
                     keyboardType="numeric"
                     maxLength={10}
@@ -714,6 +755,7 @@ const EditUser = () => {
                     style={[styles.input, phoneError && styles.inputError]}
                     value={phone}
                     onChangeText={handlePhoneChange}
+                    onFocus={() => handleInputFocus("phone")}
                     placeholder={getPhonePlaceholder()}
                     keyboardType="phone-pad"
                   />
@@ -745,6 +787,7 @@ const EditUser = () => {
                       setEmail(text);
                       validateEmail(text);
                     }}
+                    onFocus={() => handleInputFocus("email")}
                     placeholder="Enter your email"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -769,6 +812,7 @@ const EditUser = () => {
                       setLocation(text);
                       validateLocation(text);
                     }}
+                    onFocus={() => handleInputFocus("location")}
                     placeholder="Enter your location"
                   />
                   <Feather
@@ -801,7 +845,6 @@ const styles = StyleSheet.create({
   },
   editUserComponentScrollView: {
     paddingBottom: 40,
-    
   },
   editUserComponent: {
     flex: 1,
