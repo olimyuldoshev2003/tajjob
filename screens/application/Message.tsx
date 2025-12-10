@@ -1835,7 +1835,7 @@ const Message = ({ route }: { route: any }) => {
     <KeyboardAvoidingView
       style={styles.messageComponent}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : -60}
     >
       {/* Show call screens when in call */}
       {videoCall && <VideoCallScreen onEndCall={endCall} />}

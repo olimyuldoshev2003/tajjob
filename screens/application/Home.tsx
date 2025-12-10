@@ -303,27 +303,6 @@ const Home = ({ onJobPress }: HomeProps) => {
     onJobPress?.(job);
   };
 
-  // Component for rendering applicant images with dynamic positioning
-  // const ApplierImages = ({ applierImgs }: { applierImgs: any }) => {
-  //   return (
-  //     <View style={styles.someAppliersImgAndDownIcon}>
-  //       {applierImgs.map((imgSource: any, index: number) => (
-  //         <Image
-  //           key={index}
-  //           source={imgSource}
-  //           style={[styles.appliersImg, { left: index * 14 }]}
-  //         />
-  //       ))}
-  //       <Entypo
-  //         name="chevron-down"
-  //         size={29}
-  //         color="black"
-  //         style={styles.downIcon}
-  //       />
-  //     </View>
-  //   );
-  // };
-
   return (
     <View style={styles.homeComponent}>
       <View style={styles.homeComponentBlock}>
@@ -377,11 +356,11 @@ const Home = ({ onJobPress }: HomeProps) => {
             </Pressable>
           </View>
           <View style={styles.suggestedJobsBlock}>
-            {jobs.map((item) => {
+            {jobs.map((suggestedJob: any) => {
               return (
                 <EachJob
-                  key={item.id}
-                  job={item}
+                  key={suggestedJob.id}
+                  job={suggestedJob}
                   handleJobPress={handleJobPress}
                 />
               );
@@ -420,11 +399,11 @@ const Home = ({ onJobPress }: HomeProps) => {
               </Pressable>
             </ScrollView>
             <View style={styles.recentJobs}>
-              {jobs.map((item) => {
+              {jobs.map((recentJob: any) => {
                 return (
                   <EachJob
-                    key={item.id}
-                    job={item}
+                    key={recentJob.id}
+                    job={recentJob}
                     handleJobPress={handleJobPress}
                   />
                 );
@@ -454,7 +433,7 @@ const Home = ({ onJobPress }: HomeProps) => {
           </Animated.View>
 
           {/* Animated Modal Content */}
-          <Animated.ScrollView
+          <Animated.View
             style={[
               styles.modalFilterStyle,
               {
@@ -462,341 +441,332 @@ const Home = ({ onJobPress }: HomeProps) => {
               },
             ]}
           >
-            <View style={styles.modalContent}>
-              <View style={styles.modalFilterHeader}>
-                <Text style={styles.modalHeaderText}>Filter</Text>
-                <Pressable
-                  onPress={handleCloseModal}
-                  style={styles.closeButton}
-                >
-                  <FontAwesome name="close" size={42} color="black" />
+            {/* Fixed Header */}
+            <View style={styles.modalFilterHeader}>
+              <Text style={styles.modalHeaderText}>Filter</Text>
+              <Pressable onPress={handleCloseModal} style={styles.closeButton}>
+                <FontAwesome name="close" size={42} color="black" />
+              </Pressable>
+            </View>
+
+            {/* Scrollable Content */}
+            <ScrollView
+              style={styles.modalFilterScrollContent}
+              contentContainerStyle={styles.modalFilterSection}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.filterBySelectBlock}>
+                <Selector
+                  options={[
+                    { label: "All cities", value: "" },
+                    { label: "Dushanbe", value: "dushanbe" },
+                    { label: "Khujand", value: "khujand" },
+                    { label: "Kulob", value: "kulob" },
+                    { label: "Bokhtar", value: "bokhtar" },
+                  ]}
+                  selectedValue={filterByCity}
+                  onValueChange={(value) => {
+                    setFilterByCity(value);
+                  }}
+                  placeholder="Select the city..."
+                  searchable={true}
+                  primaryColor="#1976d2"
+                  style={styles.selectByCity}
+                  customArrow={
+                    <Entypo name="chevron-thin-down" size={24} color="black" />
+                  }
+                />
+              </View>
+              <View style={styles.filterBySphereAndExperienceWithCheckboxBlock}>
+                <View style={styles.filterBySphere}>
+                  <Text style={styles.titleFilterBySphere}>Sphere</Text>
+                  <View style={styles.checkboxesForFilterBySphereBlock}>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Medicine"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Engineering"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Information Technology"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Education"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Business Administration"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Law"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Architecture"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Graphic Design"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Marketing"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Accounting"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Psychology"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Programmer"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <BouncyCheckbox
+                        isChecked={checked}
+                        size={25}
+                        fillColor="blue"
+                        unFillColor="#FFFFFF"
+                        text="Tourism and Hospitality"
+                        iconStyle={{ borderColor: "red" }}
+                        innerIconStyle={{ borderWidth: 2 }}
+                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        onPress={(isChecked: boolean) => {
+                          setChecked(checked);
+                        }}
+                        style={styles.checkboxAndItsLabel}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.filterByExperience}>
+                  <Text style={styles.titleFilterByExperience}>Experience</Text>
+                  <View style={styles.checkboxesForFilterByExperienceBlock}>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <AdvancedCheckbox
+                        value={checked}
+                        onValueChange={() => {
+                          setChecked(!checked);
+                        }}
+                        label="No experience required"
+                        checkedColor="#007AFF"
+                        uncheckedColor="#ccc"
+                        size={24}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <AdvancedCheckbox
+                        value={checked}
+                        onValueChange={() => {
+                          setChecked(!checked);
+                        }}
+                        label="From 3 months to 1 year"
+                        checkedColor="#007AFF"
+                        uncheckedColor="#ccc"
+                        size={24}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <AdvancedCheckbox
+                        value={checked}
+                        onValueChange={() => {
+                          setChecked(!checked);
+                        }}
+                        label="1-2 years"
+                        checkedColor="#007AFF"
+                        uncheckedColor="#ccc"
+                        size={24}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <AdvancedCheckbox
+                        value={checked}
+                        onValueChange={() => {
+                          setChecked(!checked);
+                        }}
+                        label="2-5 years"
+                        checkedColor="#007AFF"
+                        uncheckedColor="#ccc"
+                        size={24}
+                      />
+                    </View>
+                    <View style={styles.checkboxAndItsLabelBlock}>
+                      <AdvancedCheckbox
+                        value={checked}
+                        onValueChange={() => {
+                          setChecked(!checked);
+                        }}
+                        label="10 years"
+                        checkedColor="#007AFF"
+                        uncheckedColor="#ccc"
+                        size={24}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.btnApplyAndResetBlock}>
+                <Pressable style={styles.btnApply}>
+                  <Text style={styles.btnApplyText}>Apply filter</Text>
+                </Pressable>
+                <Pressable style={styles.btnReset}>
+                  <Text style={styles.btnResetText}>Reset</Text>
                 </Pressable>
               </View>
-              <ScrollView
-                contentContainerStyle={styles.modalFilterSection}
-                showsVerticalScrollIndicator={false}
-              >
-                <View style={styles.filterBySelectBlock}>
-                  <Selector
-                    options={[
-                      { label: "All cities", value: "" },
-                      { label: "Dushanbe", value: "dushanbe" },
-                      { label: "Khujand", value: "khujand" },
-                      { label: "Kulob", value: "kulob" },
-                      { label: "Bokhtar", value: "bokhtar" },
-                    ]}
-                    selectedValue={filterByCity}
-                    onValueChange={(value) => {
-                      setFilterByCity(value);
-                    }}
-                    placeholder="Select the city..."
-                    searchable={true}
-                    primaryColor="#1976d2"
-                    style={styles.selectByCity}
-                    customArrow={
-                      <Entypo
-                        name="chevron-thin-down"
-                        size={24}
-                        color="black"
-                      />
-                    }
-                  />
-                </View>
-                <View
-                  style={styles.filterBySphereAndExperienceWithCheckboxBlock}
-                >
-                  <View style={styles.filterBySphere}>
-                    <Text style={styles.titleFilterBySphere}>Sphere</Text>
-                    <View style={styles.checkboxesForFilterBySphereBlock}>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Medicine"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Engineering"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Information Technology"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Education"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Business Administration"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Law"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Architecture"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Graphic Design"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Marketing"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Accounting"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Psychology"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Programmer"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <BouncyCheckbox
-                          isChecked={checked}
-                          size={25}
-                          fillColor="blue"
-                          unFillColor="#FFFFFF"
-                          text="Tourism and Hospitality"
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                          onPress={(isChecked: boolean) => {
-                            setChecked(checked);
-                          }}
-                          style={styles.checkboxAndItsLabel}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.filterByExperience}>
-                    <Text style={styles.titleFilterByExperience}>
-                      Experience
-                    </Text>
-                    <View style={styles.checkboxesForFilterByExperienceBlock}>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <AdvancedCheckbox
-                          value={checked}
-                          onValueChange={() => {
-                            setChecked(!checked);
-                          }}
-                          label="No experience required"
-                          checkedColor="#007AFF"
-                          uncheckedColor="#ccc"
-                          size={24}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <AdvancedCheckbox
-                          value={checked}
-                          onValueChange={() => {
-                            setChecked(!checked);
-                          }}
-                          label="From 3 months to 1 year"
-                          checkedColor="#007AFF"
-                          uncheckedColor="#ccc"
-                          size={24}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <AdvancedCheckbox
-                          value={checked}
-                          onValueChange={() => {
-                            setChecked(!checked);
-                          }}
-                          label="1-2 years"
-                          checkedColor="#007AFF"
-                          uncheckedColor="#ccc"
-                          size={24}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <AdvancedCheckbox
-                          value={checked}
-                          onValueChange={() => {
-                            setChecked(!checked);
-                          }}
-                          label="2-5 years"
-                          checkedColor="#007AFF"
-                          uncheckedColor="#ccc"
-                          size={24}
-                        />
-                      </View>
-                      <View style={styles.checkboxAndItsLabelBlock}>
-                        <AdvancedCheckbox
-                          value={checked}
-                          onValueChange={() => {
-                            setChecked(!checked);
-                          }}
-                          label="10 years"
-                          checkedColor="#007AFF"
-                          uncheckedColor="#ccc"
-                          size={24}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.btnApplyAndResetBlock}>
-                  <Pressable style={styles.btnApply}>
-                    <Text style={styles.btnApplyText}>Apply filter</Text>
-                  </Pressable>
-                  <Pressable style={styles.btnReset}>
-                    <Text style={styles.btnResetText}>Reset</Text>
-                  </Pressable>
-                </View>
-              </ScrollView>
-            </View>
-          </Animated.ScrollView>
+            </ScrollView>
+          </Animated.View>
         </View>
       </Modal>
     </View>
@@ -961,9 +931,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "white",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    // maxHeight: SCREEN_HEIGHT * 0.8,
+    // borderBottomLeftRadius: 20,
+    // borderBottomRightRadius: 20,
+    maxHeight: SCREEN_HEIGHT * 1,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -972,9 +942,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    height: "100%",
   },
-  modalContent: {
+  modalFilterScrollContent: {
     flex: 1,
   },
   modalFilterHeader: {

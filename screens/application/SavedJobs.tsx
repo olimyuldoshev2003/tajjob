@@ -1,6 +1,7 @@
 import EachJob from "@/components/home/EachJob";
+import { Entypo } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
@@ -107,17 +108,34 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
   return (
     <View style={styles.savedJobsComponent}>
       <View style={styles.savedJobsComponentBlock}>
-        <View style={styles.headerSavedJobsComponent}></View>
+        <View style={styles.headerSavedJobsComponent}>
+          <View
+            style={
+              styles.blockIconBackAndTitleOfComponentHeaderSavedJobsComponent
+            }
+          >
+            {
+              
+            }
+            <Entypo
+              name="chevron-small-left"
+              size={37}
+              color="black"
+              style={styles.iconBack}
+            />
+            <Text style={styles.titleOfComponent}>Saved job</Text>
+          </View>
+        </View>
         <View style={styles.sectionSavedJobsComponent}>
           <ScrollView
             contentContainerStyle={styles.savedJobsBlockScrollView}
             style={styles.savedJobsBlock}
           >
-            {jobs.map((item) => {
+            {jobs.map((savedJob: any) => {
               return (
                 <EachJob
-                  key={item.id}
-                  job={item}
+                  key={savedJob.id}
+                  job={savedJob}
                   handleJobPress={handleJobPress}
                 />
               );
@@ -136,8 +154,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  savedJobsComponentBlock: {},
+  savedJobsComponentBlock: {
+    paddingTop: 40,
+  },
   headerSavedJobsComponent: {},
+  blockIconBackAndTitleOfComponentHeaderSavedJobsComponent: {},
+  iconBack: {},
+  titleOfComponent: {},
   sectionSavedJobsComponent: {},
   savedJobsBlockScrollView: {
     paddingHorizontal: 10,
