@@ -1,7 +1,15 @@
 import EachJob from "@/components/home/EachJob";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
@@ -101,6 +109,8 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
     },
   ];
 
+  const navigation: any = useNavigation();
+
   const handleJobPress = (job: any) => {
     onJobPress?.(job);
   };
@@ -114,17 +124,31 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
               styles.blockIconBackAndTitleOfComponentHeaderSavedJobsComponent
             }
           >
-            {
-              
-            }
-            <Entypo
-              name="chevron-small-left"
-              size={37}
-              color="black"
-              style={styles.iconBack}
-            />
+            {Platform.OS === "ios" ? (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              >
+                <Entypo
+                  name="chevron-small-left"
+                  size={50}
+                  color="black"
+                  style={styles.iconBack}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              >
+                <Ionicons name="arrow-back-sharp" size={31} color="black" />
+              </TouchableOpacity>
+            )}
             <Text style={styles.titleOfComponent}>Saved job</Text>
           </View>
+          <FontAwesome name="bookmark" size={32} color="black" />
         </View>
         <View style={styles.sectionSavedJobsComponent}>
           <ScrollView
@@ -140,6 +164,17 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
                 />
               );
             })}
+            <View style={styles.btnMoreBlock}>
+              <Pressable style={styles.btnMore}>
+                <Text style={styles.textBtnMore}>More</Text>
+                <Entypo
+                  name="chevron-small-down"
+                  size={37}
+                  color="black"
+                  style={styles.downIcon}
+                />
+              </Pressable>
+            </View>
           </ScrollView>
         </View>
       </View>
@@ -157,15 +192,53 @@ const styles = StyleSheet.create({
   savedJobsComponentBlock: {
     paddingTop: 40,
   },
-  headerSavedJobsComponent: {},
-  blockIconBackAndTitleOfComponentHeaderSavedJobsComponent: {},
+  headerSavedJobsComponent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  blockIconBackAndTitleOfComponentHeaderSavedJobsComponent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
   iconBack: {},
-  titleOfComponent: {},
-  sectionSavedJobsComponent: {},
+  titleOfComponent: {
+    fontSize: 32,
+    fontWeight: "700",
+  },
+  sectionSavedJobsComponent: {
+    marginTop: 20,
+  },
   savedJobsBlockScrollView: {
     paddingHorizontal: 10,
     paddingVertical: 10,
     gap: 15,
+    paddingBottom: 135,
   },
   savedJobsBlock: {},
+
+  btnMoreBlock: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  btnMore: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  textBtnMore: {
+    color: "#7F7F7F",
+    fontSize: 26,
+    fontWeight: "400",
+  },
+  downIcon: {},
 });
