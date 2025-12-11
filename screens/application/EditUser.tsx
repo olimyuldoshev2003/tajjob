@@ -27,6 +27,68 @@ import { Selector } from "rn-selector";
 // @ts-ignore: Module 'country-telephone-data' has no type declarations
 import { allCountries } from "country-telephone-data";
 
+// Updated Tajik SIM card prefixes and operators data for 2025
+const TAJIK_PREFIXES = {
+  // Current & Primary prefixes
+  "90": "MegaFon Tajikistan",
+  "55": "MegaFon Tajikistan",
+  "41": "MegaFon Tajikistan",
+  "88": "MegaFon Tajikistan",
+  "00": "MegaFon Tajikistan",
+  "01": "MegaFon Tajikistan",
+  "02": "MegaFon Tajikistan",
+  "07": "MegaFon Tajikistan",
+  "97": "MegaFon Tajikistan",
+  "12": "MegaFon Tajikistan",
+  "21": "MegaFon Tajikistan",
+  "27": "MegaFon Tajikistan",
+  "91": "ZET-Mobile",
+  "40": "ZET-Mobile",
+  "80": "ZET-Mobile",
+  "33": "ZET-Mobile",
+  "81": "ZET-Mobile",
+  "03": "ZET-Mobile",
+  "04": "ZET-Mobile",
+  "08": "ZET-Mobile",
+  "05": "ZET-Mobile",
+  "09": "ZET-Mobile",
+  "06": "ZET-Mobile",
+  "18": "ZET-Mobile",
+  "19": "ZET-Mobile",
+  "66": "ZET-Mobile",
+  "38": "ZET-Mobile",
+  "92": "Tcell",
+  "93": "Tcell",
+  "50": "Tcell",
+  "77": "Tcell",
+  "70": "Tcell",
+  "99": "Tcell",
+  "11": "Tcell",
+  "10": "O-Mobile",
+  "20": "O-Mobile",
+  "22": "O-Mobile",
+  "30": "O-Mobile",
+  "78": "Anor",
+  "87": "Anor",
+  "98": "Babilon-Mobile",
+  "94": "Babilon-Mobile",
+  "71": "Babilon-Mobile",
+  "17": "Babilon-Mobile",
+  "75": "Babilon-Mobile",
+
+  // Historical Legacy (3-digit)
+  "440": "ZET-Mobile",
+  "444": "ZET-Mobile",
+  "030": "ZET-Mobile",
+  "040": "ZET-Mobile",
+  "080": "ZET-Mobile",
+  "442": "ZET-Mobile",
+  "443": "ZET-Mobile",
+  "447": "ZET-Mobile",
+  "449": "ZET-Mobile",
+  "918": "Babilon-Mobile",
+};
+
 const EditUser = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [userImage, setUserImage] = useState<string | null>(
@@ -43,6 +105,7 @@ const EditUser = () => {
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [detectedOperator, setDetectedOperator] = useState("");
 
   // Date of birth states
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -69,6 +132,8 @@ const EditUser = () => {
     // Set default country and phone format
     setSelectedCountry("tj");
     setPhone("+992 ");
+    setPhoneError("");
+    setDetectedOperator("");
   }, []);
 
   // Find current selected country data
@@ -77,6 +142,35 @@ const EditUser = () => {
     return COUNTRIES_DATA.find(
       (country: any) => country.value === selectedCountry
     );
+  };
+
+  // Detect Tajik mobile operator from phone number
+  const detectTajikOperator = (phoneNumber: string): string => {
+    if (!phoneNumber || !phoneNumber.includes("+992")) {
+      return "";
+    }
+
+    // Extract the national number part (without country code)
+    const cleanNumber = phoneNumber.replace(/[^\d]/g, "");
+    const nationalNumber = cleanNumber.startsWith("992")
+      ? cleanNumber.substring(3)
+      : cleanNumber;
+
+    if (!nationalNumber) return "";
+
+    // Check 3-digit prefixes first (historical legacy)
+    const threeDigitPrefix = nationalNumber.substring(0, 3);
+    if (TAJIK_PREFIXES[threeDigitPrefix as keyof typeof TAJIK_PREFIXES]) {
+      return TAJIK_PREFIXES[threeDigitPrefix as keyof typeof TAJIK_PREFIXES];
+    }
+
+    // Check 2-digit prefixes (current & primary)
+    const twoDigitPrefix = nationalNumber.substring(0, 2);
+    if (TAJIK_PREFIXES[twoDigitPrefix as keyof typeof TAJIK_PREFIXES]) {
+      return TAJIK_PREFIXES[twoDigitPrefix as keyof typeof TAJIK_PREFIXES];
+    }
+
+    return "";
   };
 
   // Function to handle input focus and scroll
@@ -267,17 +361,30 @@ const EditUser = () => {
     }
   };
 
-  // Country detection from phone number
+  // Enhanced country detection with Tajik prefix support
   const detectCountryFromPhoneNumber = (phoneNumber: string): string | null => {
     if (!phoneNumber || !phoneNumber.startsWith("+")) {
       return null;
     }
 
-    // Try to parse with libphonenumber first
+    // Special case: Check for Tajikistan number with specific prefixes
+    if (phoneNumber.startsWith("+992")) {
+      const operator = detectTajikOperator(phoneNumber);
+      setDetectedOperator(operator);
+      return "tj"; // Return lowercase to match COUNTRIES_DATA
+    }
+
+    // Try to parse with libphonenumber first (most accurate)
     try {
       const phoneNumberObj = parsePhoneNumberFromString(phoneNumber);
       if (phoneNumberObj && phoneNumberObj.country) {
-        return phoneNumberObj.country.toLowerCase();
+        // Convert to lowercase to match COUNTRIES_DATA format
+        const detectedCountry = phoneNumberObj.country.toLowerCase();
+
+        if (detectedCountry !== "tj") {
+          setDetectedOperator("");
+        }
+        return detectedCountry;
       }
     } catch (error) {
       console.log("Error parsing phone number:", error);
@@ -294,14 +401,18 @@ const EditUser = () => {
     for (const country of sortedCountries) {
       const countryDialCode = country.dialCode.replace("+", "");
       if (cleanPhone.startsWith(countryDialCode)) {
-        return country.value;
+        if (country.value !== "tj") {
+          setDetectedOperator("");
+        }
+        return country.value; // Already lowercase
       }
     }
 
+    setDetectedOperator("");
     return null;
   };
 
-  // Phone number formatting and country detection
+  // Enhanced phone number formatting with Tajik prefix support
   const handlePhoneChange = (text: string) => {
     // Allow only digits, plus, spaces, and parentheses
     const cleaned = text.replace(/[^\d+()\s-]/g, "");
@@ -317,6 +428,7 @@ const EditUser = () => {
         // Country changed - update selected country
         setSelectedCountry(detectedCountry);
         setPhoneError("");
+        setDetectedOperator("");
 
         // Format with new country
         try {
@@ -325,6 +437,12 @@ const EditUser = () => {
           );
           const formatted = formatter.input(cleaned);
           setPhone(formatted);
+
+          // Auto-detect operator for Tajik numbers
+          if (detectedCountry === "tj" && formatted.startsWith("+992")) {
+            const operator = detectTajikOperator(formatted);
+            setDetectedOperator(operator);
+          }
         } catch (error) {
           // Keep the cleaned version if formatting fails
           setPhone(cleaned);
@@ -342,6 +460,7 @@ const EditUser = () => {
         setSelectedCountry("");
       }
       setPhoneError("");
+      setDetectedOperator("");
       setIsPhoneValid(null);
       return;
     }
@@ -354,6 +473,12 @@ const EditUser = () => {
         );
         const formatted = formatter.input(cleaned);
         setPhone(formatted);
+
+        // Auto-detect operator for Tajik numbers
+        if (selectedCountry === "tj" && formatted.startsWith("+992")) {
+          const operator = detectTajikOperator(formatted);
+          setDetectedOperator(operator);
+        }
       } catch (error) {
         setPhone(cleaned);
       }
@@ -362,7 +487,7 @@ const EditUser = () => {
     }
   };
 
-  // Phone number validation
+  // IMPROVED validation function
   const validatePhoneNumber = (phoneNumber: string, countryCode: string) => {
     // Clear error if input is too short
     if (phoneNumber.replace("+", "").length < 4) {
@@ -380,6 +505,18 @@ const EditUser = () => {
       if (phoneNumberObj && phoneNumberObj.isValid()) {
         setPhoneError("");
         setIsPhoneValid(true);
+
+        // Only validate Tajik prefix when number is complete (11+ digits)
+        if (countryCode === "tj" && phoneNumber.startsWith("+992")) {
+          const cleanNumber = phoneNumber.replace(/[^\d]/g, "");
+          if (cleanNumber.length >= 11) {
+            const operator = detectTajikOperator(phoneNumber);
+            if (!operator) {
+              setPhoneError("Invalid Tajik mobile prefix");
+              setIsPhoneValid(false);
+            }
+          }
+        }
       } else {
         // Don't show error for incomplete numbers during typing
         const cleanNumber = phoneNumber.replace(/[^\d]/g, "");
@@ -408,6 +545,7 @@ const EditUser = () => {
   const handleCountrySelect = (countryCode: string) => {
     setSelectedCountry(countryCode);
     setPhoneError("");
+    setDetectedOperator("");
     setIsPhoneValid(null);
 
     // Update phone with new country code
@@ -419,6 +557,10 @@ const EditUser = () => {
 
   // Get phone number placeholder based on selected country
   const getPhonePlaceholder = () => {
+    if (selectedCountry === "tj") {
+      return "e.g., +992 93 123 4567";
+    }
+
     const country = getSelectedCountry();
     return `Enter phone number (${country?.dialCode || "+1"})`;
   };
@@ -587,6 +729,20 @@ const EditUser = () => {
       return;
     }
 
+    if (phone && selectedCountry === "tj") {
+      const cleanNumber = phone.replace(/[^\d]/g, "");
+      if (cleanNumber.length >= 11) {
+        const operator = detectTajikOperator(phone);
+        if (!operator) {
+          Alert.alert(
+            "Validation Error",
+            "Please enter a valid Tajik phone number with correct mobile prefix."
+          );
+          return;
+        }
+      }
+    }
+
     // Save profile logic here
     const userData = {
       fullName,
@@ -595,6 +751,8 @@ const EditUser = () => {
       email,
       location,
       profileImage: userImage,
+      country: selectedCountry,
+      detectedOperator,
     };
 
     console.log("Saving user data:", userData);
@@ -605,7 +763,7 @@ const EditUser = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 20} // Changed from -60 to 20 for Android
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 20}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
@@ -766,12 +924,21 @@ const EditUser = () => {
                     style={styles.checkIcon}
                   />
                 </View>
+
+                {/* Display detected operator */}
+                {detectedOperator && !phoneError && (
+                  <Text style={styles.operatorText}>
+                    Detected: {detectedOperator}
+                  </Text>
+                )}
+
                 {phoneError ? (
                   <Text style={styles.errorText}>{phoneError}</Text>
                 ) : (
                   <Text style={styles.hintText}>
-                    Start with + or select country. The country will
-                    auto-detect.
+                    {selectedCountry === "tj"
+                      ? "Start with +992. Supported prefixes: 90, 91, 92, 93, 94, 98, 99, etc."
+                      : "Start with + or select country. The country will auto-detect."}
                   </Text>
                 )}
               </View>
@@ -966,6 +1133,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: "italic",
     marginTop: 4,
+  },
+  operatorText: {
+    color: "#4C4ADA",
+    fontSize: 14,
+    fontWeight: "500",
+    marginTop: 4,
+    fontStyle: "italic",
   },
 
   // Country selector styles
