@@ -353,7 +353,7 @@ const Theme = () => {
               fontWeight: "500",
             }}
             activeFontStyle={{
-              color: colors.text,
+              color: "#fff",
               fontSize: 16,
               fontWeight: "600",
             }}
