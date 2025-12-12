@@ -11,12 +11,127 @@ import {
 
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import Carousel from "pinar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "expo-router";
+
+// Create a global theme manager that doesn't require context
+let currentGlobalTheme: "light" | "dark" = "light";
+let themeListeners: Array<(theme: "light" | "dark") => void> = [];
+
+// Function to update all listeners when theme changes
+const notifyThemeChange = (theme: "light" | "dark") => {
+  currentGlobalTheme = theme;
+  themeListeners.forEach((listener) => listener(theme));
+};
+
+// Function to subscribe to theme changes from any component
+export const subscribeToTheme = (
+  callback: (theme: "light" | "dark") => void
+) => {
+  themeListeners.push(callback);
+  return () => {
+    themeListeners = themeListeners.filter((listener) => listener !== callback);
+  };
+};
+
+// Get current global theme
+export const getCurrentGlobalTheme = () => currentGlobalTheme;
 
 const Theme = () => {
   const systemColorScheme = useColorScheme(); // Gets system theme (light/dark)
-  const [theme, setTheme] = useState<any>("light"); // Current selected theme
-  const [selectedIndex, setSelectedIndex] = useState<any>(0); // Segmented control index
-  const [currentTheme, setCurrentTheme] = useState<any>(systemColorScheme); // Active theme for display
+  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">(
+    systemColorScheme || "light"
+  );
+
+  const navigation:any = useNavigation()
+
+  // Load saved theme on mount
+  useEffect(() => {
+    loadSavedTheme();
+  }, []);
+
+  // Update current theme when theme changes (for preview)
+  useEffect(() => {
+    updateCurrentThemeForPreview();
+  }, [theme, systemColorScheme]);
+
+  const loadSavedTheme = async () => {
+    try {
+      const savedTheme = await AsyncStorage.getItem("app-theme");
+      if (savedTheme) {
+        const parsedTheme = JSON.parse(savedTheme);
+
+        // Map theme to the new segmented control order: System, Light, Dark
+        let newSelectedIndex = 0;
+        if (parsedTheme.theme === "system") {
+          newSelectedIndex = 0;
+        } else if (parsedTheme.theme === "light") {
+          newSelectedIndex = 1;
+        } else if (parsedTheme.theme === "dark") {
+          newSelectedIndex = 2;
+        }
+
+        setTheme(parsedTheme.theme || "system");
+        setSelectedIndex(newSelectedIndex);
+
+        // Determine current theme based on saved preference
+        let activeTheme: "light" | "dark" = "light";
+        if (parsedTheme.theme === "system") {
+          activeTheme = systemColorScheme || "light";
+        } else if (parsedTheme.theme === "dark") {
+          activeTheme = "dark";
+        } else {
+          activeTheme = "light";
+        }
+
+        setCurrentTheme(activeTheme);
+
+        // Update global theme and Appearance
+        updateAppearance(activeTheme);
+        notifyThemeChange(activeTheme);
+      } else {
+        // Default to system theme
+        const systemTheme = systemColorScheme || "light";
+        setTheme("system");
+        setCurrentTheme(systemTheme);
+        setSelectedIndex(0); // System is first (index 0)
+
+        // Update global theme and Appearance
+        updateAppearance(systemTheme);
+        notifyThemeChange(systemTheme);
+      }
+    } catch (error) {
+      console.log("Error loading theme:", error);
+    }
+  };
+
+  // Update current theme for preview (when user selects from segmented control)
+  const updateCurrentThemeForPreview = () => {
+    let activeTheme: "light" | "dark" = "light";
+
+    if (theme === "system") {
+      activeTheme = systemColorScheme || "light";
+    } else if (theme === "dark") {
+      activeTheme = "dark";
+    } else {
+      activeTheme = "light";
+    }
+
+    setCurrentTheme(activeTheme);
+  };
+
+  const updateAppearance = (themeToApply: "light" | "dark") => {
+    // This will force Appearance changes across the whole app
+    if (themeToApply === "dark") {
+      // Force dark mode on the entire app
+      Appearance.setColorScheme("dark");
+    } else {
+      // Force light mode on the entire app
+      Appearance.setColorScheme("light");
+    }
+  };
 
   // Theme color palettes
   const themeColors = {
@@ -42,31 +157,80 @@ const Theme = () => {
 
   // Get active colors based on current theme
   const getActiveColors = () => {
-    return themeColors[currentTheme === "dark" ? "dark" : "light"];
+    return themeColors[currentTheme];
   };
 
   const colors = getActiveColors();
 
   // Handle theme selection change
-  const handleThemeChange = (index:any) => {
+  const handleThemeChange = (index: number) => {
     setSelectedIndex(index);
-    const newTheme = index === 0 ? "light" : "dark";
+    let newTheme: "light" | "dark" | "system" = "system";
+
+    if (index === 0) {
+      // System (first option)
+      newTheme = "system";
+    } else if (index === 1) {
+      // Light (second option)
+      newTheme = "light";
+    } else if (index === 2) {
+      // Dark (third option)
+      newTheme = "dark";
+    }
+
     setTheme(newTheme);
-    setCurrentTheme(newTheme);
   };
 
   // Apply the selected theme
-  const applyTheme = () => {
-    // Here you would typically save to AsyncStorage or Context
-    console.log("Theme applied:", theme);
-    setCurrentTheme(theme);
-    alert(`Theme applied: ${theme === "light" ? "Light Mode" : "Dark Mode"}`);
+  const applyTheme = async () => {
+    // Determine the actual theme to apply
+    let themeToApply: "light" | "dark" = "light";
+
+    if (theme === "system") {
+      themeToApply = systemColorScheme || "light";
+    } else if (theme === "dark") {
+      themeToApply = "dark";
+    } else {
+      themeToApply = "light";
+    }
+
+    // Update current theme state
+    setCurrentTheme(themeToApply);
+
+    // Save to AsyncStorage
+    const themeData = {
+      theme,
+      currentTheme: themeToApply,
+      selectedIndex,
+    };
+
+    try {
+      await AsyncStorage.setItem("app-theme", JSON.stringify(themeData));
+
+      // Update global theme and Appearance IMMEDIATELY
+      updateAppearance(themeToApply);
+      notifyThemeChange(themeToApply);
+
+      let themeMessage = "";
+      if (theme === "system") {
+        themeMessage = `System Default (${
+          themeToApply === "light" ? "Light" : "Dark"
+        } Mode)`;
+      } else {
+        themeMessage = `${themeToApply === "light" ? "Light" : "Dark"} Mode`;
+      }
+
+      alert(`Theme applied: ${themeMessage}`);
+      navigation.goBack()
+    } catch (error) {
+      console.log("Error saving theme:", error);
+      alert("Error saving theme");
+    }
   };
 
   // Get image source based on theme
-  const getImageSource = (imageNumber:number) => {
+  const getImageSource = (imageNumber: number) => {
     if (currentTheme === "dark") {
-      // Use dark mode images if available, otherwise use light mode images
       try {
         switch (imageNumber) {
           case 1:
@@ -81,7 +245,6 @@ const Theme = () => {
             return require("../../assets/tajjob/profile/light-mode-img-1.png");
         }
       } catch (error) {
-        // Fallback to light mode images if dark mode images don't exist
         switch (imageNumber) {
           case 1:
             return require("../../assets/tajjob/profile/light-mode-img-1.png");
@@ -96,7 +259,6 @@ const Theme = () => {
         }
       }
     } else {
-      // Light mode images
       switch (imageNumber) {
         case 1:
           return require("../../assets/tajjob/profile/light-mode-img-1.jpg");
@@ -180,7 +342,7 @@ const Theme = () => {
         <View style={dynamicStyles.themeChangeBtnBlock}>
           <SegmentedControl
             style={dynamicStyles.themeChangeBtn}
-            values={["Light", "Dark"]}
+            values={["System", "Light", "Dark"]} // Changed order: System first
             selectedIndex={selectedIndex}
             onChange={(event) => {
               handleThemeChange(event.nativeEvent.selectedSegmentIndex);
@@ -200,7 +362,12 @@ const Theme = () => {
         </View>
 
         <Text style={dynamicStyles.currentThemeInfo}>
-          Current: {currentTheme === "dark" ? "Dark Mode" : "Light Mode"}
+          Current:{" "}
+          {theme === "system"
+            ? `System Default (${currentTheme === "dark" ? "Dark" : "Light"})`
+            : currentTheme === "dark"
+            ? "Dark Mode"
+            : "Light Mode"}
         </Text>
 
         <View style={styles.swiperPreviewPagesInLightAndDarkModeBlock}>
@@ -257,7 +424,7 @@ const Theme = () => {
         </View>
 
         <Text style={dynamicStyles.currentThemeInfo}>
-          Preview will change based on selected theme. Tap "Apply" to confirm.
+          This will change the theme for the entire application.
         </Text>
       </View>
     </View>
