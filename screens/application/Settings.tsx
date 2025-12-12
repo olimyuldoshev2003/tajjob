@@ -14,11 +14,14 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  useColorScheme,
   View,
 } from "react-native";
 
 const Settings = () => {
   const navigation: any = useNavigation();
+
+  const colorScheme = useColorScheme()
 
   const [modalAddFeedbackForApp, setModalAddFeedbackForApp] =
     useState<boolean>(false);
@@ -99,7 +102,7 @@ const Settings = () => {
                     </View>
                     <Text style={styles.funcType}>Theme</Text>
                   </View>
-                  <Text style={styles.selectedFunc}>Light</Text>
+                  <Text style={styles.selectedFunc}>{`${colorScheme?.toUpperCase()[0]}${colorScheme?.slice(1)}`}</Text>
                 </View>
                 <Entypo
                   name="chevron-small-right"

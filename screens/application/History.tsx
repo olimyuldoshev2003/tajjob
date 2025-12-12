@@ -1,10 +1,17 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const History = () => {
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
 
   const dynamicStyles = StyleSheet.create({
     historyComponent: {
