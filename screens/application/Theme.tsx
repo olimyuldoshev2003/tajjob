@@ -162,6 +162,9 @@ const Theme = () => {
 
   const colors = getActiveColors();
 
+  console.log(colors);
+  
+
   // Handle theme selection change
   const handleThemeChange = (index: number) => {
     setSelectedIndex(index);

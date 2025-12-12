@@ -317,7 +317,7 @@ const Home = ({ onJobPress }: HomeProps) => {
   const dynamicStyles = StyleSheet.create({
     homeComponent: {
       flex: 1,
-      backgroundColor: colorScheme === "dark" ? "#000" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
     },
     homeComponentBlock: {
       flex: 1,
@@ -522,8 +522,9 @@ const Home = ({ onJobPress }: HomeProps) => {
       color: colorScheme === "dark" ? "#fff" : "#000",
     },
 
-    
-    filterBySphereAndExperienceWithCheckboxBlock: {},
+    filterBySphereAndExperienceWithCheckboxBlock: {
+      marginTop: 30
+    },
 
     // Filter By Sphere
     filterBySphere: {
@@ -783,6 +784,9 @@ const Home = ({ onJobPress }: HomeProps) => {
                   searchable={true}
                   primaryColor="#1976d2"
                   style={dynamicStyles.selectByCity}
+                  textStyle={{
+                    color: "#bebebe",
+                  }}
                   customArrow={
                     <Entypo
                       name="chevron-thin-down"

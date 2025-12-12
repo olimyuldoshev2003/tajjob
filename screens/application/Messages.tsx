@@ -8,14 +8,15 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
-  TouchableWithoutFeedback,
+  useColorScheme,
   View,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Messages = () => {
+  const navigation: any = useNavigation();
 
-  const navigation:any = useNavigation()
+  const colorSheme = useColorScheme();
 
   const users: any = [
     {
@@ -460,23 +461,128 @@ const Messages = () => {
     },
   ];
 
+  const dynamicStyles = StyleSheet.create({
+    messagesComponent: {
+      flex: 1,
+      backgroundColor: "#0961F6",
+    },
+    headerBlockMessagesComponent: {
+      padding: 17,
+      paddingBottom: 23,
+    },
+    headerBlock1: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 30,
+    },
+    headerText: {
+      color: "#FFFFFF",
+      fontSize: 28,
+      fontWeight: "600",
+    },
+    headerBlock2: {
+      marginTop: 20,
+      position: "relative",
+    },
+    searchIcon: {
+      position: "absolute",
+      top: 10,
+      left: 7,
+      zIndex: 1000,
+    },
+    searchInput: {
+      backgroundColor: "#F5F6FA",
+      borderRadius: 10,
+      paddingLeft: 55,
+      paddingRight: 15,
+      fontSize: 20,
+      fontStyle: "italic",
+      fontWeight: "600",
+      color: "#000",
+    },
+
+    messagesContainer: {
+      flex: 1,
+      backgroundColor: colorSheme === "dark" ? "#121212" : "white",
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+    },
+
+    scrollView: {
+      flex: 1,
+    },
+
+    messagesContent: {
+      // padding: 17,
+    },
+
+    container: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      // alignItems: "center",
+      paddingVertical: 8,
+      paddingHorizontal: 17,
+    },
+    userImgFullNameAndMessageBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+      flex: 1,
+    },
+    userImg: {
+      width: 51,
+      height: 51,
+      borderRadius: 25,
+    },
+    fullNameAndMessageBlock: {
+      flex: 1,
+    },
+    fullName: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: colorSheme === "dark" ? "#fff" : "#333",
+      marginBottom: 4,
+    },
+    message: {
+      fontSize: 14,
+      color: colorSheme === "dark" ? "#dbdbdb" : "#666",
+    },
+    time: {
+      fontSize: 12,
+      color: colorSheme === "dark" ? "#fff" : "#999",
+    },
+    messageNotFoundBlock: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: colorSheme ? "#121212" : "white",
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+    },
+    messageNotFoundText: {
+      fontSize: 16,
+      color: colorSheme ? "#e6e6e6" : "#666",
+    },
+  });
+
   return (
-    <View style={styles.messagesComponent}>
+    <View style={dynamicStyles.messagesComponent}>
       {/* Header with blue background */}
-      <View style={styles.headerBlockMessagesComponent}>
-        <View style={styles.headerBlock1}>
-          <Text style={styles.headerText}>Messages</Text>
+      <View style={dynamicStyles.headerBlockMessagesComponent}>
+        <View style={dynamicStyles.headerBlock1}>
+          <Text style={dynamicStyles.headerText}>Messages</Text>
           <Entypo name="dots-three-vertical" size={26} color="white" />
         </View>
-        <View style={styles.headerBlock2}>
+        <View style={dynamicStyles.headerBlock2}>
           <Ionicons
             name="search"
             size={27}
             color="black"
-            style={styles.searchIcon}
+            style={dynamicStyles.searchIcon}
           />
           <TextInput
-            style={styles.searchInput}
+            style={dynamicStyles.searchInput}
             placeholder="Search"
             placeholderTextColor={"#C6C7CB"}
           />
@@ -484,45 +590,47 @@ const Messages = () => {
       </View>
 
       {/* Messages list with white background - FIXED */}
-      <View style={styles.messagesContainer}>
+      <View style={dynamicStyles.messagesContainer}>
         {users?.length ? (
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.messagesContent}
+            style={dynamicStyles.scrollView}
+            contentContainerStyle={dynamicStyles.messagesContent}
             showsVerticalScrollIndicator={false}
           >
             {users.map((item: any) => (
               <TouchableHighlight
                 key={item.id}
                 activeOpacity={0.6}
-                underlayColor="#f0f0f0"
+                underlayColor={colorSheme ? "#000" : "#f0f0f0"}
                 onPress={() => {
                   navigation.navigate("Message", {
                     id: item.id,
                   });
                 }}
               >
-                <View style={styles.container}>
-                  <View style={styles.userImgFullNameAndMessageBlock}>
+                <View style={dynamicStyles.container}>
+                  <View style={dynamicStyles.userImgFullNameAndMessageBlock}>
                     <Image
                       source={{ uri: item.avatar }}
-                      style={styles.userImg}
+                      style={dynamicStyles.userImg}
                     />
-                    <View style={styles.fullNameAndMessageBlock}>
-                      <Text style={styles.fullName}>{item.name}</Text>
-                      <Text style={styles.message}>
+                    <View style={dynamicStyles.fullNameAndMessageBlock}>
+                      <Text style={dynamicStyles.fullName}>{item.name}</Text>
+                      <Text style={dynamicStyles.message}>
                         {item.lastMessage || item.email}
                       </Text>
                     </View>
                   </View>
-                  <Text style={styles.time}>{item.time}</Text>
+                  <Text style={dynamicStyles.time}>{item.time}</Text>
                 </View>
               </TouchableHighlight>
             ))}
           </ScrollView>
         ) : (
-          <View style={styles.messageNotFoundBlock}>
-            <Text style={styles.messageNotFoundText}>Users not found</Text>
+          <View style={dynamicStyles.messageNotFoundBlock}>
+            <Text style={dynamicStyles.messageNotFoundText}>
+              Users not found
+            </Text>
           </View>
         )}
       </View>
@@ -531,106 +639,3 @@ const Messages = () => {
 };
 
 export default Messages;
-
-const styles = StyleSheet.create({
-  messagesComponent: {
-    flex: 1,
-    backgroundColor: "#0961F6",
-  },
-  headerBlockMessagesComponent: {
-    padding: 17,
-    paddingBottom: 23,
-  },
-  headerBlock1: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 30,
-  },
-  headerText: {
-    color: "#FFFFFF",
-    fontSize: 28,
-    fontWeight: "600",
-  },
-  headerBlock2: {
-    marginTop: 20,
-    position: "relative",
-  },
-  searchIcon: {
-    position: "absolute",
-    top: 10,
-    left: 7,
-    zIndex: 1000,
-  },
-  searchInput: {
-    backgroundColor: "#F5F6FA",
-    borderRadius: 10,
-    paddingLeft: 55,
-    paddingRight: 15,
-    fontSize: 20,
-    fontStyle: "italic",
-    fontWeight: "600",
-    color: "#000",
-  },
-
-  messagesContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-  },
-
-  scrollView: {
-    flex: 1,
-  },
-
-  messagesContent: {
-    // padding: 17,
-  },
-
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    // alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 17,
-  },
-  userImgFullNameAndMessageBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    flex: 1,
-  },
-  userImg: {
-    width: 51,
-    height: 51,
-    borderRadius: 25,
-  },
-  fullNameAndMessageBlock: {
-    flex: 1,
-  },
-  fullName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 4,
-  },
-  message: {
-    fontSize: 14,
-    color: "#666",
-  },
-  time: {
-    fontSize: 12,
-    color: "#999",
-  },
-  messageNotFoundBlock: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-  },
-  messageNotFoundText: {
-    fontSize: 16,
-    color: "#666",
-  },
-});
