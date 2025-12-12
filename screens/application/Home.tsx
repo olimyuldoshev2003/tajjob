@@ -11,6 +11,7 @@ import {
   Text,
   TextInput,
   View,
+  useColorScheme,
 } from "react-native";
 
 // import Dropdown from "react-native-input-select";
@@ -35,6 +36,9 @@ interface HomeProps {
 const Home = ({ onJobPress }: HomeProps) => {
   const navigation: any = useNavigation();
 
+  // Use useColorScheme hook to get the current theme
+  const colorScheme = useColorScheme();
+
   const [modalFilter, setModalFilter] = useState<boolean>(false);
   const [filterByCity, setFilterByCity] = useState<string>("");
   const [checked, setChecked] = useState(false);
@@ -42,6 +46,12 @@ const Home = ({ onJobPress }: HomeProps) => {
   // Animation values
   const slideAnim = useRef(new Animated.Value(0)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
+
+  // Update theme whenever colorScheme changes
+  useEffect(() => {
+    // Force re-render when theme changes
+    // This useEffect will trigger whenever useColorScheme() returns a new value
+  }, [colorScheme]);
 
   useEffect(() => {
     if (modalFilter) {
@@ -303,59 +313,338 @@ const Home = ({ onJobPress }: HomeProps) => {
     onJobPress?.(job);
   };
 
+  // Dynamic styles based on current theme
+  const dynamicStyles = StyleSheet.create({
+    homeComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#000" : "#fff",
+    },
+    homeComponentBlock: {
+      flex: 1,
+    },
+    headerHomeComponent: {
+      backgroundColor: "#0961F6",
+      paddingTop: 50,
+      paddingBottom: 30,
+      borderStartEndRadius: 20,
+      borderEndEndRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    headerBlock1: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      paddingHorizontal: 20,
+    },
+    headerTextBlock: {},
+    greetingsAndName: {
+      color: "#fff",
+      fontWeight: "700",
+      fontSize: 28,
+    },
+    greetingText: {
+      color: "#9FBFE2",
+      fontWeight: "500",
+      fontSize: 21,
+    },
+    blockNotificationIcon: {
+      position: "relative",
+    },
+    notificationIcon: {
+      backgroundColor: "#ffffff45",
+      borderRadius: 10,
+    },
+    newNotificationNotice: {
+      width: 8,
+      height: 8,
+      backgroundColor: "red",
+      borderRadius: 35,
+      position: "absolute",
+      top: 8,
+      right: 13,
+    },
+    headerBlock2: {
+      marginTop: 25,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 10,
+    },
+    searchInputBlock: {
+      position: "relative",
+      flex: 1,
+    },
+    searchIcon: {
+      position: "absolute",
+      top: 9,
+      left: 7,
+      zIndex: 1000,
+    },
+    searchInput: {
+      backgroundColor: "#F5F6FA",
+      borderRadius: 10,
+      paddingLeft: 55,
+      paddingRight: 15,
+      fontSize: 26,
+      fontStyle: "italic",
+      fontWeight: "600",
+    },
+    filterBtn: {
+      paddingVertical: 9,
+      paddingHorizontal: 10,
+      backgroundColor: "#fff",
+      borderRadius: 10,
+    },
+    filterIcon: {},
+    sectionHomeComponent: {
+      paddingHorizontal: 13,
+      paddingVertical: 15,
+      marginTop: 5,
+      gap: 15,
+      paddingBottom: 22,
+    },
+    suggestedJobAndSeeAllTextsBlock: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    suggestedJobText: {
+      fontSize: 28,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    seeAllBtn: {},
+    seeAllBtnText: {
+      color: "#6865C2",
+      fontSize: 22,
+      fontWeight: "400",
+    },
+
+    suggestedJobsBlock: {
+      gap: 15,
+    },
+    recentJobsBlock: {},
+    recentJobsText: {
+      fontSize: 28,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    filterByCategoryBlock: {},
+    filterByCategoryBlockScroll: {
+      marginTop: 10,
+      gap: 20,
+    },
+    filterByCategoryBtn: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#d4d4d4",
+      paddingVertical: 2.5,
+      paddingHorizontal: 10,
+      borderRadius: 14,
+    },
+    filterByCategoryBtnText: {
+      fontSize: 20,
+      fontWeight: "400",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    recentJobs: {
+      marginTop: 30,
+      gap: 15,
+    },
+
+    // Modal Filter sliding from top
+    //////////////////////////////////////////////////
+    modalContainer: {
+      flex: 1,
+      justifyContent: "flex-start",
+    },
+    overlayModalFilter: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    backdropPressable: {
+      flex: 1,
+    },
+    modalFilterStyle: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "white",
+      maxHeight: SCREEN_HEIGHT * 1.03,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    modalFilterScrollContent: {
+      flex: 1,
+    },
+    modalFilterHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingBottom: 20,
+      paddingHorizontal: 20,
+      paddingTop: 25,
+      borderBottomWidth: 1,
+      borderBottomColor: colorScheme === "dark" ? "#333" : "#E5E5E5",
+    },
+    closeButton: {
+      padding: 5,
+    },
+    modalHeaderText: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    modalFilterSection: {
+      paddingVertical: 10,
+      paddingBottom: 25,
+    },
+    filterBySelectBlock: {
+      marginHorizontal: 20,
+      marginTop: 12,
+    },
+    selectByCity: {
+      borderWidth: 2,
+      borderColor: colorScheme === "dark" ? "#555" : "#A2A2A2",
+      fontSize: 25,
+      fontWeight: "400",
+      width: "100%",
+      backgroundColor: colorScheme === "dark" ? "#1E1E1E" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+
+    
+    filterBySphereAndExperienceWithCheckboxBlock: {},
+
+    // Filter By Sphere
+    filterBySphere: {
+      paddingHorizontal: 20,
+    },
+    titleFilterBySphere: {
+      fontSize: 25,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    checkboxesForFilterBySphereBlock: {
+      marginTop: 10,
+      gap: 12,
+    },
+
+    // Filter By Experience
+    filterByExperience: {
+      paddingHorizontal: 20,
+      marginTop: 10,
+    },
+    titleFilterByExperience: {
+      fontSize: 25,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    checkboxesForFilterByExperienceBlock: {
+      marginTop: 10,
+      gap: 1,
+    },
+
+    // Checkbox And its label
+    checkboxAndItsLabelBlock: {},
+    checkboxAndItsLabel: {},
+
+    // Button Apply and Reset
+    btnApplyAndResetBlock: {
+      marginTop: 17,
+      paddingHorizontal: 21,
+      gap: 4,
+    },
+    btnApply: {
+      backgroundColor: "#0961F6",
+      borderRadius: 30,
+      paddingVertical: 10,
+    },
+    btnApplyText: {
+      textAlign: "center",
+      color: "#fff",
+      fontSize: 22,
+      fontWeight: "500",
+    },
+    btnReset: {
+      borderRadius: 30,
+      paddingVertical: 10,
+    },
+    btnResetText: {
+      textAlign: "center",
+      color: colorScheme === "dark" ? "#aaa" : "#707070",
+      fontSize: 21,
+      fontWeight: "400",
+    },
+    //////////////////////////////////////////////////
+  });
+
   return (
-    <View style={styles.homeComponent}>
-      <View style={styles.homeComponentBlock}>
-        <View style={[styles.headerHomeComponent]}>
-          <View style={styles.headerBlock1}>
-            <View style={styles.headerTextBlock}>
-              <Text style={styles.greetingsAndName}>Hi Olim</Text>
-              <Text style={styles.greetingText}>Welcome</Text>
+    <View style={dynamicStyles.homeComponent}>
+      <View style={dynamicStyles.homeComponentBlock}>
+        <View style={[dynamicStyles.headerHomeComponent]}>
+          <View style={dynamicStyles.headerBlock1}>
+            <View style={dynamicStyles.headerTextBlock}>
+              <Text style={dynamicStyles.greetingsAndName}>Hi Olim</Text>
+              <Text style={dynamicStyles.greetingText}>Welcome</Text>
             </View>
-            <View style={styles.blockNotificationIcon}>
+            <View style={dynamicStyles.blockNotificationIcon}>
               <MaterialIcons
                 name="notifications"
                 size={44}
                 color="white"
-                style={styles.notificationIcon}
+                style={dynamicStyles.notificationIcon}
                 onPress={() => {
                   navigation.navigate("Notifications");
                 }}
               />
-              <View style={styles.newNotificationNotice} />
+              <View style={dynamicStyles.newNotificationNotice} />
             </View>
           </View>
-          <View style={[styles.headerBlock2]}>
-            <View style={[styles.searchInputBlock]}>
+          <View style={[dynamicStyles.headerBlock2]}>
+            <View style={[dynamicStyles.searchInputBlock]}>
               <Ionicons
                 name="search"
                 size={38}
                 color="black"
-                style={styles.searchIcon}
+                style={dynamicStyles.searchIcon}
               />
               <TextInput
-                style={styles.searchInput}
+                style={dynamicStyles.searchInput}
                 placeholder="Search"
                 pointerEvents="none"
+                placeholderTextColor={colorScheme === "dark" ? "#888" : "#666"}
               />
             </View>
-            <Pressable style={styles.filterBtn} onPress={handleModalFilter}>
+            <Pressable
+              style={dynamicStyles.filterBtn}
+              onPress={handleModalFilter}
+            >
               <Image
                 source={require("../../assets/tajjob/home/filter.jpg")}
-                style={styles.filterIcon}
+                style={dynamicStyles.filterIcon}
               />
             </Pressable>
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={styles.sectionHomeComponent}>
-          <View style={styles.suggestedJobAndSeeAllTextsBlock}>
-            <Text style={styles.suggestedJobText}>Suggested job</Text>
-            <Pressable style={styles.seeAllBtn}>
-              <Text style={styles.seeAllBtnText}>See all</Text>
+        <ScrollView contentContainerStyle={dynamicStyles.sectionHomeComponent}>
+          <View style={dynamicStyles.suggestedJobAndSeeAllTextsBlock}>
+            <Text style={dynamicStyles.suggestedJobText}>Suggested job</Text>
+            <Pressable style={dynamicStyles.seeAllBtn}>
+              <Text style={dynamicStyles.seeAllBtnText}>See all</Text>
             </Pressable>
           </View>
-          <View style={styles.suggestedJobsBlock}>
+          <View style={dynamicStyles.suggestedJobsBlock}>
             {jobs.map((suggestedJob: any) => {
               return (
                 <EachJob
@@ -367,38 +656,50 @@ const Home = ({ onJobPress }: HomeProps) => {
             })}
           </View>
 
-          <View style={styles.recentJobsBlock}>
-            <Text style={styles.recentJobsText}>Recent Jobs</Text>
+          <View style={dynamicStyles.recentJobsBlock}>
+            <Text style={dynamicStyles.recentJobsText}>Recent Jobs</Text>
             <ScrollView
               horizontal
-              style={styles.filterByCategoryBlock}
-              contentContainerStyle={styles.filterByCategoryBlockScroll}
+              style={dynamicStyles.filterByCategoryBlock}
+              contentContainerStyle={dynamicStyles.filterByCategoryBlockScroll}
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
             >
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>All</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>All</Text>
               </Pressable>
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>IT-Job</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>
+                  IT-Job
+                </Text>
               </Pressable>
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>Operator</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>
+                  Operator
+                </Text>
               </Pressable>
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>
+                  Delivery
+                </Text>
               </Pressable>
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>
+                  Delivery
+                </Text>
               </Pressable>
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>
+                  Delivery
+                </Text>
               </Pressable>
-              <Pressable style={styles.filterByCategoryBtn}>
-                <Text style={styles.filterByCategoryBtnText}>Delivery</Text>
+              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+                <Text style={dynamicStyles.filterByCategoryBtnText}>
+                  Delivery
+                </Text>
               </Pressable>
             </ScrollView>
-            <View style={styles.recentJobs}>
+            <View style={dynamicStyles.recentJobs}>
               {jobs.map((recentJob: any) => {
                 return (
                   <EachJob
@@ -421,13 +722,16 @@ const Home = ({ onJobPress }: HomeProps) => {
         onRequestClose={handleCloseModal}
         statusBarTranslucent={true}
       >
-        <View style={styles.modalContainer}>
+        <View style={dynamicStyles.modalContainer}>
           {/* Animated Backdrop */}
           <Animated.View
-            style={[styles.overlayModalFilter, { opacity: backdropOpacity }]}
+            style={[
+              dynamicStyles.overlayModalFilter,
+              { opacity: backdropOpacity },
+            ]}
           >
             <Pressable
-              style={styles.backdropPressable}
+              style={dynamicStyles.backdropPressable}
               onPress={handleCloseModal}
             />
           </Animated.View>
@@ -435,27 +739,34 @@ const Home = ({ onJobPress }: HomeProps) => {
           {/* Animated Modal Content */}
           <Animated.View
             style={[
-              styles.modalFilterStyle,
+              dynamicStyles.modalFilterStyle,
               {
                 transform: [{ translateY: modalTranslateY }],
               },
             ]}
           >
             {/* Fixed Header */}
-            <View style={styles.modalFilterHeader}>
-              <Text style={styles.modalHeaderText}>Filter</Text>
-              <Pressable onPress={handleCloseModal} style={styles.closeButton}>
-                <FontAwesome name="close" size={42} color="black" />
+            <View style={dynamicStyles.modalFilterHeader}>
+              <Text style={dynamicStyles.modalHeaderText}>Filter</Text>
+              <Pressable
+                onPress={handleCloseModal}
+                style={dynamicStyles.closeButton}
+              >
+                <FontAwesome
+                  name="close"
+                  size={42}
+                  color={colorScheme === "dark" ? "#fff" : "black"}
+                />
               </Pressable>
             </View>
 
             {/* Scrollable Content */}
             <ScrollView
-              style={styles.modalFilterScrollContent}
-              contentContainerStyle={styles.modalFilterSection}
+              style={dynamicStyles.modalFilterScrollContent}
+              contentContainerStyle={dynamicStyles.modalFilterSection}
               showsVerticalScrollIndicator={false}
             >
-              <View style={styles.filterBySelectBlock}>
+              <View style={dynamicStyles.filterBySelectBlock}>
                 <Selector
                   options={[
                     { label: "All cities", value: "" },
@@ -471,230 +782,307 @@ const Home = ({ onJobPress }: HomeProps) => {
                   placeholder="Select the city..."
                   searchable={true}
                   primaryColor="#1976d2"
-                  style={styles.selectByCity}
+                  style={dynamicStyles.selectByCity}
                   customArrow={
-                    <Entypo name="chevron-thin-down" size={24} color="black" />
+                    <Entypo
+                      name="chevron-thin-down"
+                      size={24}
+                      color={colorScheme === "dark" ? "#fff" : "black"}
+                    />
                   }
                 />
               </View>
-              <View style={styles.filterBySphereAndExperienceWithCheckboxBlock}>
-                <View style={styles.filterBySphere}>
-                  <Text style={styles.titleFilterBySphere}>Sphere</Text>
-                  <View style={styles.checkboxesForFilterBySphereBlock}>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+              <View
+                style={
+                  dynamicStyles.filterBySphereAndExperienceWithCheckboxBlock
+                }
+              >
+                <View style={dynamicStyles.filterBySphere}>
+                  <Text style={dynamicStyles.titleFilterBySphere}>Sphere</Text>
+                  <View style={dynamicStyles.checkboxesForFilterBySphereBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Medicine"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Engineering"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Information Technology"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Education"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Business Administration"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Law"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Architecture"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Graphic Design"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Marketing"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Accounting"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Psychology"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Programmer"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
                         fillColor="blue"
-                        unFillColor="#FFFFFF"
+                        unFillColor={
+                          colorScheme === "dark" ? "#333" : "#FFFFFF"
+                        }
                         text="Tourism and Hospitality"
                         iconStyle={{ borderColor: "red" }}
                         innerIconStyle={{ borderWidth: 2 }}
-                        textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                        textStyle={{
+                          fontFamily: "JosefinSans-Regular",
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                         onPress={(isChecked: boolean) => {
                           setChecked(checked);
                         }}
-                        style={styles.checkboxAndItsLabel}
+                        style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
                   </View>
                 </View>
-                <View style={styles.filterByExperience}>
-                  <Text style={styles.titleFilterByExperience}>Experience</Text>
-                  <View style={styles.checkboxesForFilterByExperienceBlock}>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                <View style={dynamicStyles.filterByExperience}>
+                  <Text style={dynamicStyles.titleFilterByExperience}>
+                    Experience
+                  </Text>
+                  <View
+                    style={dynamicStyles.checkboxesForFilterByExperienceBlock}
+                  >
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <AdvancedCheckbox
                         value={checked}
                         onValueChange={() => {
@@ -704,9 +1092,12 @@ const Home = ({ onJobPress }: HomeProps) => {
                         checkedColor="#007AFF"
                         uncheckedColor="#ccc"
                         size={24}
+                        labelStyle={{
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <AdvancedCheckbox
                         value={checked}
                         onValueChange={() => {
@@ -716,9 +1107,12 @@ const Home = ({ onJobPress }: HomeProps) => {
                         checkedColor="#007AFF"
                         uncheckedColor="#ccc"
                         size={24}
+                        labelStyle={{
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <AdvancedCheckbox
                         value={checked}
                         onValueChange={() => {
@@ -728,9 +1122,12 @@ const Home = ({ onJobPress }: HomeProps) => {
                         checkedColor="#007AFF"
                         uncheckedColor="#ccc"
                         size={24}
+                        labelStyle={{
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <AdvancedCheckbox
                         value={checked}
                         onValueChange={() => {
@@ -740,9 +1137,12 @@ const Home = ({ onJobPress }: HomeProps) => {
                         checkedColor="#007AFF"
                         uncheckedColor="#ccc"
                         size={24}
+                        labelStyle={{
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                       />
                     </View>
-                    <View style={styles.checkboxAndItsLabelBlock}>
+                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <AdvancedCheckbox
                         value={checked}
                         onValueChange={() => {
@@ -752,17 +1152,20 @@ const Home = ({ onJobPress }: HomeProps) => {
                         checkedColor="#007AFF"
                         uncheckedColor="#ccc"
                         size={24}
+                        labelStyle={{
+                          color: colorScheme === "dark" ? "#fff" : "#000",
+                        }}
                       />
                     </View>
                   </View>
                 </View>
               </View>
-              <View style={styles.btnApplyAndResetBlock}>
-                <Pressable style={styles.btnApply}>
-                  <Text style={styles.btnApplyText}>Apply filter</Text>
+              <View style={dynamicStyles.btnApplyAndResetBlock}>
+                <Pressable style={dynamicStyles.btnApply}>
+                  <Text style={dynamicStyles.btnApplyText}>Apply filter</Text>
                 </Pressable>
-                <Pressable style={styles.btnReset}>
-                  <Text style={styles.btnResetText}>Reset</Text>
+                <Pressable style={dynamicStyles.btnReset}>
+                  <Text style={dynamicStyles.btnResetText}>Reset</Text>
                 </Pressable>
               </View>
             </ScrollView>
@@ -774,272 +1177,3 @@ const Home = ({ onJobPress }: HomeProps) => {
 };
 
 export default Home;
-
-const styles = StyleSheet.create({
-  homeComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  homeComponentBlock: {
-    flex: 1,
-  },
-  headerHomeComponent: {
-    backgroundColor: "#0961F6",
-    paddingTop: 50,
-    paddingBottom: 30,
-    borderStartEndRadius: 20,
-    borderEndEndRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  headerBlock1: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingHorizontal: 20,
-  },
-  headerTextBlock: {},
-  greetingsAndName: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 28,
-  },
-  greetingText: {
-    color: "#9FBFE2",
-    fontWeight: "500",
-    fontSize: 21,
-  },
-  blockNotificationIcon: {
-    position: "relative",
-  },
-  notificationIcon: {
-    backgroundColor: "#ffffff45",
-    borderRadius: 10,
-  },
-  newNotificationNotice: {
-    width: 8,
-    height: 8,
-    backgroundColor: "red",
-    borderRadius: 35,
-    position: "absolute",
-    top: 8,
-    right: 13,
-  },
-  headerBlock2: {
-    marginTop: 25,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 10,
-  },
-  searchInputBlock: {
-    position: "relative",
-    flex: 1,
-  },
-  searchIcon: {
-    position: "absolute",
-    top: 9,
-    left: 7,
-    zIndex: 1000,
-  },
-  searchInput: {
-    backgroundColor: "#F5F6FA",
-    borderRadius: 10,
-    paddingLeft: 55,
-    paddingRight: 15,
-    fontSize: 26,
-    fontStyle: "italic",
-    fontWeight: "600",
-  },
-  filterBtn: {
-    paddingVertical: 9,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-  },
-  filterIcon: {},
-  sectionHomeComponent: {
-    paddingHorizontal: 13,
-    paddingVertical: 15,
-    marginTop: 5,
-    gap: 15,
-    paddingBottom: 22,
-  },
-  suggestedJobAndSeeAllTextsBlock: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  suggestedJobText: {
-    fontSize: 28,
-    fontWeight: "500",
-  },
-  seeAllBtn: {},
-  seeAllBtnText: {
-    color: "#6865C2",
-    fontSize: 22,
-    fontWeight: "400",
-  },
-
-  suggestedJobsBlock: {
-    gap: 15,
-  },
-  recentJobsBlock: {},
-  recentJobsText: {
-    fontSize: 28,
-    fontWeight: "500",
-  },
-  filterByCategoryBlock: {},
-  filterByCategoryBlockScroll: {
-    marginTop: 10,
-    gap: 20,
-  },
-  filterByCategoryBtn: {
-    backgroundColor: "#d4d4d4",
-    paddingVertical: 2.5,
-    paddingHorizontal: 10,
-    borderRadius: 14,
-  },
-  filterByCategoryBtnText: {
-    fontSize: 20,
-    fontWeight: "400",
-  },
-  recentJobs: {
-    marginTop: 30,
-    gap: 15,
-  },
-
-  // Modal Filter sliding from top
-  //////////////////////////////////////////////////
-  modalContainer: {
-    flex: 1,
-    justifyContent: "flex-start",
-  },
-  overlayModalFilter: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  backdropPressable: {
-    flex: 1,
-  },
-  modalFilterStyle: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "white",
-    // borderBottomLeftRadius: 20,
-    // borderBottomRightRadius: 20,
-    maxHeight: SCREEN_HEIGHT * 1.03,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  modalFilterScrollContent: {
-    flex: 1,
-  },
-  modalFilterHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    paddingTop: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5E5",
-  },
-  closeButton: {
-    padding: 5,
-  },
-  modalHeaderText: {
-    fontSize: 32,
-    fontWeight: "700",
-  },
-  modalFilterSection: {
-    paddingVertical: 10,
-    paddingBottom: 25,
-  },
-  filterBySelectBlock: {
-    marginHorizontal: 20,
-    marginTop: 12,
-  },
-  selectByCity: {
-    borderWidth: 2,
-    borderColor: "#A2A2A2",
-    fontSize: 25,
-    fontWeight: "400",
-    width: "100%",
-  },
-
-  filterBySphereAndExperienceWithCheckboxBlock: {
-    marginTop: 30,
-  },
-
-  // Filter By Sphere
-  filterBySphere: {
-    paddingHorizontal: 20,
-  },
-  titleFilterBySphere: {
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  checkboxesForFilterBySphereBlock: {
-    marginTop: 10,
-    gap: 12,
-  },
-
-  // Filter By Experience
-  filterByExperience: {
-    paddingHorizontal: 20,
-    marginTop: 10,
-  },
-  titleFilterByExperience: {
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  checkboxesForFilterByExperienceBlock: {
-    marginTop: 10,
-    gap: 1,
-  },
-
-  // Checkbox And its label
-  checkboxAndItsLabelBlock: {},
-  checkboxAndItsLabel: {},
-
-  // Button Apply and Reset
-  btnApplyAndResetBlock: {
-    marginTop: 17,
-    paddingHorizontal: 21,
-    gap: 4,
-  },
-  btnApply: {
-    backgroundColor: "#0961F6",
-    borderRadius: 30,
-    paddingVertical: 10,
-  },
-  btnApplyText: {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "500",
-  },
-  btnReset: {
-    borderRadius: 30,
-    paddingVertical: 10,
-  },
-  btnResetText: {
-    textAlign: "center",
-    color: "#707070",
-    fontSize: 21,
-    fontWeight: "400",
-  },
-  //////////////////////////////////////////////////
-});
