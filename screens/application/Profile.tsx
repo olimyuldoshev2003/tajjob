@@ -31,7 +31,7 @@ const Profile = () => {
   const dynamicStyles = StyleSheet.create({
     profileComponent: {
       flex: 1,
-      backgroundColor: "#2623D2",
+      backgroundColor:colorScheme === "dark" ? "#b8b8b8":  "#2623D2",
     },
     profileComponentBlock: {
       flex: 1,
