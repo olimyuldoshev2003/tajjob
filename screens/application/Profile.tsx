@@ -31,7 +31,7 @@ const Profile = () => {
   const dynamicStyles = StyleSheet.create({
     profileComponent: {
       flex: 1,
-      backgroundColor:colorScheme === "dark" ? "#b8b8b8":  "#2623D2",
+      backgroundColor: colorScheme === "dark" ? "#b8b8b8" : "#2623D2",
     },
     profileComponentBlock: {
       flex: 1,
@@ -41,13 +41,13 @@ const Profile = () => {
       paddingTop: 50,
     },
     headerText: {
-      color: "#FFFFFF",
+      color: colorScheme === "dark" ? "#000" : "#FFFFFF",
       fontSize: 28,
       fontWeight: "600",
     },
     sectionBlockProfileComponent: {
       flex: 1,
-      backgroundColor: "#fff",
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,
       marginTop: 45,
