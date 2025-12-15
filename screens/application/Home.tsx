@@ -419,7 +419,7 @@ const Home = ({ onJobPress }: HomeProps) => {
     },
     seeAllBtn: {},
     seeAllBtnText: {
-      color: "#6865C2",
+      color: colorScheme === "dark" ? "#00c3ff" : "#6865C2",
       fontSize: 22,
       fontWeight: "400",
     },
@@ -523,7 +523,7 @@ const Home = ({ onJobPress }: HomeProps) => {
     },
 
     filterBySphereAndExperienceWithCheckboxBlock: {
-      marginTop: 30
+      marginTop: 30,
     },
 
     // Filter By Sphere

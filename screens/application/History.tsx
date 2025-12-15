@@ -40,7 +40,10 @@ const History = () => {
     },
     history: {
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 0 },
+      shadowOffset: {
+        width: 0,
+        height: 0
+      },
       shadowOpacity: 0.3,
       shadowRadius: 8,
       elevation: 5,

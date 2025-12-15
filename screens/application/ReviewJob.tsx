@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -23,90 +24,258 @@ const ReviewJob = ({
 }) => {
   // console.log(route.params.id);
 
+  const colorScheme = useColorScheme()
+
   const [rating, setRating] = useState(0);
 
+  const dynamicStyles = StyleSheet.create({
+    reviewJobComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+    },
+    reviewJobComponentBlock: {
+      paddingVertical: 20,
+      paddingHorizontal: 20,
+    },
+    reviewJobComponentScrollViewBlock: {},
+    headerReviewJobComponent: {},
+    headerBlock1ReviewJobComponent: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    headerBlock1Text: {
+      fontSize: 18,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    btnHeaderBlock1: {},
+    btnTextHeaderBlock1: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#2623D0",
+      fontSize: 16,
+      fontWeight: "500",
+      textDecorationLine: "underline",
+    },
+    headerBlock2ReviewJobComponent: {
+      position: "relative",
+      marginTop: 10,
+    },
+    searchIcon: {
+      position: "absolute",
+      top: 7,
+      left: 7,
+    },
+    searchInput: {
+      paddingVertical: 10,
+      paddingHorizontal: 10,
+      paddingLeft: 40,
+      boxShadow: "0 0 5px gray",
+      borderRadius: 10,
+      fontSize: 16,
+      fontWeight: 500,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    headerBlock3ReviewJobComponent: {
+      flexDirection: "row",
+      marginTop: 30,
+      gap: 10,
+    },
+    btnFilter: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      boxShadow: "0 0 5px gray",
+      paddingVertical: 4,
+      paddingHorizontal: 10,
+      borderRadius: 10,
+    },
+    filterIcon: {
+      width: 24,
+      height: 24,
+    },
+    btnTextFilter: {
+      fontSize: 15,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    filterBtnsBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 9,
+    },
+    interestBtn: {},
+    complainBtn: {},
+    feedbackBtn: {},
+
+    interestBtnText: {},
+    complainBtnText: {},
+    feedbackBtnText: {},
+
+    filterBtn: {
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      boxShadow: "0 0 5px gray",
+      borderRadius: 10,
+    },
+    filterBtnText: {
+      fontSize: 15,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    filterBtnActive: {
+      backgroundColor: colorScheme === "dark" ? "#00b8f0" : "#2623D2",
+    },
+    filterBtnTextActive: {
+      color: "#fff",
+    },
+    sectionReviewJobComponent: {
+      marginTop: 20,
+      paddingBottom: 40,
+    },
+    reviews: {},
+
+    // Each review
+    reviewBlock: {
+      padding: 10,
+      boxShadow: "0 0 5px gray",
+      borderRadius: 20,
+    },
+    headerReviewBlock: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    userImgFullnameAndRatingBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    userImgReview: {
+      width: 37,
+      height: 37,
+      resizeMode: "contain",
+      borderRadius: 50,
+    },
+    fullnameAndRatingBlock: {},
+    fullnameReviewer: {
+      fontSize: 18,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    sectionReviewBlock: {
+      marginTop: 10,
+    },
+    review: {
+      fontSize: 14,
+      fontWeight: "400",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    reviewTime: {
+      color: colorScheme === "dark" ? "#fff" : "#c2c2c2",
+      fontSize: 14,
+      fontWeight: "500",
+      textAlign: "right",
+    },
+  });
+
+
   return (
-    <View style={styles.reviewJobComponent}>
+    <View style={dynamicStyles.reviewJobComponent}>
       <ScrollView
-        style={styles.reviewJobComponentBlock}
-        contentContainerStyle={styles.reviewJobComponentScrollViewBlock}
+        style={dynamicStyles.reviewJobComponentBlock}
+        contentContainerStyle={dynamicStyles.reviewJobComponentScrollViewBlock}
       >
-        <View style={styles.headerReviewJobComponent}>
-          <View style={styles.headerBlock1ReviewJobComponent}>
-            <Text style={styles.headerBlock1Text}>Reviews</Text>
+        <View style={dynamicStyles.headerReviewJobComponent}>
+          <View style={dynamicStyles.headerBlock1ReviewJobComponent}>
+            <Text style={dynamicStyles.headerBlock1Text}>Reviews</Text>
             <Pressable
-              style={styles.btnHeaderBlock1}
+              style={dynamicStyles.btnHeaderBlock1}
               onPress={() => {
                 setModalAddReview(true);
               }}
             >
-              <Text style={styles.btnTextHeaderBlock1}>Add review</Text>
+              <Text style={dynamicStyles.btnTextHeaderBlock1}>Add review</Text>
             </Pressable>
           </View>
-          <View style={styles.headerBlock2ReviewJobComponent}>
+          <View style={dynamicStyles.headerBlock2ReviewJobComponent}>
             <Ionicons
               name="search"
               size={26}
-              color="black"
-              style={styles.searchIcon}
+              color={colorScheme === "dark" ? "#fff" : "black"}
+              style={dynamicStyles.searchIcon}
             />
 
             <TextInput
-              style={styles.searchInput}
+              style={dynamicStyles.searchInput}
               placeholder="Search in reviews"
+              placeholderTextColor={colorScheme === "dark" ? "#cacaca":"gray"}
             />
           </View>
-          <View style={styles.headerBlock3ReviewJobComponent}>
-            <Pressable style={styles.btnFilter}>
+          <View style={dynamicStyles.headerBlock3ReviewJobComponent}>
+            <Pressable style={dynamicStyles.btnFilter}>
               <Image
                 source={require("../../assets/tajjob/job/filter-icon.jpg")}
-                style={styles.filterIcon}
+                style={dynamicStyles.filterIcon}
               />
-              <Text style={styles.btnTextFilter}>Filter</Text>
+              <Text style={dynamicStyles.btnTextFilter}>Filter</Text>
             </Pressable>
-            <View style={styles.filterBtnsBlock}>
+            <View style={dynamicStyles.filterBtnsBlock}>
               <Pressable
                 style={[
-                  styles.filterBtn,
-                  styles.interestBtn,
-                  styles.filterBtnActive,
+                  dynamicStyles.filterBtn,
+                  dynamicStyles.interestBtn,
+                  dynamicStyles.filterBtnActive,
                 ]}
               >
                 <Text
                   style={[
-                    styles.filterBtnText,
-                    styles.interestBtnText,
-                    styles.filterBtnTextActive,
+                    dynamicStyles.filterBtnText,
+                    dynamicStyles.interestBtnText,
+                    dynamicStyles.filterBtnTextActive,
                   ]}
                 >
                   Interest
                 </Text>
               </Pressable>
-              <Pressable style={[styles.filterBtn, styles.complainBtn]}>
-                <Text style={[styles.filterBtnText, styles.complainBtnText]}>
+              <Pressable
+                style={[dynamicStyles.filterBtn, dynamicStyles.complainBtn]}
+              >
+                <Text
+                  style={[
+                    dynamicStyles.filterBtnText,
+                    dynamicStyles.complainBtnText,
+                  ]}
+                >
                   Complain
                 </Text>
               </Pressable>
-              <Pressable style={[styles.filterBtn, styles.feedbackBtn]}>
-                <Text style={[styles.filterBtnText, styles.feedbackBtnText]}>
+              <Pressable
+                style={[dynamicStyles.filterBtn, dynamicStyles.feedbackBtn]}
+              >
+                <Text
+                  style={[
+                    dynamicStyles.filterBtnText,
+                    dynamicStyles.feedbackBtnText,
+                  ]}
+                >
                   Feedback
                 </Text>
               </Pressable>
             </View>
           </View>
         </View>
-        <View style={styles.sectionReviewJobComponent}>
-          <View style={styles.reviews}>
+        <View style={dynamicStyles.sectionReviewJobComponent}>
+          <View style={dynamicStyles.reviews}>
             {/* Review 1 */}
-            <View style={styles.reviewBlock}>
-              <View style={styles.headerReviewBlock}>
-                <View style={styles.userImgFullnameAndRatingBlock}>
+            <View style={dynamicStyles.reviewBlock}>
+              <View style={dynamicStyles.headerReviewBlock}>
+                <View style={dynamicStyles.userImgFullnameAndRatingBlock}>
                   <Image
                     source={require("../../assets/tajjob/job/user-img-review.jpg")}
-                    style={styles.userImgReview}
+                    style={dynamicStyles.userImgReview}
                   />
-                  <View style={styles.fullnameAndRatingBlock}>
-                    <Text style={styles.fullnameReviewer}>John Boris</Text>
+                  <View style={dynamicStyles.fullnameAndRatingBlock}>
+                    <Text style={dynamicStyles.fullnameReviewer}>
+                      John Boris
+                    </Text>
                     <Stars
                       default={rating}
                       count={5}
@@ -124,8 +293,8 @@ const ReviewJob = ({
                 </View>
                 <Entypo name="heart-outlined" size={30} color="black" />
               </View>
-              <View style={styles.sectionReviewBlock}>
-                <Text style={styles.review}>
+              <View style={dynamicStyles.sectionReviewBlock}>
+                <Text style={dynamicStyles.review}>
                   Reliable, Trusted, Innovative, Digital, Banking, Modern, Safe,
                   Fast, Customer, Service, Support, Convenient, Mobile,
                   Application, Professional, Easy, Secure, Transparent,
@@ -134,7 +303,7 @@ const ReviewJob = ({
                   Excellent, Popular
                 </Text>
               </View>
-              <Text style={styles.reviewTime}>11 days ago</Text>
+              <Text style={dynamicStyles.reviewTime}>11 days ago</Text>
             </View>
           </View>
         </View>
@@ -145,144 +314,3 @@ const ReviewJob = ({
 
 export default ReviewJob;
 
-const styles = StyleSheet.create({
-  reviewJobComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  reviewJobComponentBlock: {
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-  },
-  reviewJobComponentScrollViewBlock: {},
-  headerReviewJobComponent: {},
-  headerBlock1ReviewJobComponent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  headerBlock1Text: {
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  btnHeaderBlock1: {},
-  btnTextHeaderBlock1: {
-    color: "#2623D0",
-    fontSize: 16,
-    fontWeight: "500",
-    textDecorationLine: "underline",
-  },
-  headerBlock2ReviewJobComponent: {
-    position: "relative",
-    marginTop: 10,
-  },
-  searchIcon: {
-    position: "absolute",
-    top: 7,
-    left: 7,
-  },
-  searchInput: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    paddingLeft: 40,
-    boxShadow: "0 0 5px gray",
-    borderRadius: 10,
-    fontSize: 16,
-    fontWeight: 500,
-  },
-  headerBlock3ReviewJobComponent: {
-    flexDirection: "row",
-    marginTop: 30,
-    gap: 10,
-  },
-  btnFilter: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    boxShadow: "0 0 5px gray",
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
-  filterIcon: {
-    width: 24,
-    height: 24,
-  },
-  btnTextFilter: {
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  filterBtnsBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 9,
-  },
-  interestBtn: {},
-  complainBtn: {},
-  feedbackBtn: {},
-
-  interestBtnText: {},
-  complainBtnText: {},
-  feedbackBtnText: {},
-
-  filterBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    boxShadow: "0 0 5px gray",
-    borderRadius: 10,
-  },
-  filterBtnText: {
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  filterBtnActive: {
-    backgroundColor: "#2623D2",
-  },
-  filterBtnTextActive: {
-    color: "#fff",
-  },
-  sectionReviewJobComponent: {
-    marginTop: 20,
-    paddingBottom: 40,
-  },
-  reviews: {},
-
-  // Each review
-  reviewBlock: {
-    padding: 10,
-    boxShadow: "0 0 5px gray",
-    borderRadius: 20,
-  },
-  headerReviewBlock: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  userImgFullnameAndRatingBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  userImgReview: {
-    width: 37,
-    height: 37,
-    resizeMode: "contain",
-    borderRadius: 50,
-  },
-  fullnameAndRatingBlock: {},
-  fullnameReviewer: {
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  sectionReviewBlock: {
-    marginTop: 10,
-  },
-  review: {
-    fontSize: 14,
-    fontWeight: "400",
-  },
-  reviewTime: {
-    color: "#C2C2C2",
-    fontSize: 14,
-    fontWeight: "500",
-    textAlign: "right",
-  },
-});

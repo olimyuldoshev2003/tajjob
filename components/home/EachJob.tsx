@@ -142,7 +142,7 @@ const EachJob = ({
         color: colorScheme === "dark" ? "#fff" : "#7e7e7e",
       },
       salary: {
-        color: "#766EAA",
+        color: colorScheme === "dark" ? "#00c3ff" : "#766EAA",
       },
     });
   

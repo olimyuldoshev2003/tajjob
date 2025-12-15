@@ -1,14 +1,34 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, useColorScheme, View } from "react-native";
 
 const AboutJob = ({ route }: { route: any }) => {
+
+  const colorScheme = useColorScheme()
+
+    const dynamicStyles = StyleSheet.create({
+      aboutJobComponent: {
+        flex: 1,
+        backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      },
+      aboutJobComponentBlock: {
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+      },
+      aboutJobComponentScrollViewBlock: {},
+      aboutJobText: {
+        fontSize: 18,
+        fontWeight: "500",
+        paddingBottom: 30,
+        color: colorScheme === "dark" ? "#fff" : "#000",
+      },
+    });
   return (
-    <View style={styles.aboutJobComponent}>
+    <View style={dynamicStyles.aboutJobComponent}>
       <ScrollView
-        style={styles.aboutJobComponentBlock}
-        contentContainerStyle={styles.aboutJobComponentScrollViewBlock}
+        style={dynamicStyles.aboutJobComponentBlock}
+        contentContainerStyle={dynamicStyles.aboutJobComponentScrollViewBlock}
       >
-        <Text style={styles.aboutJobText}>{route.params.aboutJob}</Text>
+        <Text style={dynamicStyles.aboutJobText}>{route.params.aboutJob}</Text>
       </ScrollView>
     </View>
   );
@@ -16,19 +36,4 @@ const AboutJob = ({ route }: { route: any }) => {
 
 export default AboutJob;
 
-const styles = StyleSheet.create({
-  aboutJobComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  aboutJobComponentBlock: {
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-  },
-  aboutJobComponentScrollViewBlock: {},
-  aboutJobText: {
-    fontSize: 18,
-    fontWeight: "500",
-    paddingBottom: 30,
-  },
-});
+

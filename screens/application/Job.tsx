@@ -17,6 +17,7 @@ import {
   Share,
   StyleSheet,
   Text,
+  useColorScheme,
   View,
 } from "react-native";
 import AboutEmployer from "./AboutEmployer";
@@ -25,6 +26,9 @@ import ReviewJob from "./ReviewJob";
 
 const Job = ({ route }: { route: any }) => {
   const navigation: any = useNavigation();
+
+  const colorScheme = useColorScheme();
+
   const Tab = createMaterialTopTabNavigator();
   const [modalAddReview, setModalAddReview] = useState<boolean>(false);
   const [modalApply, setModalApply] = useState<boolean>(false);
@@ -169,114 +173,267 @@ const Job = ({ route }: { route: any }) => {
     Alert.alert("Success", "Job link copied to clipboard!");
   };
 
+  const dynamicStyles = StyleSheet.create({
+    jobComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#dddddd",
+    },
+    headerJobComponent: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingTop: 50,
+    },
+    closePageBtn: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 50,
+    },
+    saveAndShareBtnBlock: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 12,
+    },
+    saveBtn: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      paddingVertical: 6,
+      paddingHorizontal: 11,
+      borderRadius: 50,
+    },
+    shareBtn: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      paddingVertical: 6,
+      paddingHorizontal: 6,
+      borderRadius: 50,
+    },
+    sectionJobComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      marginTop: 57,
+      paddingBottom: 50,
+    },
+    employerImgEmplyerNameAndJobBlock: {
+      alignItems: "center",
+      marginTop: 3,
+      position: "absolute",
+      top: -46,
+      left: "22%",
+    },
+    employerImg: {
+      width: 86,
+      height: 89,
+      borderRadius: 50,
+    },
+    employerName: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    job: {
+      color: colorScheme === "dark" ? "#fff" : "#888888",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    locationIconAndLocation: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    location: {
+      color: colorScheme === "dark" ? "#ececec" : "#787878",
+      fontSize: 18,
+      fontWeight: "400",
+    },
+    salaryEmploymentTypeWorkingModelAndJobLevelBlock: {
+      marginTop: 160,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      rowGap: 10,
+      columnGap: 30,
+    },
+    salaryBlock: {},
+    employmentTypeBlock: {},
+    workingModelBlock: {},
+    jobLevelBlock: {},
+
+    // 4 informations with the same style blocks
+    fourInformationsWithTheSameStyleBlock: {
+      width: "44%",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      boxShadow: "0 0 5px gray",
+      padding: 6,
+      borderRadius: 5,
+    },
+    infoIconBlock: {
+      backgroundColor: "#E2E2E2",
+      padding: 6,
+      borderRadius: 50,
+    },
+    infoIcon: {
+      width: 21,
+      height: 21,
+    },
+    titleAndInfoBlock: {},
+    title: {
+      color: colorScheme === "dark" ? "#fff" : "#969695",
+      fontSize: 15,
+      fontWeight: "500",
+    },
+    info: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 14,
+      fontWeight: "700",
+    },
+    aboutJobCompanyAndReviewBlock: {},
+    btnApplyJobBlock: {
+      paddingHorizontal: 10,
+    },
+    btnApplyJob: {
+      backgroundColor: "#2623D2",
+      paddingVertical: 10,
+      borderRadius: 20,
+    },
+    btnTextApplyJob: {
+      textAlign: "center",
+      color: "#FFFFFF",
+      fontSize: 25,
+      fontWeight: "700",
+    },
+  });
+
   const ReviewJobWithModalAddReview = ({ route }: { route: any }) => (
     <ReviewJob setModalAddReview={setModalAddReview} route={route} />
   );
 
   return (
-    <View style={styles.jobComponent}>
-      <View style={styles.headerJobComponent}>
+    <View style={dynamicStyles.jobComponent}>
+      <View style={dynamicStyles.headerJobComponent}>
         <Pressable
-          style={styles.closePageBtn}
+          style={dynamicStyles.closePageBtn}
           onPress={() => {
             navigation.goBack();
           }}
         >
-          <FontAwesome name="close" size={32} color="black" />
+          <FontAwesome
+            name="close"
+            size={32}
+            color={colorScheme === "dark" ? "#fff" : "black"}
+          />
         </Pressable>
-        <View style={styles.saveAndShareBtnBlock}>
-          <Pressable style={styles.saveBtn}>
-            <FontAwesome name="bookmark-o" size={32} color="black" />
+        <View style={dynamicStyles.saveAndShareBtnBlock}>
+          <Pressable style={dynamicStyles.saveBtn}>
+            <FontAwesome
+              name="bookmark-o"
+              size={32}
+              color={colorScheme === "dark" ? "#fff" : "black"}
+            />
           </Pressable>
           <Pressable
-            style={styles.shareBtn}
+            style={dynamicStyles.shareBtn}
             // onPress={onShare} // Add the share function here
             onPress={onShare} // Using custom share options
           >
-            <Entypo name="share" size={32} color="black" />
+            <Entypo
+              name="share"
+              size={32}
+              color={colorScheme === "dark" ? "#fff" : "black"}
+            />
           </Pressable>
         </View>
       </View>
-      <View style={styles.sectionJobComponent}>
-        <View style={styles.employerImgEmplyerNameAndJobBlock}>
+      <View style={dynamicStyles.sectionJobComponent}>
+        <View style={dynamicStyles.employerImgEmplyerNameAndJobBlock}>
           <Image
             source={require("../../assets/tajjob/home/alif.jpg")}
-            style={styles.employerImg}
+            style={dynamicStyles.employerImg}
           />
-          <Text style={styles.employerName}>Alif Bank</Text>
-          <Text style={styles.job}>Operation specialist</Text>
-          <View style={styles.locationIconAndLocation}>
-            <Entypo name="location-pin" size={29} color="black" />
-            <Text style={styles.location}>Dushanbe, Tajikistan</Text>
+          <Text style={dynamicStyles.employerName}>Alif Bank</Text>
+          <Text style={dynamicStyles.job}>Operation specialist</Text>
+          <View style={dynamicStyles.locationIconAndLocation}>
+            <Entypo
+              name="location-pin"
+              size={29}
+              color={colorScheme === "dark" ? "#fff" : "black"}
+            />
+            <Text style={dynamicStyles.location}>Dushanbe, Tajikistan</Text>
           </View>
         </View>
-        <View style={styles.salaryEmploymentTypeWorkingModelAndJobLevelBlock}>
+        <View
+          style={dynamicStyles.salaryEmploymentTypeWorkingModelAndJobLevelBlock}
+        >
           <View
             style={[
-              styles.salaryBlock,
-              styles.fourInformationsWithTheSameStyleBlock,
+              dynamicStyles.salaryBlock,
+              dynamicStyles.fourInformationsWithTheSameStyleBlock,
             ]}
           >
-            <View style={styles.infoIconBlock}>
+            <View style={dynamicStyles.infoIconBlock}>
               <Image
                 source={require("../../assets/tajjob/job/money-icon.png")}
-                style={styles.infoIcon}
+                style={dynamicStyles.infoIcon}
               />
             </View>
-            <View style={styles.titleAndInfoBlock}>
-              <Text style={styles.title}>Salary(Monthly)</Text>
-              <Text style={styles.info}>1500 somoni</Text>
+            <View style={dynamicStyles.titleAndInfoBlock}>
+              <Text style={dynamicStyles.title}>Salary(Monthly)</Text>
+              <Text style={dynamicStyles.info}>1500 somoni</Text>
             </View>
           </View>
           <View
             style={[
-              styles.employmentTypeBlock,
-              styles.fourInformationsWithTheSameStyleBlock,
+              dynamicStyles.employmentTypeBlock,
+              dynamicStyles.fourInformationsWithTheSameStyleBlock,
             ]}
           >
-            <View style={styles.infoIconBlock}>
+            <View style={dynamicStyles.infoIconBlock}>
               <Image
                 source={require("../../assets/tajjob/job/employment-type-icon.png")}
-                style={styles.infoIcon}
+                style={dynamicStyles.infoIcon}
               />
             </View>
-            <View style={styles.titleAndInfoBlock}>
-              <Text style={styles.title}>Employment Type</Text>
-              <Text style={styles.info}>Full - Time</Text>
+            <View style={dynamicStyles.titleAndInfoBlock}>
+              <Text style={dynamicStyles.title}>Employment Type</Text>
+              <Text style={dynamicStyles.info}>Full - Time</Text>
             </View>
           </View>
           <View
             style={[
-              styles.workingModelBlock,
-              styles.fourInformationsWithTheSameStyleBlock,
+              dynamicStyles.workingModelBlock,
+              dynamicStyles.fourInformationsWithTheSameStyleBlock,
             ]}
           >
-            <View style={styles.infoIconBlock}>
+            <View style={dynamicStyles.infoIconBlock}>
               <Image
                 source={require("../../assets/tajjob/job/working-model-icon.png")}
-                style={styles.infoIcon}
+                style={dynamicStyles.infoIcon}
               />
             </View>
-            <View style={styles.titleAndInfoBlock}>
-              <Text style={styles.title}>Working Model</Text>
-              <Text style={styles.info}>Remote</Text>
+            <View style={dynamicStyles.titleAndInfoBlock}>
+              <Text style={dynamicStyles.title}>Working Model</Text>
+              <Text style={dynamicStyles.info}>Remote</Text>
             </View>
           </View>
           <View
             style={[
-              styles.jobLevelBlock,
-              styles.fourInformationsWithTheSameStyleBlock,
+              dynamicStyles.jobLevelBlock,
+              dynamicStyles.fourInformationsWithTheSameStyleBlock,
             ]}
           >
-            <View style={styles.infoIconBlock}>
+            <View style={dynamicStyles.infoIconBlock}>
               <Image
                 source={require("../../assets/tajjob/job/level.png")}
-                style={styles.infoIcon}
+                style={dynamicStyles.infoIcon}
               />
             </View>
-            <View style={styles.titleAndInfoBlock}>
-              <Text style={styles.title}>Level</Text>
-              <Text style={styles.info}>Internship</Text>
+            <View style={dynamicStyles.titleAndInfoBlock}>
+              <Text style={dynamicStyles.title}>Level</Text>
+              <Text style={dynamicStyles.info}>Internship</Text>
             </View>
           </View>
         </View>
@@ -284,8 +441,10 @@ const Job = ({ route }: { route: any }) => {
           <NavigationContainer>
             <Tab.Navigator
               screenOptions={{
-                tabBarActiveTintColor: "#2623D0",
-                tabBarInactiveTintColor: "#000",
+                tabBarActiveTintColor:
+                  colorScheme === "dark" ? "#00c3ff" : "#2623D0",
+                tabBarInactiveTintColor:
+                  colorScheme === "dark" ? "#fff" : "#000",
                 tabBarLabelStyle: {
                   fontSize: 21,
                   fontWeight: "500",
@@ -298,7 +457,8 @@ const Job = ({ route }: { route: any }) => {
                   borderBottomWidth: 0,
                 },
                 tabBarIndicatorStyle: {
-                  backgroundColor: "#2623D0",
+                  backgroundColor:
+                    colorScheme === "dark" ? "#00c3ff" : "#2623D0",
                   height: 3,
                 },
                 tabBarPressOpacity: 0.7,
@@ -339,14 +499,14 @@ const Job = ({ route }: { route: any }) => {
             </Tab.Navigator>
           </NavigationContainer>
         </NavigationIndependentTree>
-        <View style={styles.btnApplyJobBlock}>
+        <View style={dynamicStyles.btnApplyJobBlock}>
           <Pressable
-            style={styles.btnApplyJob}
+            style={dynamicStyles.btnApplyJob}
             onPress={() => {
               setModalApply(true);
             }}
           >
-            <Text style={styles.btnTextApplyJob}>Apply</Text>
+            <Text style={dynamicStyles.btnTextApplyJob}>Apply</Text>
           </Pressable>
         </View>
 
@@ -361,137 +521,3 @@ const Job = ({ route }: { route: any }) => {
 };
 
 export default Job;
-
-const styles = StyleSheet.create({
-  jobComponent: {
-    flex: 1,
-    backgroundColor: "#dddddd",
-  },
-  headerJobComponent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-  },
-  closePageBtn: {
-    backgroundColor: "#fff",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 50,
-  },
-  saveAndShareBtnBlock: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 12,
-  },
-  saveBtn: {
-    backgroundColor: "#fff",
-    paddingVertical: 6,
-    paddingHorizontal: 11,
-    borderRadius: 50,
-  },
-  shareBtn: {
-    backgroundColor: "#fff",
-    paddingVertical: 6,
-    paddingHorizontal: 6,
-    borderRadius: 50,
-  },
-  sectionJobComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    marginTop: 57,
-    paddingBottom: 50,
-  },
-  employerImgEmplyerNameAndJobBlock: {
-    alignItems: "center",
-    marginTop: 3,
-    position: "absolute",
-    top: -46,
-    left: "22%",
-  },
-  employerImg: {
-    width: 86,
-    height: 89,
-    borderRadius: 50,
-  },
-  employerName: {
-    fontSize: 32,
-    fontWeight: "700",
-  },
-  job: {
-    color: "#888888",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  locationIconAndLocation: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  location: {
-    color: "#787878",
-    fontSize: 18,
-    fontWeight: "400",
-  },
-  salaryEmploymentTypeWorkingModelAndJobLevelBlock: {
-    marginTop: 160,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    rowGap: 10,
-    columnGap: 30,
-  },
-  salaryBlock: {},
-  employmentTypeBlock: {},
-  workingModelBlock: {},
-  jobLevelBlock: {},
-
-  // 4 informations with the same style blocks
-  fourInformationsWithTheSameStyleBlock: {
-    width: "44%",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    boxShadow: "0 0 5px gray",
-    padding: 6,
-    borderRadius: 5,
-  },
-  infoIconBlock: {
-    backgroundColor: "#E2E2E2",
-    padding: 6,
-    borderRadius: 50,
-  },
-  infoIcon: {
-    width: 21,
-    height: 21,
-  },
-  titleAndInfoBlock: {},
-  title: {
-    color: "#969695",
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  info: {
-    color: "#4C4ADA",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  aboutJobCompanyAndReviewBlock: {},
-  btnApplyJobBlock: {
-    paddingHorizontal: 10,
-  },
-  btnApplyJob: {
-    backgroundColor: "#2623D2",
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  btnTextApplyJob: {
-    textAlign: "center",
-    color: "#FFFFFF",
-    fontSize: 25,
-    fontWeight: "700",
-  },
-});
