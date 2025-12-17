@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React, { useEffect, useRef, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import React, { useRef, useState } from "react";
+import { TouchableOpacity, useColorScheme, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Icons
@@ -8,18 +8,20 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useNavigation, usePathname } from "expo-router";
 import JobDetailModal from "../../components/home/JobDetailModal";
 import StackNavigatorHistoryPage from "../stacks/StackNavigatorHistoryPage";
 import StackNavigatorHomePage from "../stacks/StackNavigatorHomePage";
 import StackNavigatorMessagesPage from "../stacks/StackNavigatorMessagesPage";
 import StackNavigatorProfilePage from "../stacks/StackNavigatorProfilePage";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();
   const pathName = usePathname();
+
+  const colorScheme = useColorScheme();
 
   const modalizeRef = useRef<any>(null);
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -90,7 +92,11 @@ const TabNavigator = () => {
       <TouchableOpacity
         {...props}
         onPress={handlePress}
-        style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
         {children}
       </TouchableOpacity>
@@ -101,12 +107,23 @@ const TabNavigator = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Tab.Navigator
         screenOptions={{
+          tabBarBackground: () => (
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: colorScheme === "dark" ? "#000000" : "#FFFFFF",
+              }}
+            />
+          ),
           tabBarActiveTintColor: "#0184F0",
-          tabBarInactiveTintColor: "#7F7F7F",
+          tabBarInactiveTintColor: colorScheme === "dark" ? "#fff" : "#7F7F7F",
           tabBarLabelStyle: {
             fontSize: 14,
             fontWeight: "bold",
+            color: colorScheme === "dark" ? "#fff" : "#000",
           },
+
+
           headerShown: false,
           tabBarButton: (props: any) => (
             <CustomTabBarButton route={props.route} {...props} />
@@ -120,6 +137,8 @@ const TabNavigator = () => {
             tabBarLabel: "Job",
             tabBarStyle: getTabBarStyle(route),
             tabBarIcon({ size, color }) {
+              console.log(color);
+
               return (
                 <MaterialIcons name="business-center" size={27} color={color} />
               );

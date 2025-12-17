@@ -16,7 +16,7 @@ import { ScrollView } from "react-native-gesture-handler";
 const Messages = () => {
   const navigation: any = useNavigation();
 
-  const colorSheme = useColorScheme();
+  const colorScheme = useColorScheme();
 
   const users: any = [
     {
@@ -504,7 +504,7 @@ const Messages = () => {
 
     messagesContainer: {
       flex: 1,
-      backgroundColor: colorSheme === "dark" ? "#121212" : "white",
+      backgroundColor: colorScheme === "dark" ? "#121212" : "white",
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,
     },
@@ -541,28 +541,28 @@ const Messages = () => {
     fullName: {
       fontSize: 16,
       fontWeight: "bold",
-      color: colorSheme === "dark" ? "#fff" : "#333",
+      color: colorScheme === "dark" ? "#fff" : "#333",
       marginBottom: 4,
     },
     message: {
       fontSize: 14,
-      color: colorSheme === "dark" ? "#dbdbdb" : "#666",
+      color: colorScheme === "dark" ? "#dbdbdb" : "#666",
     },
     time: {
       fontSize: 12,
-      color: colorSheme === "dark" ? "#fff" : "#999",
+      color: colorScheme === "dark" ? "#fff" : "#999",
     },
     messageNotFoundBlock: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: colorSheme ? "#121212" : "white",
+      backgroundColor: colorScheme ? "#121212" : "white",
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,
     },
     messageNotFoundText: {
       fontSize: 16,
-      color: colorSheme ? "#e6e6e6" : "#666",
+      color: colorScheme ? "#e6e6e6" : "#666",
     },
   });
 
@@ -601,7 +601,7 @@ const Messages = () => {
               <TouchableHighlight
                 key={item.id}
                 activeOpacity={0.6}
-                underlayColor={colorSheme ? "#000" : "#f0f0f0"}
+                underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                 onPress={() => {
                   navigation.navigate("Message", {
                     id: item.id,

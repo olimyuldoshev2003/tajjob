@@ -71,9 +71,10 @@ const Profile = () => {
       fontSize: 26,
       fontWeight: "700",
       marginTop: 8,
+      color: colorScheme === "dark" ? "#fff" : "000",
     },
     userNumberPhone: {
-      color: "#6B7280",
+      color: colorScheme === "dark" ? "#dbd9d9" : "#6B7280",
       fontSize: 20,
       fontWeight: "400",
       marginTop: 4,
@@ -94,6 +95,7 @@ const Profile = () => {
       fontSize: 22,
       fontWeight: "500",
       marginBottom: 15,
+      color: colorScheme === "dark" ? "#fff" : "#000",
     },
     generalBlock: {
       gap: 15,
@@ -109,7 +111,7 @@ const Profile = () => {
     /////////////////////////////////////////////////////////////
     // Styles of 6 type buttons, which has the same style
     btnFunc: {
-      backgroundColor: "#FFFFFF",
+      backgroundColor: colorScheme === "dark" ? "#333333" : "#FFFFFF",
       borderRadius: 12,
     },
     iconFuncTypeAndIconRightSideBlock: {
@@ -135,6 +137,7 @@ const Profile = () => {
     funcTypeText: {
       fontSize: 18,
       fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
     },
     rightSideIcon: {},
     /////////////////////////////////////////////////////////////
@@ -145,6 +148,7 @@ const Profile = () => {
       fontSize: 22,
       fontWeight: "500",
       marginBottom: 15,
+      color: colorScheme === "dark" ? "#fff" : "#000",
     },
     appearanceBlock: {
       gap: 15,
@@ -185,7 +189,7 @@ const Profile = () => {
                   {/* Edit User */}
                   <TouchableHighlight
                     style={[dynamicStyles.editUserBtn, dynamicStyles.btnFunc]}
-                    underlayColor="#f0f0f0"
+                    underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                     onPress={() => {
                       navigation.navigate("EditUser");
                     }}
@@ -203,16 +207,16 @@ const Profile = () => {
                       <Entypo
                         name="chevron-small-right"
                         size={37}
-                        color="black"
+                        color={colorScheme === "dark" ? "#fff":"black" }
                         style={dynamicStyles.rightSideIcon}
                       />
                     </View>
                   </TouchableHighlight>
 
                   {/* Create Resume */}
-                  <TouchableHighlight
+                  {/* <TouchableHighlight
                     style={[dynamicStyles.createResumeBtn, dynamicStyles.btnFunc]}
-                    underlayColor="#f0f0f0"
+                    underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                   >
                     <View style={dynamicStyles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={dynamicStyles.iconAndFuncTypeBlock}>
@@ -227,11 +231,11 @@ const Profile = () => {
                       <Entypo
                         name="chevron-small-right"
                         size={37}
-                        color="black"
+                        color={colorScheme === "dark" ? "#fff":"black" }
                         style={dynamicStyles.rightSideIcon}
                       />
                     </View>
-                  </TouchableHighlight>
+                  </TouchableHighlight> */}
 
                   {/* Saved Jobs */}
                   <TouchableHighlight
@@ -239,7 +243,7 @@ const Profile = () => {
                     onPress={() => {
                       navigation.navigate("SavedJobs");
                     }}
-                    underlayColor="#f0f0f0"
+                    underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                   >
                     <View style={dynamicStyles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={dynamicStyles.iconAndFuncTypeBlock}>
@@ -256,7 +260,7 @@ const Profile = () => {
                       <Entypo
                         name="chevron-small-right"
                         size={37}
-                        color="black"
+                        color={colorScheme === "dark" ? "#fff":"black" }
                         style={dynamicStyles.rightSideIcon}
                       />
                     </View>
@@ -269,7 +273,7 @@ const Profile = () => {
                   {/* Settings */}
                   <TouchableHighlight
                     style={[dynamicStyles.settingsBtn, dynamicStyles.btnFunc]}
-                    underlayColor="#f0f0f0"
+                    underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                     onPress={() => {
                       navigation.navigate("Settings");
                     }}
@@ -287,7 +291,7 @@ const Profile = () => {
                       <Entypo
                         name="chevron-small-right"
                         size={37}
-                        color="black"
+                        color={colorScheme === "dark" ? "#fff":"black" }
                         style={dynamicStyles.rightSideIcon}
                       />
                     </View>
@@ -296,7 +300,7 @@ const Profile = () => {
                   {/* Security */}
                   <TouchableHighlight
                     style={[dynamicStyles.securityBtn, dynamicStyles.btnFunc]}
-                    underlayColor="#f0f0f0"
+                    underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                   >
                     <View style={dynamicStyles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={dynamicStyles.iconAndFuncTypeBlock}>
@@ -311,7 +315,7 @@ const Profile = () => {
                       <Entypo
                         name="chevron-small-right"
                         size={37}
-                        color="black"
+                        color={colorScheme === "dark" ? "#fff":"black" }
                         style={dynamicStyles.rightSideIcon}
                       />
                     </View>
@@ -320,7 +324,7 @@ const Profile = () => {
                   {/* Share */}
                   <TouchableHighlight
                     style={[dynamicStyles.shareBtn, dynamicStyles.btnFunc]}
-                    underlayColor="#f0f0f0"
+                    underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                   >
                     <View style={dynamicStyles.iconFuncTypeAndIconRightSideBlock}>
                       <View style={dynamicStyles.iconAndFuncTypeBlock}>
@@ -335,7 +339,7 @@ const Profile = () => {
                       <Entypo
                         name="chevron-small-right"
                         size={37}
-                        color="black"
+                        color={colorScheme === "dark" ? "#fff":"black" }
                         style={dynamicStyles.rightSideIcon}
                       />
                     </View>
