@@ -3,7 +3,7 @@ import Job from "@/screens/application/Job";
 import Notifications from "@/screens/application/Notifications";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Define the type for the props
@@ -15,6 +15,7 @@ const StackNavigatorHomePage = ({
   openJobModal,
 }: StackNavigatorHomePageProps) => {
   const Stack = createNativeStackNavigator();
+  const colorScheme = useColorScheme();
 
   // Enhanced Home component with modal control
   const HomeWithModal = () => <Home onJobPress={openJobModal} />;
@@ -27,6 +28,13 @@ const StackNavigatorHomePage = ({
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          headerStyle: {
+            backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+          },
+          headerTintColor: colorScheme === "dark" ? "#fff" : "#000",
+          headerTitleStyle: {
+            color: colorScheme === "dark" ? "#fff" : "#000",
+          },
         }}
       >
         <Stack.Screen
