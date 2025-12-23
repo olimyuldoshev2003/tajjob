@@ -464,7 +464,7 @@ const Messages = () => {
   const dynamicStyles = StyleSheet.create({
     messagesComponent: {
       flex: 1,
-      backgroundColor: "#0961F6",
+      backgroundColor: colorScheme === "dark" ? "#b8b8b8" : "#0961F6",
     },
     headerBlockMessagesComponent: {
       padding: 17,
@@ -477,7 +477,7 @@ const Messages = () => {
       marginTop: 30,
     },
     headerText: {
-      color: "#FFFFFF",
+      color: colorScheme === "dark" ? "#000" : "#FFFFFF",
       fontSize: 28,
       fontWeight: "600",
     },
@@ -572,7 +572,11 @@ const Messages = () => {
       <View style={dynamicStyles.headerBlockMessagesComponent}>
         <View style={dynamicStyles.headerBlock1}>
           <Text style={dynamicStyles.headerText}>Messages</Text>
-          <Entypo name="dots-three-vertical" size={26} color="white" />
+          <Entypo
+            name="dots-three-vertical"
+            size={26}
+            color={colorScheme === "dark" ? "#000" : "white"}
+          />
         </View>
         <View style={dynamicStyles.headerBlock2}>
           <Ionicons

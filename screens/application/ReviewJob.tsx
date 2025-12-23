@@ -206,7 +206,7 @@ const ReviewJob = ({
             <TextInput
               style={dynamicStyles.searchInput}
               placeholder="Search in reviews"
-              placeholderTextColor={colorScheme === "dark" ? "#cacaca":"gray"}
+              placeholderTextColor={colorScheme === "dark" ? "#cacaca" : "gray"}
             />
           </View>
           <View style={dynamicStyles.headerBlock3ReviewJobComponent}>
@@ -291,7 +291,11 @@ const ReviewJob = ({
                     />
                   </View>
                 </View>
-                <Entypo name="heart-outlined" size={30} color="black" />
+                <Entypo
+                  name="heart-outlined"
+                  size={30}
+                  color={colorScheme === "dark" ? "#fff" : "black"}
+                />
               </View>
               <View style={dynamicStyles.sectionReviewBlock}>
                 <Text style={dynamicStyles.review}>

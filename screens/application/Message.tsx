@@ -23,6 +23,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   Vibration,
   View,
 } from "react-native";
@@ -73,6 +74,7 @@ interface IncomingCallModalProps {
 
 const Message = ({ route }: { route: any }) => {
   const navigation: any = useNavigation();
+  const colorScheme = useColorScheme();
   const { width: SCREEN_WIDTH } = Dimensions.get("window");
   const [messageText, setMessageText] = useState<string>("");
   const [messages, setMessages] = useState<MessageType[]>([
@@ -130,10 +132,10 @@ const Message = ({ route }: { route: any }) => {
   const [swipeTranslate] = useState(new Animated.Value(0));
 
   const recordingRef = useRef<Audio.Recording | null>(null);
-  const recordingTimerRef:any = useRef<NodeJS.Timeout | null>(null);
-  const playbackTimerRef:any = useRef<NodeJS.Timeout | null>(null);
+  const recordingTimerRef: any = useRef<NodeJS.Timeout | null>(null);
+  const playbackTimerRef: any = useRef<NodeJS.Timeout | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
-  const waveformUpdateRef:any = useRef<NodeJS.Timeout | null>(null);
+  const waveformUpdateRef: any = useRef<NodeJS.Timeout | null>(null);
   const recordingStartTimeRef = useRef<number>(0);
 
   // Animation values for waveform
@@ -1222,6 +1224,637 @@ const Message = ({ route }: { route: any }) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  const dynamicStyles = StyleSheet.create({
+    messageComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+    },
+    headerMessagesComponentBlock: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingTop: 50,
+      paddingHorizontal: 10,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 4,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+      paddingBottom: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: colorScheme === "dark" ? "#e2e2e2" : "#f0f0f0",
+    },
+    headerBlock1: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    HRImg: {
+      width: 55,
+      height: 55,
+      borderRadius: 50,
+      borderWidth: 2,
+      borderColor: "#2623D2",
+    },
+    fullnameAndStatusBlockHeaderBlock1: {
+      gap: 2,
+    },
+    HRFullname: {
+      fontSize: 23,
+      fontWeight: "600",
+      color: colorScheme === "dark" ? "#f0f0f0" : "#333",
+    },
+    HRStatus: {
+      color: "#4CD964",
+      fontSize: 14,
+      fontWeight: "500",
+    },
+    headerBlock2: {
+      flexDirection: "row",
+      gap: 15,
+      alignItems: "center",
+    },
+    sectionAndFooterMessagesComponentBlock: {
+      flex: 1,
+      paddingBottom: 42,
+    },
+    sectionMessagesComponentBlock: {
+      flex: 1,
+    },
+    scrollViewContent: {
+      flexGrow: 1,
+      paddingBottom: 20,
+    },
+    messagesContainer: {
+      flex: 1,
+    },
+    messagesSentDay: {
+      alignSelf: "center",
+      color: colorScheme === "dark" ? "#e4e4e4" : "#9E9E9E",
+      fontSize: 16,
+      fontWeight: "500",
+      marginTop: 15,
+      marginBottom: 10,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#f8f8f8",
+      paddingVertical: 6,
+      paddingHorizontal: 15,
+      borderRadius: 15,
+    },
+    messagesBlockOfThisDay: {
+      gap: 12,
+      paddingVertical: 10,
+      paddingHorizontal: 10,
+    },
+    messageOfUserMainBlock: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      marginBottom: 5,
+    },
+    messageOfUserBlock: {
+      maxWidth: "75%",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
+      padding: 12,
+      borderRadius: 18,
+      borderBottomRightRadius: 4,
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#000000" : "#f0f0f0",
+    },
+    messageOfUser: {
+      fontSize: 16,
+      fontWeight: "400",
+      color: colorScheme === "dark" ? "#fff" : "#333",
+      lineHeight: 22,
+    },
+    messageOfHRMainBlock: {
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      marginBottom: 5,
+    },
+    messageOfHRBlock: {
+      maxWidth: "75%",
+      backgroundColor: colorScheme === "dark" ? "#00c3ffc1" : "#2623D2",
+      padding: 12,
+      borderRadius: 18,
+      borderBottomLeftRadius: 4,
+      shadowColor: "#2623D2",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    messageOfHR: {
+      fontSize: 16,
+      fontWeight: "400",
+      color: "#fff",
+      lineHeight: 22,
+    },
+    // Voice message dynamicStyles
+    voiceMessageOfUserBlock: {
+      maxWidth: "75%",
+      backgroundColor: colorScheme === "dark" ? "#dbdbdb" : "#fff",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
+      padding: 12,
+      borderRadius: 18,
+      borderBottomRightRadius: 4,
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#000000" : "#f0f0f0",
+    },
+    voiceMessageOfHRBlock: {
+      maxWidth: "75%",
+      backgroundColor: colorScheme === "dark" ? "#00c3ffc1" : "#2623D2",
+      padding: 12,
+      borderRadius: 18,
+      borderBottomLeftRadius: 4,
+      shadowColor: "#2623D2",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    voiceMessageContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      minHeight: 32,
+    },
+    playButtonContainer: {},
+    playButton: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: "rgba(38, 35, 210, 0.1)",
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: "rgba(38, 35, 210, 0.2)",
+    },
+    playingButton: {
+      backgroundColor: "rgba(255, 59, 48, 0.1)",
+      borderColor: "rgba(255, 59, 48, 0.2)",
+    },
+    // Waveform dynamicStyles
+    waveformContainer: {
+      width: 140,
+      height: 32,
+    },
+    waveformTouchArea: {
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+    },
+    waveformBarsContainer: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+      width: "100%",
+      height: "100%",
+      position: "relative",
+      paddingHorizontal: 2,
+    },
+    waveformBar: {
+      alignSelf: "flex-end",
+    },
+    waveformProgressOverlay: {
+      position: "absolute",
+      height: "100%",
+      borderRadius: 8,
+      left: 0,
+      top: 0,
+    },
+    seekIndicator: {
+      position: "absolute",
+      top: -2,
+      width: 3,
+      height: "120%",
+      borderRadius: 1.5,
+      zIndex: 10,
+    },
+    // Recording waveform dynamicStyles
+    recordingWaveformContainer: {
+      width: 100,
+      height: 32,
+      justifyContent: "center",
+    },
+    recordingWaveformBars: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+      height: "100%",
+      paddingHorizontal: 5,
+    },
+    recordingWaveformBar: {
+      alignSelf: "flex-end",
+    },
+    voiceDuration: {
+      fontSize: 12,
+      fontWeight: "500",
+      minWidth: 35,
+      textAlign: "center",
+    },
+    voiceDurationUser: {
+      color: "#2623D2",
+    },
+    voiceDurationHR: {
+      color: "#fff",
+    },
+    playingDuration: {
+      fontWeight: "700",
+    },
+    messageSentTimeAndSeenBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      gap: 4,
+      marginTop: 6,
+    },
+    messageSentTimeUser: {
+      color: "#9E9E9E",
+      fontSize: 11,
+      fontWeight: "400",
+    },
+    messageSentTimeHR: {
+      color: "rgba(255,255,255,0.7)",
+      fontSize: 11,
+      fontWeight: "400",
+    },
+    messageSeenIcon: {
+      marginLeft: 2,
+    },
+    footerMessagesComponentBlock: {
+      paddingHorizontal: 10,
+      paddingBottom: 10,
+      paddingTop: 10,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+      borderTopWidth: 1,
+      borderTopColor: colorScheme === "dark" ? "#e2e2e2" : "#f0f0f0",
+    },
+    inputMessageAndIconBlock: {
+      position: "relative",
+    },
+    inputMessage: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 5,
+      fontSize: 16,
+      fontWeight: "400",
+      borderRadius: 25,
+      paddingLeft: 50,
+      paddingRight: 50,
+      paddingVertical: 12,
+      maxHeight: 100,
+      color: colorScheme === "dark" ? "#f0f0f0" : "#000",
+    },
+    iconStckersFooter: {
+      position: "absolute",
+      top: 6.5,
+      left: 9,
+      zIndex: 1,
+      padding: 5,
+    },
+    sendButton: {
+      position: "absolute",
+      top: 6,
+      right: 12,
+      padding: 5,
+    },
+    btnVoiceToText: {
+      position: "absolute",
+      top: 6,
+      right: 8,
+      padding: 5,
+    },
+    // Recording dynamicStyles
+    recordingContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      borderRadius: 25,
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      position: "relative",
+      borderWidth: 1,
+      borderColor: "#ff3b30",
+      shadowColor: "#ff3b30",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    recordingIndicator: {
+      alignItems: "center",
+      justifyContent: "center",
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: "rgba(255, 59, 48, 0.1)",
+      borderWidth: 1,
+      borderColor: "rgba(255, 59, 48, 0.3)",
+    },
+    recordingTime: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: "#ff3b30",
+      minWidth: 40,
+      textAlign: "center",
+    },
+    cancelRecordingButton: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "rgba(255, 59, 48, 0.1)",
+      marginRight: 8,
+      borderWidth: 1,
+      borderColor: "rgba(255, 59, 48, 0.2)",
+    },
+    stopRecordingButton: {
+      backgroundColor: "#ff3b30",
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      shadowColor: "#ff3b30",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 3,
+      elevation: 4,
+    },
+    // Swipe to cancel dynamicStyles
+    cancelIndicator: {
+      position: "absolute",
+      left: -110,
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(255, 59, 48, 0.1)",
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: "rgba(255, 59, 48, 0.2)",
+    },
+    cancelText: {
+      color: "#ff3b30",
+      fontSize: 11,
+      fontWeight: "600",
+      marginLeft: 4,
+    },
+
+    // Video Off Overlay
+    videoOffOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.7)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    // Video Call dynamicStyles
+    videoCallContainer: {
+      flex: 1,
+      backgroundColor: "#000",
+    },
+    videoCallBackground: {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      resizeMode: "cover",
+    },
+    remoteVideoContainer: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.7)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    remoteVideo: {
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    localVideoContainer: {
+      position: "absolute",
+      top: 50,
+      right: 20,
+      width: 120,
+      height: 160,
+      borderRadius: 10,
+      overflow: "hidden",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.8,
+      shadowRadius: 4,
+      elevation: 5,
+      backgroundColor: "rgba(0,0,0,0.6)",
+      borderWidth: 2,
+      borderColor: "#fff",
+    },
+    localVideo: {
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    mockVideoText: {
+      color: "#fff",
+      fontSize: 18,
+      textAlign: "center",
+      marginTop: 10,
+      fontWeight: "600",
+    },
+    mockVideoSubtext: {
+      color: "rgba(255,255,255,0.8)",
+      fontSize: 14,
+      textAlign: "center",
+      marginTop: 5,
+    },
+    mockLocalVideoText: {
+      color: "#fff",
+      fontSize: 12,
+      textAlign: "center",
+      marginTop: 5,
+    },
+
+    // Voice Call dynamicStyles
+    voiceCallContainer: {
+      flex: 1,
+      backgroundColor: "#000",
+    },
+    voiceCallBackground: {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      resizeMode: "cover",
+    },
+    voiceCallContent: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.7)",
+      justifyContent: "space-between",
+      paddingVertical: 80,
+    },
+    voiceCallAvatar: {
+      alignItems: "center",
+      marginTop: 40,
+    },
+    callAvatar: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      marginBottom: 20,
+      borderWidth: 3,
+      borderColor: "#fff",
+    },
+    callUserName: {
+      fontSize: 24,
+      fontWeight: "600",
+      color: "#fff",
+      marginBottom: 8,
+    },
+    callStatus: {
+      fontSize: 16,
+      color: "#4CD964",
+      fontWeight: "500",
+    },
+
+    // Call Controls
+    callControls: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      paddingHorizontal: 20,
+    },
+    callButton: {
+      alignItems: "center",
+    },
+    callButtonIcon: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 8,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 3,
+      elevation: 4,
+    },
+    callButtonText: {
+      color: "#fff",
+      fontSize: 12,
+      marginTop: 5,
+      fontWeight: "500",
+    },
+
+    // Call Info
+    callInfo: {
+      alignItems: "center",
+      marginTop: 20,
+    },
+    callInfoText: {
+      color: "#fff",
+      fontSize: 18,
+      fontWeight: "500",
+    },
+    callDuration: {
+      color: "rgba(255,255,255,0.8)",
+      fontSize: 16,
+      marginTop: 5,
+    },
+
+    // Incoming Call dynamicStyles
+    incomingCallContainer: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.9)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    incomingCallContent: {
+      backgroundColor: "#fff",
+      borderRadius: 20,
+      padding: 30,
+      alignItems: "center",
+      margin: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.3,
+      shadowRadius: 20,
+      elevation: 10,
+    },
+    incomingCallAvatar: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      marginBottom: 20,
+      borderWidth: 3,
+      borderColor: "#2623D2",
+    },
+    incomingCallTitle: {
+      fontSize: 22,
+      fontWeight: "600",
+      marginBottom: 10,
+      textAlign: "center",
+      color: "#333",
+    },
+    incomingCallSubtitle: {
+      fontSize: 18,
+      color: "#666",
+      marginBottom: 30,
+    },
+    incomingCallButtons: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "100%",
+    },
+    incomingCallButton: {
+      flex: 1,
+      padding: 15,
+      borderRadius: 10,
+      alignItems: "center",
+      marginHorizontal: 10,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    rejectButton: {
+      backgroundColor: "#ff3b30",
+    },
+    acceptButton: {
+      backgroundColor: "#4CD964",
+    },
+    rejectButtonText: {
+      color: "#fff",
+      fontSize: 16,
+      fontWeight: "600",
+      marginTop: 5,
+    },
+    acceptButtonText: {
+      color: "#fff",
+      fontSize: 16,
+      fontWeight: "600",
+      marginTop: 5,
+    },
+  });
+
   // Enhanced Voice Waveform Component
   const VoiceWaveform = ({
     message,
@@ -1262,16 +1895,16 @@ const Message = ({ route }: { route: any }) => {
 
     return (
       <View
-        style={[styles.waveformContainer]}
+        style={[dynamicStyles.waveformContainer]}
         ref={waveformRef}
         onLayout={handleWaveformLayout}
       >
         <TouchableOpacity
-          style={styles.waveformTouchArea}
+          style={dynamicStyles.waveformTouchArea}
           onPress={handleWaveformPress}
           activeOpacity={0.8}
         >
-          <View style={styles.waveformBarsContainer}>
+          <View style={dynamicStyles.waveformBarsContainer}>
             {waveformData.slice(0, barCount).map((amplitude, index) => {
               const barProgress = index / barCount;
               const isActive = barProgress <= progressPercent;
@@ -1282,7 +1915,7 @@ const Message = ({ route }: { route: any }) => {
                 <View
                   key={index}
                   style={[
-                    styles.waveformBar,
+                    dynamicStyles.waveformBar,
                     {
                       width: 3,
                       height: height,
@@ -1304,7 +1937,7 @@ const Message = ({ route }: { route: any }) => {
             {isPlaying && (
               <Animated.View
                 style={[
-                  styles.waveformProgressOverlay,
+                  dynamicStyles.waveformProgressOverlay,
                   {
                     width: progressAnim.interpolate({
                       inputRange: [0, 1],
@@ -1321,7 +1954,7 @@ const Message = ({ route }: { route: any }) => {
             {isPlaying && (
               <Animated.View
                 style={[
-                  styles.seekIndicator,
+                  dynamicStyles.seekIndicator,
                   {
                     left: progressAnim.interpolate({
                       inputRange: [0, 1],
@@ -1346,8 +1979,8 @@ const Message = ({ route }: { route: any }) => {
         : Array(15).fill(0.3);
 
     return (
-      <View style={styles.recordingWaveformContainer}>
-        <View style={styles.recordingWaveformBars}>
+      <View style={dynamicStyles.recordingWaveformContainer}>
+        <View style={dynamicStyles.recordingWaveformBars}>
           {data.slice(0, 15).map((amplitude, index) => {
             const height = Math.max(6, amplitude * 20);
             const isRecent = index >= data.length - 3;
@@ -1356,7 +1989,7 @@ const Message = ({ route }: { route: any }) => {
               <Animated.View
                 key={index}
                 style={[
-                  styles.recordingWaveformBar,
+                  dynamicStyles.recordingWaveformBar,
                   {
                     width: 2,
                     height: height,
@@ -1393,28 +2026,28 @@ const Message = ({ route }: { route: any }) => {
         <View
           style={
             message.isUser
-              ? styles.messageOfUserMainBlock
-              : styles.messageOfHRMainBlock
+              ? dynamicStyles.messageOfUserMainBlock
+              : dynamicStyles.messageOfHRMainBlock
           }
           key={message.id}
         >
           <View
             style={
               message.isUser
-                ? styles.voiceMessageOfUserBlock
-                : styles.voiceMessageOfHRBlock
+                ? dynamicStyles.voiceMessageOfUserBlock
+                : dynamicStyles.voiceMessageOfHRBlock
             }
           >
-            <View style={styles.voiceMessageContainer}>
+            <View style={dynamicStyles.voiceMessageContainer}>
               <TouchableOpacity
-                style={styles.playButtonContainer}
+                style={dynamicStyles.playButtonContainer}
                 onPress={() => playVoiceMessage(message)}
                 activeOpacity={0.7}
               >
                 <Animated.View
                   style={[
-                    styles.playButton,
-                    isPlaying && styles.playingButton,
+                    dynamicStyles.playButton,
+                    isPlaying && dynamicStyles.playingButton,
                     {
                       transform: [{ scale: isPlaying ? pulseAnimation : 1 }],
                     },
@@ -1437,23 +2070,23 @@ const Message = ({ route }: { route: any }) => {
 
               <Text
                 style={[
-                  styles.voiceDuration,
+                  dynamicStyles.voiceDuration,
                   message.isUser
-                    ? styles.voiceDurationUser
-                    : styles.voiceDurationHR,
-                  isPlaying && styles.playingDuration,
+                    ? dynamicStyles.voiceDurationUser
+                    : dynamicStyles.voiceDurationHR,
+                  isPlaying && dynamicStyles.playingDuration,
                 ]}
               >
                 {formatTime(isPlaying ? currentProgress : duration)}
               </Text>
             </View>
 
-            <View style={styles.messageSentTimeAndSeenBlock}>
+            <View style={dynamicStyles.messageSentTimeAndSeenBlock}>
               <Text
                 style={
                   message.isUser
-                    ? styles.messageSentTimeUser
-                    : styles.messageSentTimeHR
+                    ? dynamicStyles.messageSentTimeUser
+                    : dynamicStyles.messageSentTimeHR
                 }
               >
                 {message.timestamp}
@@ -1463,7 +2096,7 @@ const Message = ({ route }: { route: any }) => {
                   name="check-all"
                   size={16}
                   color="#00b7ff"
-                  style={styles.messageSeenIcon}
+                  style={dynamicStyles.messageSeenIcon}
                 />
               )}
             </View>
@@ -1477,27 +2110,33 @@ const Message = ({ route }: { route: any }) => {
       <View
         style={
           message.isUser
-            ? styles.messageOfUserMainBlock
-            : styles.messageOfHRMainBlock
+            ? dynamicStyles.messageOfUserMainBlock
+            : dynamicStyles.messageOfHRMainBlock
         }
         key={message.id}
       >
         <View
           style={
-            message.isUser ? styles.messageOfUserBlock : styles.messageOfHRBlock
+            message.isUser
+              ? dynamicStyles.messageOfUserBlock
+              : dynamicStyles.messageOfHRBlock
           }
         >
           <Text
-            style={message.isUser ? styles.messageOfUser : styles.messageOfHR}
+            style={
+              message.isUser
+                ? dynamicStyles.messageOfUser
+                : dynamicStyles.messageOfHR
+            }
           >
             {message.text}
           </Text>
-          <View style={styles.messageSentTimeAndSeenBlock}>
+          <View style={dynamicStyles.messageSentTimeAndSeenBlock}>
             <Text
               style={
                 message.isUser
-                  ? styles.messageSentTimeUser
-                  : styles.messageSentTimeHR
+                  ? dynamicStyles.messageSentTimeUser
+                  : dynamicStyles.messageSentTimeHR
               }
             >
               {message.timestamp}
@@ -1507,7 +2146,7 @@ const Message = ({ route }: { route: any }) => {
                 name="check-all"
                 size={16}
                 color="#00b7ff"
-                style={styles.messageSeenIcon}
+                style={dynamicStyles.messageSeenIcon}
               />
             )}
           </View>
@@ -1563,30 +2202,30 @@ const Message = ({ route }: { route: any }) => {
     };
 
     return (
-      <View style={styles.videoCallContainer}>
+      <View style={dynamicStyles.videoCallContainer}>
         {/* Background with garden image */}
         <Image
           source={require("../../assets/tajjob/messages/garden-bg.png")}
-          style={styles.videoCallBackground}
+          style={dynamicStyles.videoCallBackground}
           blurRadius={2}
         />
 
         {/* Remote Video Stream - Mock */}
-        <View style={styles.remoteVideoContainer}>
-          <View style={styles.remoteVideo}>
+        <View style={dynamicStyles.remoteVideoContainer}>
+          <View style={dynamicStyles.remoteVideo}>
             <Ionicons name="videocam" size={60} color="#fff" />
-            <Text style={styles.mockVideoText}>Danny H.</Text>
-            <Text style={styles.mockVideoSubtext}>Video Call</Text>
+            <Text style={dynamicStyles.mockVideoText}>Danny H.</Text>
+            <Text style={dynamicStyles.mockVideoSubtext}>Video Call</Text>
           </View>
         </View>
 
         {/* Local Video Stream - Mock */}
-        <View style={styles.localVideoContainer}>
-          <View style={styles.localVideo}>
+        <View style={dynamicStyles.localVideoContainer}>
+          <View style={dynamicStyles.localVideo}>
             <Ionicons name="person" size={30} color="#fff" />
-            <Text style={styles.mockLocalVideoText}>You</Text>
+            <Text style={dynamicStyles.mockLocalVideoText}>You</Text>
             {!isVideoOn && (
-              <View style={styles.videoOffOverlay}>
+              <View style={dynamicStyles.videoOffOverlay}>
                 <Ionicons name="videocam-off" size={20} color="#fff" />
               </View>
             )}
@@ -1594,22 +2233,24 @@ const Message = ({ route }: { route: any }) => {
         </View>
 
         {/* Call Info */}
-        <View style={styles.callInfo}>
-          <Text style={styles.callInfoText}>Video Call with Danny H.</Text>
-          <Text style={styles.callDuration}>
+        <View style={dynamicStyles.callInfo}>
+          <Text style={dynamicStyles.callInfoText}>
+            Video Call with Danny H.
+          </Text>
+          <Text style={dynamicStyles.callDuration}>
             {formatCallDuration(callDuration)}
           </Text>
         </View>
 
         {/* Call Controls */}
-        <View style={styles.callControls}>
+        <View style={dynamicStyles.callControls}>
           <TouchableOpacity
-            style={styles.callButton}
+            style={dynamicStyles.callButton}
             onPress={() => setIsSpeakerOn(!isSpeakerOn)}
           >
             <View
               style={[
-                styles.callButtonIcon,
+                dynamicStyles.callButtonIcon,
                 {
                   backgroundColor: isSpeakerOn ? "#4CD964" : "#666",
                 },
@@ -1617,18 +2258,18 @@ const Message = ({ route }: { route: any }) => {
             >
               <Ionicons name="volume-high" size={24} color="#fff" />
             </View>
-            <Text style={styles.callButtonText}>
+            <Text style={dynamicStyles.callButtonText}>
               {isSpeakerOn ? "Speaker" : "Phone"}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.callButton}
+            style={dynamicStyles.callButton}
             onPress={() => setIsMuted(!isMuted)}
           >
             <View
               style={[
-                styles.callButtonIcon,
+                dynamicStyles.callButtonIcon,
                 {
                   backgroundColor: isMuted ? "#ff3b30" : "#666",
                 },
@@ -1640,18 +2281,18 @@ const Message = ({ route }: { route: any }) => {
                 color="#fff"
               />
             </View>
-            <Text style={styles.callButtonText}>
+            <Text style={dynamicStyles.callButtonText}>
               {isMuted ? "Muted" : "Mute"}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.callButton}
+            style={dynamicStyles.callButton}
             onPress={() => setIsVideoOn(!isVideoOn)}
           >
             <View
               style={[
-                styles.callButtonIcon,
+                dynamicStyles.callButtonIcon,
                 {
                   backgroundColor: isVideoOn ? "#007AFF" : "#666",
                 },
@@ -1663,18 +2304,24 @@ const Message = ({ route }: { route: any }) => {
                 color="#fff"
               />
             </View>
-            <Text style={styles.callButtonText}>
+            <Text style={dynamicStyles.callButtonText}>
               {isVideoOn ? "Video" : "Off"}
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.callButton} onPress={onEndCall}>
+          <TouchableOpacity
+            style={dynamicStyles.callButton}
+            onPress={onEndCall}
+          >
             <View
-              style={[styles.callButtonIcon, { backgroundColor: "#ff3b30" }]}
+              style={[
+                dynamicStyles.callButtonIcon,
+                { backgroundColor: "#ff3b30" },
+              ]}
             >
               <Ionicons name="call" size={24} color="#fff" />
             </View>
-            <Text style={styles.callButtonText}>End</Text>
+            <Text style={dynamicStyles.callButtonText}>End</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -1704,41 +2351,43 @@ const Message = ({ route }: { route: any }) => {
     };
 
     return (
-      <View style={styles.voiceCallContainer}>
+      <View style={dynamicStyles.voiceCallContainer}>
         {/* Background with man image */}
         <Image
           source={require("../../assets/tajjob/messages/man-bg.png")}
-          style={styles.voiceCallBackground}
+          style={dynamicStyles.voiceCallBackground}
           blurRadius={2}
         />
 
-        <View style={styles.voiceCallContent}>
-          <View style={styles.voiceCallAvatar}>
+        <View style={dynamicStyles.voiceCallContent}>
+          <View style={dynamicStyles.voiceCallAvatar}>
             <Image
               source={require("../../assets/tajjob/messages/hr.jpg")}
-              style={styles.callAvatar}
+              style={dynamicStyles.callAvatar}
             />
-            <Text style={styles.callUserName}>Danny H.</Text>
-            <Text style={styles.callStatus}>Connected</Text>
+            <Text style={dynamicStyles.callUserName}>Danny H.</Text>
+            <Text style={dynamicStyles.callStatus}>Connected</Text>
           </View>
 
           {/* Call Info */}
-          <View style={styles.callInfo}>
-            <Text style={styles.callInfoText}>Voice Call with Danny H.</Text>
-            <Text style={styles.callDuration}>
+          <View style={dynamicStyles.callInfo}>
+            <Text style={dynamicStyles.callInfoText}>
+              Voice Call with Danny H.
+            </Text>
+            <Text style={dynamicStyles.callDuration}>
               {formatCallDuration(callDuration)}
             </Text>
           </View>
 
           {/* Call Controls */}
-          <View style={styles.callControls}>
+          <View style={dynamicStyles.callControls}>
             <TouchableOpacity
-              style={styles.callButton}
+              style={dynamicStyles.callButton}
               onPress={() => setIsSpeakerOn(!isSpeakerOn)}
             >
               <View
                 style={[
-                  styles.callButtonIcon,
+                  dynamicStyles.callButtonIcon,
                   {
                     backgroundColor: isSpeakerOn ? "#4CD964" : "#666",
                   },
@@ -1746,18 +2395,18 @@ const Message = ({ route }: { route: any }) => {
               >
                 <Ionicons name="volume-high" size={24} color="#fff" />
               </View>
-              <Text style={styles.callButtonText}>
+              <Text style={dynamicStyles.callButtonText}>
                 {isSpeakerOn ? "Speaker" : "Phone"}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.callButton}
+              style={dynamicStyles.callButton}
               onPress={() => setIsMuted(!isMuted)}
             >
               <View
                 style={[
-                  styles.callButtonIcon,
+                  dynamicStyles.callButtonIcon,
                   {
                     backgroundColor: isMuted ? "#ff3b30" : "#666",
                   },
@@ -1769,18 +2418,24 @@ const Message = ({ route }: { route: any }) => {
                   color="#fff"
                 />
               </View>
-              <Text style={styles.callButtonText}>
+              <Text style={dynamicStyles.callButtonText}>
                 {isMuted ? "Muted" : "Mute"}
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.callButton} onPress={onEndCall}>
+            <TouchableOpacity
+              style={dynamicStyles.callButton}
+              onPress={onEndCall}
+            >
               <View
-                style={[styles.callButtonIcon, { backgroundColor: "#ff3b30" }]}
+                style={[
+                  dynamicStyles.callButtonIcon,
+                  { backgroundColor: "#ff3b30" },
+                ]}
               >
                 <Ionicons name="call" size={24} color="#fff" />
               </View>
-              <Text style={styles.callButtonText}>End</Text>
+              <Text style={dynamicStyles.callButtonText}>End</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1797,32 +2452,38 @@ const Message = ({ route }: { route: any }) => {
   }) => {
     return (
       <Modal visible={visible} transparent={true} animationType="slide">
-        <View style={styles.incomingCallContainer}>
-          <View style={styles.incomingCallContent}>
+        <View style={dynamicStyles.incomingCallContainer}>
+          <View style={dynamicStyles.incomingCallContent}>
             <Image
               source={require("../../assets/tajjob/messages/hr.jpg")}
-              style={styles.incomingCallAvatar}
+              style={dynamicStyles.incomingCallAvatar}
             />
-            <Text style={styles.incomingCallTitle}>
+            <Text style={dynamicStyles.incomingCallTitle}>
               Incoming {isVideoCall ? "Video" : "Voice"} Call
             </Text>
-            <Text style={styles.incomingCallSubtitle}>Danny H.</Text>
+            <Text style={dynamicStyles.incomingCallSubtitle}>Danny H.</Text>
 
-            <View style={styles.incomingCallButtons}>
+            <View style={dynamicStyles.incomingCallButtons}>
               <TouchableOpacity
-                style={[styles.incomingCallButton, styles.rejectButton]}
+                style={[
+                  dynamicStyles.incomingCallButton,
+                  dynamicStyles.rejectButton,
+                ]}
                 onPress={onReject}
               >
                 <Ionicons name="call" size={24} color="#fff" />
-                <Text style={styles.rejectButtonText}>Decline</Text>
+                <Text style={dynamicStyles.rejectButtonText}>Decline</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.incomingCallButton, styles.acceptButton]}
+                style={[
+                  dynamicStyles.incomingCallButton,
+                  dynamicStyles.acceptButton,
+                ]}
                 onPress={onAccept}
               >
                 <Ionicons name="call" size={24} color="#fff" />
-                <Text style={styles.acceptButtonText}>Accept</Text>
+                <Text style={dynamicStyles.acceptButtonText}>Accept</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1833,7 +2494,7 @@ const Message = ({ route }: { route: any }) => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.messageComponent}
+      style={dynamicStyles.messageComponent}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : -60}
     >
@@ -1844,68 +2505,86 @@ const Message = ({ route }: { route: any }) => {
       {/* Show chat when not in call */}
       {!videoCall && !voiceCall && (
         <>
-          <View style={styles.headerMessagesComponentBlock}>
-            <View style={styles.headerBlock1}>
+          <View style={dynamicStyles.headerMessagesComponentBlock}>
+            <View style={dynamicStyles.headerBlock1}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back-sharp" size={31} color="black" />
+                <Ionicons
+                  name="arrow-back-sharp"
+                  size={31}
+                  color={colorScheme === "dark" ? "#fff" : "black"}
+                />
               </TouchableOpacity>
               <Image
                 source={require("../../assets/tajjob/messages/hr.jpg")}
-                style={styles.HRImg}
+                style={dynamicStyles.HRImg}
               />
-              <View style={styles.fullnameAndStatusBlockHeaderBlock1}>
-                <Text style={styles.HRFullname}>Danny H.</Text>
-                <Text style={styles.HRStatus}>
+              <View style={dynamicStyles.fullnameAndStatusBlockHeaderBlock1}>
+                <Text style={dynamicStyles.HRFullname}>Danny H.</Text>
+                <Text style={dynamicStyles.HRStatus}>
                   {isConnected ? "Online" : "Connecting..."}
                 </Text>
               </View>
             </View>
-            <View style={styles.headerBlock2}>
+            <View style={dynamicStyles.headerBlock2}>
               <TouchableOpacity onPress={handleVoiceCall}>
-                <FontAwesome5 name="phone-alt" size={31} color="black" />
+                <FontAwesome5
+                  name="phone-alt"
+                  size={31}
+                  color={colorScheme === "dark" ? "#fff" : "black"}
+                />
               </TouchableOpacity>
               <TouchableOpacity onPress={handleVideoCall}>
-                <FontAwesome name="video-camera" size={31} color="black" />
+                <FontAwesome
+                  name="video-camera"
+                  size={31}
+                  color={colorScheme === "dark" ? "#fff" : "black"}
+                />
               </TouchableOpacity>
               <TouchableOpacity>
-                <Entypo name="dots-three-vertical" size={31} color="black" />
+                <Entypo
+                  name="dots-three-vertical"
+                  size={31}
+                  color={colorScheme === "dark" ? "#fff" : "black"}
+                />
               </TouchableOpacity>
             </View>
           </View>
 
-          <View style={styles.sectionAndFooterMessagesComponentBlock}>
+          <View style={dynamicStyles.sectionAndFooterMessagesComponentBlock}>
             <ScrollView
               ref={scrollViewRef}
-              style={styles.sectionMessagesComponentBlock}
+              style={dynamicStyles.sectionMessagesComponentBlock}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.scrollViewContent}
+              contentContainerStyle={dynamicStyles.scrollViewContent}
               onContentSizeChange={() =>
                 scrollViewRef.current?.scrollToEnd({ animated: true })
               }
             >
-              <View style={styles.messagesContainer}>
-                <Text style={styles.messagesSentDay}>Today</Text>
-                <View style={styles.messagesBlockOfThisDay}>
+              <View style={dynamicStyles.messagesContainer}>
+                <Text style={dynamicStyles.messagesSentDay}>Today</Text>
+                <View style={dynamicStyles.messagesBlockOfThisDay}>
                   {messages.map(renderMessage)}
                 </View>
               </View>
             </ScrollView>
 
             {/* Message input footer */}
-            <View style={styles.footerMessagesComponentBlock}>
+            <View style={dynamicStyles.footerMessagesComponentBlock}>
               {isRecording ? (
-                <View style={styles.recordingContainer}>
+                <View style={dynamicStyles.recordingContainer}>
                   {/* Swipe to Cancel Indicator */}
                   {slideToCancelVisible && (
-                    <View style={styles.cancelIndicator}>
+                    <View style={dynamicStyles.cancelIndicator}>
                       <Ionicons name="close-circle" size={20} color="#ff3b30" />
-                      <Text style={styles.cancelText}>Release to cancel</Text>
+                      <Text style={dynamicStyles.cancelText}>
+                        Release to cancel
+                      </Text>
                     </View>
                   )}
 
                   <Animated.View
                     style={[
-                      styles.recordingIndicator,
+                      dynamicStyles.recordingIndicator,
                       {
                         transform: [
                           {
@@ -1923,13 +2602,13 @@ const Message = ({ route }: { route: any }) => {
                   {/* Live recording waveform */}
                   <RecordingWaveform />
 
-                  <Text style={styles.recordingTime}>
+                  <Text style={dynamicStyles.recordingTime}>
                     {formatTime(recordingTime)}
                   </Text>
 
                   {/* Cancel Button */}
                   <TouchableOpacity
-                    style={styles.cancelRecordingButton}
+                    style={dynamicStyles.cancelRecordingButton}
                     onPress={cancelRecording}
                     activeOpacity={0.7}
                   >
@@ -1938,7 +2617,7 @@ const Message = ({ route }: { route: any }) => {
 
                   {/* Stop/Send Button */}
                   <TouchableOpacity
-                    style={styles.stopRecordingButton}
+                    style={dynamicStyles.stopRecordingButton}
                     onPress={stopRecording}
                     activeOpacity={0.7}
                   >
@@ -1947,11 +2626,13 @@ const Message = ({ route }: { route: any }) => {
                 </View>
               ) : (
                 // Normal input
-                <View style={styles.inputMessageAndIconBlock}>
+                <View style={dynamicStyles.inputMessageAndIconBlock}>
                   <TextInput
-                    style={styles.inputMessage}
+                    style={dynamicStyles.inputMessage}
                     placeholder="Message"
-                    placeholderTextColor={"#9E9E9E"}
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#e4e4e4" : "#9E9E9E"
+                    }
                     value={messageText}
                     onChangeText={setMessageText}
                     multiline
@@ -1959,29 +2640,41 @@ const Message = ({ route }: { route: any }) => {
                     returnKeyType="send"
                     blurOnSubmit={false}
                   />
-                  <TouchableOpacity style={styles.iconStckersFooter}>
-                    <FontAwesome5 name="smile" size={22} color="black" />
+                  <TouchableOpacity style={dynamicStyles.iconStckersFooter}>
+                    <FontAwesome5
+                      name="smile"
+                      size={22}
+                      color={colorScheme === "dark" ? "#fff" : "black"}
+                    />
                   </TouchableOpacity>
 
                   {messageText.trim() ? (
                     <TouchableOpacity
-                      style={styles.sendButton}
+                      style={dynamicStyles.sendButton}
                       onPress={sendTextMessage}
                       activeOpacity={0.7}
                     >
-                      <Ionicons name="send" size={20} color="#2623D2" />
+                      <Ionicons
+                        name="send"
+                        size={20}
+                        color={colorScheme === "dark" ? "#00c3ffc1" : "#2623D2"}
+                      />
                     </TouchableOpacity>
                   ) : (
                     // Voice button
                     <TouchableOpacity
-                      style={styles.btnVoiceToText}
+                      style={dynamicStyles.btnVoiceToText}
                       onPress={() => {
                         resetRecordingTime();
                         handleVoiceButtonPress();
                       }}
                       activeOpacity={0.7}
                     >
-                      <Ionicons name="mic" size={22} color="#2623D2" />
+                      <Ionicons
+                        name="mic"
+                        size={22}
+                        color={colorScheme === "dark" ? "#00c3ffc1" : "#2623D2"}
+                      />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -2001,635 +2694,5 @@ const Message = ({ route }: { route: any }) => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  messageComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  headerMessagesComponentBlock: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 50,
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-    backgroundColor: "#fff",
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  headerBlock1: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  HRImg: {
-    width: 55,
-    height: 55,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: "#2623D2",
-  },
-  fullnameAndStatusBlockHeaderBlock1: {
-    gap: 2,
-  },
-  HRFullname: {
-    fontSize: 23,
-    fontWeight: "600",
-    color: "#333",
-  },
-  HRStatus: {
-    color: "#4CD964",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  headerBlock2: {
-    flexDirection: "row",
-    gap: 15,
-    alignItems: "center",
-  },
-  sectionAndFooterMessagesComponentBlock: {
-    flex: 1,
-    paddingBottom: 42,
-  },
-  sectionMessagesComponentBlock: {
-    flex: 1,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesSentDay: {
-    alignSelf: "center",
-    color: "#9E9E9E",
-    fontSize: 16,
-    fontWeight: "500",
-    marginTop: 15,
-    marginBottom: 10,
-    backgroundColor: "#f8f8f8",
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 15,
-  },
-  messagesBlockOfThisDay: {
-    gap: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-  },
-  messageOfUserMainBlock: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginBottom: 5,
-  },
-  messageOfUserBlock: {
-    maxWidth: "75%",
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-    padding: 12,
-    borderRadius: 18,
-    borderBottomRightRadius: 4,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
-  },
-  messageOfUser: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "#333",
-    lineHeight: 22,
-  },
-  messageOfHRMainBlock: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 5,
-  },
-  messageOfHRBlock: {
-    maxWidth: "75%",
-    backgroundColor: "#2623D2",
-    padding: 12,
-    borderRadius: 18,
-    borderBottomLeftRadius: 4,
-    shadowColor: "#2623D2",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  messageOfHR: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "#fff",
-    lineHeight: 22,
-  },
-  // Voice message styles
-  voiceMessageOfUserBlock: {
-    maxWidth: "75%",
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-    padding: 12,
-    borderRadius: 18,
-    borderBottomRightRadius: 4,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
-  },
-  voiceMessageOfHRBlock: {
-    maxWidth: "75%",
-    backgroundColor: "#2623D2",
-    padding: 12,
-    borderRadius: 18,
-    borderBottomLeftRadius: 4,
-    shadowColor: "#2623D2",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  voiceMessageContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    minHeight: 32,
-  },
-  playButtonContainer: {},
-  playButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(38, 35, 210, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(38, 35, 210, 0.2)",
-  },
-  playingButton: {
-    backgroundColor: "rgba(255, 59, 48, 0.1)",
-    borderColor: "rgba(255, 59, 48, 0.2)",
-  },
-  // Waveform styles
-  waveformContainer: {
-    width: 140,
-    height: 32,
-  },
-  waveformTouchArea: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-  },
-  waveformBarsContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    width: "100%",
-    height: "100%",
-    position: "relative",
-    paddingHorizontal: 2,
-  },
-  waveformBar: {
-    alignSelf: "flex-end",
-  },
-  waveformProgressOverlay: {
-    position: "absolute",
-    height: "100%",
-    borderRadius: 8,
-    left: 0,
-    top: 0,
-  },
-  seekIndicator: {
-    position: "absolute",
-    top: -2,
-    width: 3,
-    height: "120%",
-    borderRadius: 1.5,
-    zIndex: 10,
-  },
-  // Recording waveform styles
-  recordingWaveformContainer: {
-    width: 100,
-    height: 32,
-    justifyContent: "center",
-  },
-  recordingWaveformBars: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    height: "100%",
-    paddingHorizontal: 5,
-  },
-  recordingWaveformBar: {
-    alignSelf: "flex-end",
-  },
-  voiceDuration: {
-    fontSize: 12,
-    fontWeight: "500",
-    minWidth: 35,
-    textAlign: "center",
-  },
-  voiceDurationUser: {
-    color: "#2623D2",
-  },
-  voiceDurationHR: {
-    color: "#fff",
-  },
-  playingDuration: {
-    fontWeight: "700",
-  },
-  messageSentTimeAndSeenBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    gap: 4,
-    marginTop: 6,
-  },
-  messageSentTimeUser: {
-    color: "#9E9E9E",
-    fontSize: 11,
-    fontWeight: "400",
-  },
-  messageSentTimeHR: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: 11,
-    fontWeight: "400",
-  },
-  messageSeenIcon: {
-    marginLeft: 2,
-  },
-  footerMessagesComponentBlock: {
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-    paddingTop: 10,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-  },
-  inputMessageAndIconBlock: {
-    position: "relative",
-  },
-  inputMessage: {
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-    fontSize: 16,
-    fontWeight: "400",
-    borderRadius: 25,
-    paddingLeft: 50,
-    paddingRight: 50,
-    paddingVertical: 12,
-    maxHeight: 100,
-  },
-  iconStckersFooter: {
-    position: "absolute",
-    top: 10.5,
-    left: 12,
-    zIndex: 1,
-    padding: 5,
-  },
-  sendButton: {
-    position: "absolute",
-    top: 6,
-    right: 12,
-    padding: 5,
-  },
-  btnVoiceToText: {
-    position: "absolute",
-    top: 6,
-    right: 8,
-    padding: 5,
-  },
-  // Recording styles
-  recordingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    position: "relative",
-    borderWidth: 1,
-    borderColor: "#ff3b30",
-    shadowColor: "#ff3b30",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  recordingIndicator: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(255, 59, 48, 0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 59, 48, 0.3)",
-  },
-  recordingTime: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#ff3b30",
-    minWidth: 40,
-    textAlign: "center",
-  },
-  cancelRecordingButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255, 59, 48, 0.1)",
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255, 59, 48, 0.2)",
-  },
-  stopRecordingButton: {
-    backgroundColor: "#ff3b30",
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#ff3b30",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  // Swipe to cancel styles
-  cancelIndicator: {
-    position: "absolute",
-    left: -110,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 59, 48, 0.1)",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(255, 59, 48, 0.2)",
-  },
-  cancelText: {
-    color: "#ff3b30",
-    fontSize: 11,
-    fontWeight: "600",
-    marginLeft: 4,
-  },
-
-  // Video Off Overlay
-  videoOffOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  // Video Call Styles
-  videoCallContainer: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-  videoCallBackground: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  remoteVideoContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  remoteVideo: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  localVideoContainer: {
-    position: "absolute",
-    top: 50,
-    right: 20,
-    width: 120,
-    height: 160,
-    borderRadius: 10,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-    elevation: 5,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-  localVideo: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  mockVideoText: {
-    color: "#fff",
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 10,
-    fontWeight: "600",
-  },
-  mockVideoSubtext: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 5,
-  },
-  mockLocalVideoText: {
-    color: "#fff",
-    fontSize: 12,
-    textAlign: "center",
-    marginTop: 5,
-  },
-
-  // Voice Call Styles
-  voiceCallContainer: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-  voiceCallBackground: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  voiceCallContent: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "space-between",
-    paddingVertical: 80,
-  },
-  voiceCallAvatar: {
-    alignItems: "center",
-    marginTop: 40,
-  },
-  callAvatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 20,
-    borderWidth: 3,
-    borderColor: "#fff",
-  },
-  callUserName: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#fff",
-    marginBottom: 8,
-  },
-  callStatus: {
-    fontSize: 16,
-    color: "#4CD964",
-    fontWeight: "500",
-  },
-
-  // Call Controls
-  callControls: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingHorizontal: 20,
-  },
-  callButton: {
-    alignItems: "center",
-  },
-  callButtonIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  callButtonText: {
-    color: "#fff",
-    fontSize: 12,
-    marginTop: 5,
-    fontWeight: "500",
-  },
-
-  // Call Info
-  callInfo: {
-    alignItems: "center",
-    marginTop: 20,
-  },
-  callInfoText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  callDuration: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 16,
-    marginTop: 5,
-  },
-
-  // Incoming Call Styles
-  incomingCallContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.9)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  incomingCallContent: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 30,
-    alignItems: "center",
-    margin: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  incomingCallAvatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 20,
-    borderWidth: 3,
-    borderColor: "#2623D2",
-  },
-  incomingCallTitle: {
-    fontSize: 22,
-    fontWeight: "600",
-    marginBottom: 10,
-    textAlign: "center",
-    color: "#333",
-  },
-  incomingCallSubtitle: {
-    fontSize: 18,
-    color: "#666",
-    marginBottom: 30,
-  },
-  incomingCallButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  incomingCallButton: {
-    flex: 1,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  rejectButton: {
-    backgroundColor: "#ff3b30",
-  },
-  acceptButton: {
-    backgroundColor: "#4CD964",
-  },
-  rejectButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 5,
-  },
-  acceptButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 5,
-  },
-});
 
 export default Message;

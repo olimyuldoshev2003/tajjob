@@ -323,7 +323,7 @@ const Home = ({ onJobPress }: HomeProps) => {
       flex: 1,
     },
     headerHomeComponent: {
-      backgroundColor: "#0961F6",
+      backgroundColor: colorScheme === "dark" ? "#b8b8b8" : "#0961F6",
       paddingTop: 50,
       paddingBottom: 30,
       borderStartEndRadius: 20,
@@ -342,12 +342,12 @@ const Home = ({ onJobPress }: HomeProps) => {
     },
     headerTextBlock: {},
     greetingsAndName: {
-      color: "#fff",
+      color: colorScheme === "dark" ? "#000" : "#fff",
       fontWeight: "700",
       fontSize: 28,
     },
     greetingText: {
-      color: "#9FBFE2",
+      color: colorScheme === "dark" ? "#004997" : "#9FBFE2",
       fontWeight: "500",
       fontSize: 21,
     },
@@ -355,7 +355,7 @@ const Home = ({ onJobPress }: HomeProps) => {
       position: "relative",
     },
     notificationIcon: {
-      backgroundColor: "#ffffff45",
+      backgroundColor: colorScheme === "dark" ? "#121212": "#ffffff45",
       borderRadius: 10,
     },
     newNotificationNotice: {
