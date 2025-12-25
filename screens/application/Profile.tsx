@@ -65,7 +65,6 @@ const Profile = () => {
       width: 96,
       height: 96,
       borderRadius: 50,
-      borderColor: "#fff",
     },
     userFullname: {
       fontSize: 26,
@@ -104,8 +103,8 @@ const Profile = () => {
     createResumeBtn: {},
     savedJobsBtn: {},
     saveIconBlock: {
-      paddingVertical: 10,
-      paddingHorizontal: 15.4,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
     },
     saveIcon: {},
     /////////////////////////////////////////////////////////////
@@ -130,8 +129,8 @@ const Profile = () => {
       borderRadius: 50,
     },
     icon: {
-      width: 32,
-      height: 32,
+      width: 23,
+      height: 23,
       resizeMode: "contain",
     },
     funcTypeText: {

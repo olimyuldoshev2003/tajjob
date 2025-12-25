@@ -1065,7 +1065,7 @@ const ModalApply = ({
                       }
                       searchPlaceholder="Search countries..."
                       textStyle={{
-                        color: "#bebebe",
+                        color: colorScheme === "dark" ? "#bebebe" : "#000",
                       }}
                       style={dynamicStyles.selectorStyle}
                       optionStyle={dynamicStyles.optionStyle}

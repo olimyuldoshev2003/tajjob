@@ -91,6 +91,7 @@ const AboutEmployer = ({ route }: { route: any }) => {
     imgOfHR: {
       width: 61,
       height: 61,
+      borderRadius: 50,
     },
     HRFullnameAndPosition: {},
     HRFullname: {

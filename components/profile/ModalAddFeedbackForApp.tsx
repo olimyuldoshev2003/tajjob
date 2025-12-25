@@ -1,10 +1,9 @@
-import Entypo from "@expo/vector-icons/Entypo";
 import {
   FontAwesome,
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import * as DocumentPicker from "expo-document-picker";
+import Entypo from "@expo/vector-icons/Entypo";
 import {
   AsYouType,
   CountryCode,
@@ -22,6 +21,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   View,
 } from "react-native";
 import { Selector } from "rn-selector";
@@ -97,6 +97,7 @@ const ModalAddFeedbackForApp = ({
   modalAddFeedbackForApp: boolean;
   setModalAddFeedbackForApp: any;
 }) => {
+  const colorScheme = useColorScheme();
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [review, setReview] = useState("");
@@ -470,6 +471,219 @@ const ModalAddFeedbackForApp = ({
     }
   };
 
+  const dynamicStyles = StyleSheet.create({
+    modalAddFeedbackForAppComponent: {},
+    overlayModalAddFeedbackForApp: {
+      position: "absolute",
+      inset: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalAddFeedbackForAppMainBlock: {
+      position: "absolute",
+      inset: 0,
+      backgroundColor: colorScheme === "dark" ? "#b8b8b8" : "#2623D2",
+    },
+    headerModalAddFeedbackForApp: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 17,
+      gap: 51,
+    },
+    btnCloseModalAddFeedbackForApp: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#dddddd",
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 50,
+    },
+    textHeaderModalAddFeedbackForApp: {
+      color: colorScheme === "dark" ? "#000" : "#FFFFFF",
+      fontSize: 20,
+      fontWeight: "600",
+    },
+    btnTextCloseModalAddFeedbackForApp: {},
+    sectionModalAddFeedbackForApp: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      marginTop: 50,
+      position: "relative",
+    },
+    blockUserImgAndUserFullname: {
+      alignItems: "center",
+      gap: 5,
+      position: "absolute",
+      top: -41,
+      left: 0,
+      right: 0,
+      zIndex: 10,
+    },
+    userImg: {
+      width: 86,
+      height: 86,
+      borderRadius: 50,
+    },
+    userFullname: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    scrollViewContainer: {
+      marginTop: 85,
+      padding: 10,
+      paddingBottom: 0,
+    },
+    blockSectionModalAddFeedbackForAppScrollView: {
+      gap: 15,
+      paddingBottom: 10,
+    },
+    blockSectionModalAddFeedbackForApp: {},
+    emailLabelIconAndInput: {},
+    phoneNumberLabelIconAndInput: {},
+    detailedReviewLabelAndInput: {
+      gap: 9,
+      paddingHorizontal: 5,
+    },
+    labelDetailedReview: {},
+    inputDetailedReview: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "white",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 2,
+      elevation: 5,
+      fontSize: 22,
+      fontWeight: "400",
+      borderRadius: 20,
+      paddingVertical: 15,
+      minHeight: 210,
+      textAlignVertical: "top",
+    },
+    btnSubmitFeedbackForApp: {
+      backgroundColor: "#2623D2",
+      paddingVertical: 15,
+      borderRadius: 20,
+      marginTop: 10,
+    },
+    btnSubmitFeedbackForAppDisabled: {
+      backgroundColor: "#999",
+      opacity: 0.7,
+    },
+    btnTextSubmitFeedbackForApp: {
+      color: "#fff",
+      textAlign: "center",
+      fontSize: 25,
+      fontWeight: "700",
+    },
+
+    // Styles with the same names
+    labelIconAndInputBlock: {
+      gap: 9,
+    },
+
+    label: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    iconAndInputBlock: {
+      position: "relative",
+      paddingHorizontal: 3,
+    },
+    icon: {
+      position: "absolute",
+      top: 9,
+      left: 11,
+      zIndex: 1,
+    },
+    phoneIcon: {
+      position: "absolute",
+      top: 11,
+      left: 11,
+      zIndex: 1,
+    },
+    input: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "white",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 2,
+      elevation: 5,
+      fontSize: 22,
+      fontWeight: "400",
+      borderRadius: 20,
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      paddingLeft: 53,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    phoneInputError: {
+      borderColor: "#d32f2f",
+      borderWidth: 2,
+    },
+    phoneErrorText: {
+      color: "#d32f2f",
+      fontSize: 14,
+      fontWeight: "500",
+      marginTop: 5,
+    },
+    phoneHintText: {
+      color: "#666",
+      fontSize: 12,
+      fontStyle: "italic",
+      marginTop: 5,
+      lineHeight: 16,
+    },
+
+    // Country selector styles
+    countrySelectorContainer: {
+      zIndex: 1000,
+      marginBottom: 10,
+    },
+    selectorWrapper: {
+      position: "relative",
+    },
+    selectorStyle: {
+      borderWidth: 1,
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 2,
+      elevation: 5,
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+      paddingHorizontal: 15,
+    },
+    selectorBackdrop: {
+      position: "absolute",
+      top: -100,
+      left: -20,
+      right: -20,
+      bottom: -100,
+      zIndex: -1,
+    },
+    dropdownStyle: {
+      borderWidth: 1,
+      borderColor: "#ddd",
+      borderRadius: 10,
+      marginTop: 5,
+      maxHeight: 200,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+    },
+    optionStyle: {
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+
+    searchInputStyle: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+  });
+
   return (
     <Modal
       visible={modalAddFeedbackForApp}
@@ -478,83 +692,83 @@ const ModalAddFeedbackForApp = ({
       onRequestClose={() => {
         setModalAddFeedbackForApp(!modalAddFeedbackForApp);
       }}
-      style={styles.modalAddFeedbackForAppComponent}
+      style={dynamicStyles.modalAddFeedbackForAppComponent}
     >
       <Pressable
-        style={styles.overlayModalAddFeedbackForApp}
+        style={dynamicStyles.overlayModalAddFeedbackForApp}
         onPress={() => {
           setModalAddFeedbackForApp(false);
         }}
       >
         <Pressable
-          style={styles.modalAddFeedbackForAppMainBlock}
+          style={dynamicStyles.modalAddFeedbackForAppMainBlock}
           onPress={(e) => e.stopPropagation()}
         >
-          <View style={styles.headerModalAddFeedbackForApp}>
+          <View style={dynamicStyles.headerModalAddFeedbackForApp}>
             <Pressable
-              style={styles.btnCloseModalAddFeedbackForApp}
+              style={dynamicStyles.btnCloseModalAddFeedbackForApp}
               onPress={() => {
                 setModalAddFeedbackForApp(false);
               }}
             >
-              <FontAwesome name="close" size={32} color="black" />
+              <FontAwesome name="close" size={32} color={colorScheme === "dark" ? "#fff" : "black"} />
             </Pressable>
-            <Text style={styles.textHeaderModalAddFeedbackForApp}>
+            <Text style={dynamicStyles.textHeaderModalAddFeedbackForApp}>
               Write Us Feedback
             </Text>
           </View>
-          <View style={styles.sectionModalAddFeedbackForApp}>
-            <View style={styles.blockUserImgAndUserFullname}>
+          <View style={dynamicStyles.sectionModalAddFeedbackForApp}>
+            <View style={dynamicStyles.blockUserImgAndUserFullname}>
               <Image
                 source={require("../../assets/tajjob/profile/profileImg.jpg")}
-                style={styles.userImg}
+                style={dynamicStyles.userImg}
               />
-              <Text style={styles.userFullname}>Olim Yuldoshev</Text>
+              <Text style={dynamicStyles.userFullname}>Olim Yuldoshev</Text>
             </View>
-            <View style={styles.scrollViewContainer}>
+            <View style={dynamicStyles.scrollViewContainer}>
               <ScrollView
                 contentContainerStyle={
-                  styles.blockSectionModalAddFeedbackForAppScrollView
+                  dynamicStyles.blockSectionModalAddFeedbackForAppScrollView
                 }
-                style={styles.blockSectionModalAddFeedbackForApp}
+                style={dynamicStyles.blockSectionModalAddFeedbackForApp}
               >
                 <View
                   style={[
-                    styles.emailLabelIconAndInput,
-                    styles.labelIconAndInputBlock,
+                    dynamicStyles.emailLabelIconAndInput,
+                    dynamicStyles.labelIconAndInputBlock,
                   ]}
                 >
-                  <Text style={styles.label}>Email *</Text>
-                  <View style={styles.iconAndInputBlock}>
+                  <Text style={dynamicStyles.label}>Email *</Text>
+                  <View style={dynamicStyles.iconAndInputBlock}>
                     <MaterialCommunityIcons
                       name="email"
                       size={35}
-                      color="black"
-                      style={styles.icon}
+                      color={colorScheme === "dark" ? "#fff" : "black"}
+                      style={dynamicStyles.icon}
                     />
                     <TextInput
-                      style={styles.input}
+                      style={dynamicStyles.input}
                       placeholder="example@gmail.com"
                       value={email}
                       onChangeText={setEmail}
                       keyboardType="email-address"
                       autoCapitalize="none"
-                      placeholderTextColor="#999"
+                      placeholderTextColor={colorScheme === "dark" ? "#fff" : "#999"}
                     />
                   </View>
                 </View>
 
                 <View
                   style={[
-                    styles.phoneNumberLabelIconAndInput,
-                    styles.labelIconAndInputBlock,
+                    dynamicStyles.phoneNumberLabelIconAndInput,
+                    dynamicStyles.labelIconAndInputBlock,
                   ]}
                 >
-                  <Text style={styles.label}>Phone number *</Text>
+                  <Text style={dynamicStyles.label}>Phone number *</Text>
 
                   {/* Country Selector */}
-                  <View style={styles.countrySelectorContainer}>
-                    <View style={styles.selectorWrapper}>
+                  <View style={dynamicStyles.countrySelectorContainer}>
+                    <View style={dynamicStyles.selectorWrapper}>
                       <Selector
                         options={COUNTRIES_DATA}
                         selectedValue={selectedCountry}
@@ -566,42 +780,48 @@ const ModalAddFeedbackForApp = ({
                           <Entypo
                             name="chevron-thin-down"
                             size={16}
-                            color="#666"
+                            color={colorScheme === "dark" ? "#fff" : "#666"}
                           />
                         }
-                        optionStyle={styles.optionStyle}
+                        optionStyle={dynamicStyles.optionStyle}
                         searchPlaceholder="Search countries..."
-                        style={styles.selectorStyle}
-                        dropdownStyle={styles.dropdownStyle}
+                        textStyle={{
+                          color:colorScheme === "dark"? "#bebebe":"#000",
+                        }} 
+                        style={dynamicStyles.selectorStyle}
+                        dropdownStyle={dynamicStyles.dropdownStyle}
+                        searchInputStyle={dynamicStyles.searchInputStyle}
                       />
-                      <Pressable style={styles.selectorBackdrop} />
+                      <Pressable style={dynamicStyles.selectorBackdrop} />
                     </View>
                   </View>
 
-                  <View style={styles.iconAndInputBlock}>
+                  <View style={dynamicStyles.iconAndInputBlock}>
                     <FontAwesome5
                       name="phone-alt"
                       size={30}
-                      color="black"
-                      style={styles.phoneIcon}
+                      color={colorScheme === "dark" ? "#fff" : "black"}
+                      style={dynamicStyles.phoneIcon}
                     />
                     <TextInput
                       style={[
-                        styles.input,
-                        phoneError && styles.phoneInputError,
+                        dynamicStyles.input,
+                        phoneError && dynamicStyles.phoneInputError,
                       ]}
                       placeholder={getPhonePlaceholder()}
                       value={phone}
                       onChangeText={handlePhoneChange}
                       keyboardType="phone-pad"
-                      placeholderTextColor="#999"
+                      placeholderTextColor={colorScheme === "dark" ? "#fff":"#999"}
                     />
                   </View>
 
                   {phoneError ? (
-                    <Text style={styles.phoneErrorText}>{phoneError}</Text>
+                    <Text style={dynamicStyles.phoneErrorText}>
+                      {phoneError}
+                    </Text>
                   ) : (
-                    <Text style={styles.phoneHintText}>
+                    <Text style={dynamicStyles.phoneHintText}>
                       {selectedCountry === "tj"
                         ? "Start with +992. Supported prefixes: 90, 91, 92, 93, 94, 98, 99, etc."
                         : "Start with + or select country. The country will auto-detect."}
@@ -609,31 +829,36 @@ const ModalAddFeedbackForApp = ({
                   )}
                 </View>
 
-                <View style={styles.detailedReviewLabelAndInput}>
-                  <Text style={[styles.labelDetailedReview, styles.label]}>
+                <View style={dynamicStyles.detailedReviewLabelAndInput}>
+                  <Text
+                    style={[
+                      dynamicStyles.labelDetailedReview,
+                      dynamicStyles.label,
+                    ]}
+                  >
                     Detailed review *
                   </Text>
                   <TextInput
-                    style={styles.inputDetailedReview}
+                    style={dynamicStyles.inputDetailedReview}
                     placeholder="Enter your feedback here..."
                     multiline
                     numberOfLines={7}
                     value={review}
                     onChangeText={setReview}
                     textAlignVertical="top"
-                    placeholderTextColor="#999"
+                    placeholderTextColor={colorScheme === "dark" ? "#fff" : "#999"}
                   />
                 </View>
 
                 <Pressable
                   style={[
-                    styles.btnSubmitFeedbackForApp,
-                    isLoading && styles.btnSubmitFeedbackForAppDisabled,
+                    dynamicStyles.btnSubmitFeedbackForApp,
+                    isLoading && dynamicStyles.btnSubmitFeedbackForAppDisabled,
                   ]}
                   onPress={handleSubmit}
                   disabled={isLoading}
                 >
-                  <Text style={styles.btnTextSubmitFeedbackForApp}>
+                  <Text style={dynamicStyles.btnTextSubmitFeedbackForApp}>
                     {isLoading ? "Submitting..." : "Submit"}
                   </Text>
                 </Pressable>
@@ -647,205 +872,3 @@ const ModalAddFeedbackForApp = ({
 };
 
 export default ModalAddFeedbackForApp;
-
-const styles = StyleSheet.create({
-  modalAddFeedbackForAppComponent: {},
-  overlayModalAddFeedbackForApp: {
-    position: "absolute",
-    inset: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalAddFeedbackForAppMainBlock: {
-    position: "absolute",
-    inset: 0,
-    backgroundColor: "#2623D2",
-  },
-  headerModalAddFeedbackForApp: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 17,
-    gap: 51,
-  },
-  btnCloseModalAddFeedbackForApp: {
-    backgroundColor: "#dddddd",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 50,
-  },
-  textHeaderModalAddFeedbackForApp: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  btnTextCloseModalAddFeedbackForApp: {},
-  sectionModalAddFeedbackForApp: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    marginTop: 50,
-    position: "relative",
-  },
-  blockUserImgAndUserFullname: {
-    alignItems: "center",
-    gap: 5,
-    position: "absolute",
-    top: -41,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  userImg: {
-    width: 86,
-    height: 86,
-    borderRadius: 50,
-  },
-  userFullname: {
-    fontSize: 32,
-    fontWeight: "700",
-  },
-  scrollViewContainer: {
-    marginTop: 85,
-    padding: 10,
-    paddingBottom: 0,
-  },
-  blockSectionModalAddFeedbackForAppScrollView: {
-    gap: 15,
-    paddingBottom: 10,
-  },
-  blockSectionModalAddFeedbackForApp: {},
-  emailLabelIconAndInput: {},
-  phoneNumberLabelIconAndInput: {},
-  detailedReviewLabelAndInput: {
-    gap: 9,
-    paddingHorizontal: 5,
-  },
-  labelDetailedReview: {},
-  inputDetailedReview: {
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-    fontSize: 22,
-    fontWeight: "400",
-    borderRadius: 20,
-    paddingVertical: 15,
-    minHeight: 210,
-    textAlignVertical: "top",
-  },
-  btnSubmitFeedbackForApp: {
-    backgroundColor: "#2623D2",
-    paddingVertical: 15,
-    borderRadius: 20,
-    marginTop: 10,
-  },
-  btnSubmitFeedbackForAppDisabled: {
-    backgroundColor: "#999",
-    opacity: 0.7,
-  },
-  btnTextSubmitFeedbackForApp: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 25,
-    fontWeight: "700",
-  },
-
-  // Styles with the same names
-  labelIconAndInputBlock: {
-    gap: 9,
-  },
-
-  label: {
-    color: "#4C4ADA",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  iconAndInputBlock: {
-    position: "relative",
-    paddingHorizontal: 3,
-  },
-  icon: {
-    position: "absolute",
-    top: 9,
-    left: 11,
-    zIndex: 1,
-  },
-  phoneIcon: {
-    position: "absolute",
-    top: 11,
-    left: 11,
-    zIndex: 1,
-  },
-  input: {
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-    fontSize: 22,
-    fontWeight: "400",
-    borderRadius: 20,
-    paddingVertical: 12,
-    paddingLeft: 53,
-  },
-  phoneInputError: {
-    borderColor: "#d32f2f",
-    borderWidth: 2,
-  },
-  phoneErrorText: {
-    color: "#d32f2f",
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 5,
-  },
-  phoneHintText: {
-    color: "#666",
-    fontSize: 12,
-    fontStyle: "italic",
-    marginTop: 5,
-    lineHeight: 16,
-  },
-
-  // Country selector styles
-  countrySelectorContainer: {
-    zIndex: 1000,
-    marginBottom: 10,
-  },
-  selectorWrapper: {
-    position: "relative",
-  },
-  selectorStyle: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-    backgroundColor: "#fff",
-    paddingHorizontal: 15,
-  },
-  selectorBackdrop: {
-    position: "absolute",
-    top: -100,
-    left: -20,
-    right: -20,
-    bottom: -100,
-    zIndex: -1,
-  },
-  dropdownStyle: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    marginTop: 5,
-    maxHeight: 200,
-  },
-  optionStyle: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-  },
-});

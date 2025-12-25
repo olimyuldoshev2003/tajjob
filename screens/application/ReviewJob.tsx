@@ -10,6 +10,10 @@ import {
   TextInput,
   useColorScheme,
   View,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 
 // @ts-ignore
@@ -36,8 +40,11 @@ const ReviewJob = ({
     reviewJobComponentBlock: {
       paddingVertical: 20,
       paddingHorizontal: 20,
+      flex: 1,
     },
-    reviewJobComponentScrollViewBlock: {},
+    reviewJobComponentScrollViewBlock: {
+      flexGrow: 1,
+    },
     headerReviewJobComponent: {},
     headerBlock1ReviewJobComponent: {
       flexDirection: "row",
@@ -63,6 +70,7 @@ const ReviewJob = ({
       position: "absolute",
       top: 7,
       left: 7,
+      zIndex: 1,
     },
     searchInput: {
       paddingVertical: 10,
@@ -88,8 +96,7 @@ const ReviewJob = ({
       paddingHorizontal: 10,
       borderRadius: 10,
     },
-    filterIcon: {
-    },
+    filterIcon: {},
     btnTextFilter: {
       fontSize: 15,
       fontWeight: "500",
@@ -127,7 +134,7 @@ const ReviewJob = ({
     },
     sectionReviewJobComponent: {
       marginTop: 20,
-      paddingBottom: 40,
+      paddingBottom: 100,
     },
     reviews: {},
 
@@ -175,143 +182,169 @@ const ReviewJob = ({
   });
 
   return (
-    <View style={dynamicStyles.reviewJobComponent}>
-      <ScrollView
-        style={dynamicStyles.reviewJobComponentBlock}
-        contentContainerStyle={dynamicStyles.reviewJobComponentScrollViewBlock}
-      >
-        <View style={dynamicStyles.headerReviewJobComponent}>
-          <View style={dynamicStyles.headerBlock1ReviewJobComponent}>
-            <Text style={dynamicStyles.headerBlock1Text}>Reviews</Text>
-            <Pressable
-              style={dynamicStyles.btnHeaderBlock1}
-              onPress={() => {
-                setModalAddReview(true);
-              }}
-            >
-              <Text style={dynamicStyles.btnTextHeaderBlock1}>Add review</Text>
-            </Pressable>
-          </View>
-          <View style={dynamicStyles.headerBlock2ReviewJobComponent}>
-            <Ionicons
-              name="search"
-              size={26}
-              color={colorScheme === "dark" ? "#fff" : "black"}
-              style={dynamicStyles.searchIcon}
-            />
-
-            <TextInput
-              style={dynamicStyles.searchInput}
-              placeholder="Search in reviews"
-              placeholderTextColor={colorScheme === "dark" ? "#cacaca" : "gray"}
-            />
-          </View>
-          <View style={dynamicStyles.headerBlock3ReviewJobComponent}>
-            <Pressable style={dynamicStyles.btnFilter}>
-              <Ionicons
-                name="options"
-                size={24}
-                color={colorScheme === "dark" ? "#fff":"black"}
-                style={dynamicStyles.filterIcon}
-              />
-              <Text style={dynamicStyles.btnTextFilter}>Filter</Text>
-            </Pressable>
-            <View style={dynamicStyles.filterBtnsBlock}>
-              <Pressable
-                style={[
-                  dynamicStyles.filterBtn,
-                  dynamicStyles.interestBtn,
-                  dynamicStyles.filterBtnActive,
-                ]}
-              >
-                <Text
-                  style={[
-                    dynamicStyles.filterBtnText,
-                    dynamicStyles.interestBtnText,
-                    dynamicStyles.filterBtnTextActive,
-                  ]}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 20}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={dynamicStyles.reviewJobComponent}>
+          <ScrollView
+            style={dynamicStyles.reviewJobComponentBlock}
+            contentContainerStyle={
+              dynamicStyles.reviewJobComponentScrollViewBlock
+            }
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={dynamicStyles.headerReviewJobComponent}>
+              <View style={dynamicStyles.headerBlock1ReviewJobComponent}>
+                <Text style={dynamicStyles.headerBlock1Text}>Reviews</Text>
+                <Pressable
+                  style={dynamicStyles.btnHeaderBlock1}
+                  onPress={() => {
+                    setModalAddReview(true);
+                  }}
                 >
-                  Interest
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[dynamicStyles.filterBtn, dynamicStyles.complainBtn]}
-              >
-                <Text
-                  style={[
-                    dynamicStyles.filterBtnText,
-                    dynamicStyles.complainBtnText,
-                  ]}
-                >
-                  Complain
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[dynamicStyles.filterBtn, dynamicStyles.feedbackBtn]}
-              >
-                <Text
-                  style={[
-                    dynamicStyles.filterBtnText,
-                    dynamicStyles.feedbackBtnText,
-                  ]}
-                >
-                  Feedback
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-        <View style={dynamicStyles.sectionReviewJobComponent}>
-          <View style={dynamicStyles.reviews}>
-            {/* Review 1 */}
-            <View style={dynamicStyles.reviewBlock}>
-              <View style={dynamicStyles.headerReviewBlock}>
-                <View style={dynamicStyles.userImgFullnameAndRatingBlock}>
-                  <Image
-                    source={require("../../assets/tajjob/job/user-img-review.jpg")}
-                    style={dynamicStyles.userImgReview}
-                  />
-                  <View style={dynamicStyles.fullnameAndRatingBlock}>
-                    <Text style={dynamicStyles.fullnameReviewer}>
-                      John Boris
-                    </Text>
-                    <Stars
-                      default={rating}
-                      count={5}
-                      disabled={true}
-                      starSize={50}
-                      fullStar={<Entypo name="star" size={18} color="orange" />}
-                      emptyStar={
-                        <Entypo name="star-outlined" size={18} color="orange" />
-                      }
-                      halfStar={
-                        <Ionicons name="star-half" size={18} color="orange" />
-                      }
-                    />
-                  </View>
-                </View>
-                <Entypo
-                  name="heart-outlined"
-                  size={30}
+                  <Text style={dynamicStyles.btnTextHeaderBlock1}>
+                    Add review
+                  </Text>
+                </Pressable>
+              </View>
+              <View style={dynamicStyles.headerBlock2ReviewJobComponent}>
+                <Ionicons
+                  name="search"
+                  size={26}
                   color={colorScheme === "dark" ? "#fff" : "black"}
+                  style={dynamicStyles.searchIcon}
+                />
+
+                <TextInput
+                  style={dynamicStyles.searchInput}
+                  placeholder="Search in reviews"
+                  placeholderTextColor={
+                    colorScheme === "dark" ? "#cacaca" : "gray"
+                  }
                 />
               </View>
-              <View style={dynamicStyles.sectionReviewBlock}>
-                <Text style={dynamicStyles.review}>
-                  Reliable, Trusted, Innovative, Digital, Banking, Modern, Safe,
-                  Fast, Customer, Service, Support, Convenient, Mobile,
-                  Application, Professional, Easy, Secure, Transparent,
-                  Flexible, Growth, Future, Smart, Finance, Helpful,
-                  User-friendly, Strong, Accessible, Simple, Efficient,
-                  Excellent, Popular
-                </Text>
+              <View style={dynamicStyles.headerBlock3ReviewJobComponent}>
+                <Pressable style={dynamicStyles.btnFilter}>
+                  <Ionicons
+                    name="options"
+                    size={24}
+                    color={colorScheme === "dark" ? "#fff" : "black"}
+                    style={dynamicStyles.filterIcon}
+                  />
+                  <Text style={dynamicStyles.btnTextFilter}>Filter</Text>
+                </Pressable>
+                <View style={dynamicStyles.filterBtnsBlock}>
+                  <Pressable
+                    style={[
+                      dynamicStyles.filterBtn,
+                      dynamicStyles.interestBtn,
+                      dynamicStyles.filterBtnActive,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        dynamicStyles.filterBtnText,
+                        dynamicStyles.interestBtnText,
+                        dynamicStyles.filterBtnTextActive,
+                      ]}
+                    >
+                      Interest
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[dynamicStyles.filterBtn, dynamicStyles.complainBtn]}
+                  >
+                    <Text
+                      style={[
+                        dynamicStyles.filterBtnText,
+                        dynamicStyles.complainBtnText,
+                      ]}
+                    >
+                      Complain
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[dynamicStyles.filterBtn, dynamicStyles.feedbackBtn]}
+                  >
+                    <Text
+                      style={[
+                        dynamicStyles.filterBtnText,
+                        dynamicStyles.feedbackBtnText,
+                      ]}
+                    >
+                      Feedback
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
-              <Text style={dynamicStyles.reviewTime}>11 days ago</Text>
             </View>
-          </View>
+            <View style={dynamicStyles.sectionReviewJobComponent}>
+              <View style={dynamicStyles.reviews}>
+                {/* Review 1 */}
+                <View style={dynamicStyles.reviewBlock}>
+                  <View style={dynamicStyles.headerReviewBlock}>
+                    <View style={dynamicStyles.userImgFullnameAndRatingBlock}>
+                      <Image
+                        source={require("../../assets/tajjob/job/user-img-review.jpg")}
+                        style={dynamicStyles.userImgReview}
+                      />
+                      <View style={dynamicStyles.fullnameAndRatingBlock}>
+                        <Text style={dynamicStyles.fullnameReviewer}>
+                          John Boris
+                        </Text>
+                        <Stars
+                          default={rating}
+                          count={5}
+                          disabled={true}
+                          starSize={50}
+                          fullStar={
+                            <Entypo name="star" size={18} color="orange" />
+                          }
+                          emptyStar={
+                            <Entypo
+                              name="star-outlined"
+                              size={18}
+                              color="orange"
+                            />
+                          }
+                          halfStar={
+                            <Ionicons
+                              name="star-half"
+                              size={18}
+                              color="orange"
+                            />
+                          }
+                        />
+                      </View>
+                    </View>
+                    <Entypo
+                      name="heart-outlined"
+                      size={30}
+                      color={colorScheme === "dark" ? "#fff" : "black"}
+                    />
+                  </View>
+                  <View style={dynamicStyles.sectionReviewBlock}>
+                    <Text style={dynamicStyles.review}>
+                      Reliable, Trusted, Innovative, Digital, Banking, Modern,
+                      Safe, Fast, Customer, Service, Support, Convenient,
+                      Mobile, Application, Professional, Easy, Secure,
+                      Transparent, Flexible, Growth, Future, Smart, Finance,
+                      Helpful, User-friendly, Strong, Accessible, Simple,
+                      Efficient, Excellent, Popular
+                    </Text>
+                  </View>
+                  <Text style={dynamicStyles.reviewTime}>11 days ago</Text>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
         </View>
-      </ScrollView>
-    </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -444,11 +444,18 @@ const Home = ({ onJobPress }: HomeProps) => {
       paddingHorizontal: 10,
       borderRadius: 14,
     },
+
+    filterByCategoryBtnActive: {
+      backgroundColor: colorScheme === "dark" ? "#00b8f0" : "#2623D2",
+    },
+
     filterByCategoryBtnText: {
       fontSize: 20,
       fontWeight: "400",
       color: colorScheme === "dark" ? "#fff" : "#000",
     },
+    filterByCategoryBtnTextActive: {},
+
     recentJobs: {
       marginTop: 30,
       gap: 15,
@@ -684,35 +691,32 @@ const Home = ({ onJobPress }: HomeProps) => {
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
             >
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
-                <Text style={dynamicStyles.filterByCategoryBtnText}>All</Text>
+              <Pressable
+                style={[
+                  dynamicStyles.filterByCategoryBtn,
+                  dynamicStyles.filterByCategoryBtnActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    dynamicStyles.filterByCategoryBtnText,
+                    dynamicStyles.filterByCategoryBtnTextActive,
+                  ]}
+                >
+                  All
+                </Text>
               </Pressable>
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+              <Pressable style={[dynamicStyles.filterByCategoryBtn]}>
                 <Text style={dynamicStyles.filterByCategoryBtnText}>
                   IT-Job
                 </Text>
               </Pressable>
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+              <Pressable style={[dynamicStyles.filterByCategoryBtn]}>
                 <Text style={dynamicStyles.filterByCategoryBtnText}>
                   Operator
                 </Text>
               </Pressable>
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
-                <Text style={dynamicStyles.filterByCategoryBtnText}>
-                  Delivery
-                </Text>
-              </Pressable>
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
-                <Text style={dynamicStyles.filterByCategoryBtnText}>
-                  Delivery
-                </Text>
-              </Pressable>
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
-                <Text style={dynamicStyles.filterByCategoryBtnText}>
-                  Delivery
-                </Text>
-              </Pressable>
-              <Pressable style={dynamicStyles.filterByCategoryBtn}>
+              <Pressable style={[dynamicStyles.filterByCategoryBtn]}>
                 <Text style={dynamicStyles.filterByCategoryBtnText}>
                   Delivery
                 </Text>
