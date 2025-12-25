@@ -1,3 +1,8 @@
+import {
+  FontAwesome6,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as DocumentPicker from "expo-document-picker";
@@ -11,13 +16,13 @@ import examples from "libphonenumber-js/examples.mobile.json";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Image,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   View,
 } from "react-native";
 import { Selector } from "rn-selector";
@@ -93,6 +98,8 @@ const ModalApply = ({
   modalApply: any;
   setModalApply: any;
 }) => {
+  const colorScheme = useColorScheme();
+
   const [selectedFile, setSelectedFile] =
     useState<DocumentPicker.DocumentPickerResult | null>(null);
   const [fullName, setFullName] = useState("");
@@ -113,7 +120,7 @@ const ModalApply = ({
     emoji: country.emoji,
     dialCode: country.dialCode,
     name: country.name,
-  }));  
+  }));
 
   // Find current selected country data
   const getSelectedCountry = () => {
@@ -577,6 +584,371 @@ const ModalApply = ({
     return selectedFile.assets[0].name;
   };
 
+  const dynamicStyles = StyleSheet.create({
+    modalApplyComponent: {},
+    overlayModalApply: {
+      position: "absolute",
+      inset: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalApplyMainBlock: {
+      position: "absolute",
+      inset: 0,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+    },
+    headerModalApply: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 41,
+      padding: 20,
+    },
+    closeModalBtn: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#dddddd",
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 50,
+    },
+    textHeaderModalApply: {
+      color: colorScheme === "dark" ? "#fff" : "#3E3D3D",
+      fontSize: 25,
+      fontWeight: "600",
+    },
+    sectionModalApply: {},
+    block1SectionModalApply: {
+      paddingHorizontal: 20,
+      paddingBottom: 100,
+      gap: 20,
+    },
+    fullnameBlock: {
+      gap: 10,
+    },
+    fullnameLabel: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    fullnameInputContainer: {
+      position: "relative",
+    },
+    fullnameImg: {
+      position: "absolute",
+      top: 10,
+      left: 12,
+      zIndex: 1,
+    },
+    fullnameInput: {
+      borderWidth: 1,
+      paddingHorizontal: 15,
+      paddingLeft: 53,
+      paddingVertical: 12,
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      fontSize: 20,
+      width: "100%",
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    emailBlock: {
+      gap: 10,
+    },
+    emailLabel: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    emailInputContainer: {
+      position: "relative",
+    },
+    emailImg: {
+      position: "absolute",
+      top: 12,
+      left: 12,
+      zIndex: 1,
+    },
+    emailInput: {
+      borderWidth: 1,
+      paddingHorizontal: 15,
+      paddingLeft: 53,
+      paddingVertical: 12,
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      fontSize: 20,
+      width: "100%",
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    phoneBlock: {
+      gap: 10,
+    },
+    phoneLabel: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    countrySelectorContainer: {
+      zIndex: 1000,
+    },
+    selectedCountryContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderWidth: 1,
+      paddingHorizontal: 15,
+      paddingVertical: 12,
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    selectedCountryText: {
+      fontSize: 16,
+      color: "#333",
+    },
+    selectorWrapper: {
+      position: "relative",
+    },
+    selectorStyle: {
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      paddingHorizontal: 15,
+    },
+    selectorBackdrop: {
+      position: "absolute",
+      top: -100,
+      left: -20,
+      right: -20,
+      bottom: -100,
+      zIndex: -1,
+    },
+    dropdownStyle: {
+      borderWidth: 1,
+      borderColor: "#ddd",
+      borderRadius: 10,
+      marginTop: 5,
+      maxHeight: 200,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+    },
+    optionStyle: {
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    searchInputStyle: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    phoneInputContainer: {
+      position: "relative",
+    },
+    phoneImg: {
+      position: "absolute",
+      top: 12,
+      left: 12,
+      zIndex: 1,
+    },
+    phoneInput: {
+      borderWidth: 1,
+      paddingHorizontal: 15,
+      paddingLeft: 53,
+      paddingVertical: 12,
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      fontSize: 20,
+      width: "100%",
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    phoneInputError: {
+      borderColor: "#d32f2f",
+      borderWidth: 2,
+    },
+    phoneErrorText: {
+      color: "#d32f2f",
+      fontSize: 14,
+      fontWeight: "500",
+      marginTop: 5,
+    },
+    phoneHintText: {
+      color: colorScheme === "dark" ? "#fff" : "#666",
+      fontSize: 12,
+      fontStyle: "italic",
+      marginTop: 5,
+      lineHeight: 16,
+    },
+    operatorText: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 14,
+      fontWeight: "500",
+      marginTop: 5,
+      fontStyle: "italic",
+    },
+    uploadCvBlock: {
+      gap: 10,
+    },
+    uploadCVLabel: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    uploadCVButton: {
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      borderRadius: 20,
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      alignItems: "center",
+      gap: 2,
+      minHeight: 60,
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    uploadCVButtonSelected: {
+      borderColor: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      backgroundColor: "#f0f4ff",
+    },
+    uploadCVButtonImg: {},
+    uploadCVButtonText: {
+      color: colorScheme === "dark" ? "#fff" : "#A2A2A2",
+      fontSize: 18,
+      fontWeight: "400",
+      textAlign: "center",
+      flex: 1,
+    },
+    uploadCVButtonTextSelected: {
+      color: "#666",
+    },
+    fileActions: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 8,
+      gap: 10,
+    },
+    fileNameContainer: {
+      flex: 1,
+      marginRight: 10,
+    },
+    fileSelectedText: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 14,
+      fontWeight: "500",
+    },
+    removeFileBtn: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      backgroundColor: "#ffebee",
+      borderRadius: 8,
+      flexShrink: 0,
+    },
+    removeFileText: {
+      color: "#d32f2f",
+      fontSize: 12,
+      fontWeight: "500",
+    },
+    fileHint: {
+      color: colorScheme === "dark" ? "#fff" : "#666",
+      fontSize: 12,
+      fontStyle: "italic",
+      marginTop: 4,
+    },
+    commentApplyBlock: {
+      gap: 10,
+    },
+    commentApplyLabel: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 25,
+      fontWeight: "500",
+    },
+    commentInput: {
+      borderWidth: 1,
+      paddingHorizontal: 15,
+      paddingVertical: 12,
+      borderRadius: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      fontSize: 20,
+      width: "100%",
+      height: 190,
+      textAlignVertical: "top",
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    btnApply: {
+      backgroundColor: "#2623D2",
+      paddingVertical: 15,
+      borderRadius: 20,
+      marginTop: 30,
+    },
+    btnApplyDisabled: {
+      backgroundColor: "#999",
+      opacity: 0.7,
+    },
+    btnTextApply: {
+      color: "#fff",
+      textAlign: "center",
+      fontSize: 25,
+      fontWeight: "700",
+    },
+  });
+
   return (
     <Modal
       visible={modalApply}
@@ -587,128 +959,157 @@ const ModalApply = ({
       }}
     >
       <Pressable
-        style={styles.overlayModalApply}
+        style={dynamicStyles.overlayModalApply}
         onPress={() => setModalApply(false)}
       >
         <Pressable
-          style={styles.modalApplyMainBlock}
+          style={dynamicStyles.modalApplyMainBlock}
           onPress={(e) => e.stopPropagation()}
         >
-          <View style={styles.headerModalApply}>
+          <View style={dynamicStyles.headerModalApply}>
             <Pressable
-              style={styles.closeModalBtn}
+              style={dynamicStyles.closeModalBtn}
               onPress={() => {
                 setModalApply(false);
               }}
             >
-              <FontAwesome name="close" size={32} color="black" />
+              <FontAwesome
+                name="close"
+                size={32}
+                color={colorScheme === "dark" ? "#fff" : "black"}
+              />
             </Pressable>
-            <Text style={styles.textHeaderModalApply}>Apply for Job</Text>
+            <Text style={dynamicStyles.textHeaderModalApply}>
+              Apply for Job
+            </Text>
           </View>
 
-          <View style={styles.sectionModalApply}>
+          <View style={dynamicStyles.sectionModalApply}>
             <ScrollView
-              contentContainerStyle={styles.block1SectionModalApply}
+              contentContainerStyle={dynamicStyles.block1SectionModalApply}
               showsVerticalScrollIndicator={false}
             >
               {/* Full Name Field */}
-              <View style={styles.fullnameBlock}>
-                <Text style={styles.fullnameLabel}>Full Name *</Text>
-                <View style={styles.fullnameInputContainer}>
-                  <Image
+              <View style={dynamicStyles.fullnameBlock}>
+                <Text style={dynamicStyles.fullnameLabel}>Full Name *</Text>
+                <View style={dynamicStyles.fullnameInputContainer}>
+                  {/* <Image
                     source={require("../../assets/tajjob/auth/userLogo.jpg")}
-                    style={styles.fullnameImg}
+                    style={dynamicStyles.fullnameImg}
+                  /> */}
+                  <FontAwesome6
+                    name="user-large"
+                    size={28}
+                    color={colorScheme === "dark" ? "#fff" : "black"}
+                    style={dynamicStyles.fullnameImg}
                   />
+
                   <TextInput
                     placeholder="Enter your full name"
-                    style={styles.fullnameInput}
+                    style={dynamicStyles.fullnameInput}
                     value={fullName}
                     onChangeText={setFullName}
                     returnKeyType="next"
-                    placeholderTextColor="#999"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "#999"
+                    }
                   />
                 </View>
               </View>
 
               {/* Email Field */}
-              <View style={styles.emailBlock}>
-                <Text style={styles.emailLabel}>Email *</Text>
-                <View style={styles.emailInputContainer}>
-                  <Image
-                    source={require("../../assets/tajjob/auth/emailLogo.jpg")}
-                    style={styles.emailImg}
+              <View style={dynamicStyles.emailBlock}>
+                <Text style={dynamicStyles.emailLabel}>Email *</Text>
+                <View style={dynamicStyles.emailInputContainer}>
+                  <MaterialCommunityIcons
+                    name="email"
+                    size={32}
+                    color={colorScheme === "dark" ? "#fff" : "black"}
+                    style={dynamicStyles.emailImg}
                   />
                   <TextInput
                     placeholder="example@gmail.com"
-                    style={styles.emailInput}
+                    style={dynamicStyles.emailInput}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     value={email}
                     onChangeText={setEmail}
                     returnKeyType="next"
-                    placeholderTextColor="#999"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "#999"
+                    }
                   />
                 </View>
               </View>
 
-              <View style={styles.phoneBlock}>
-                <Text style={styles.phoneLabel}>Phone Number *</Text>
+              <View style={dynamicStyles.phoneBlock}>
+                <Text style={dynamicStyles.phoneLabel}>Phone Number *</Text>
 
-                <View style={styles.countrySelectorContainer}>
-                  <View style={styles.selectorWrapper}>
+                <View style={dynamicStyles.countrySelectorContainer}>
+                  <View style={dynamicStyles.selectorWrapper}>
                     <Selector
                       options={COUNTRIES_DATA}
                       selectedValue={selectedCountry}
                       onValueChange={handleCountrySelect}
                       placeholder="Select Country"
                       searchable={true}
-                      primaryColor="#4C4ADA"
+                      primaryColor={
+                        colorScheme === "dark" ? "#00c3ff" : "#4C4ADA"
+                      }
                       customArrow={
                         <Entypo
                           name="chevron-thin-down"
                           size={16}
-                          color="#666"
+                          color={colorScheme === "dark" ? "#fff" : "#666"}
                         />
                       }
-                      optionStyle={styles.optionStyle}
                       searchPlaceholder="Search countries..."
-                      style={styles.selectorStyle}
-                      dropdownStyle={styles.dropdownStyle}
+                      textStyle={{
+                        color: "#bebebe",
+                      }}
+                      style={dynamicStyles.selectorStyle}
+                      optionStyle={dynamicStyles.optionStyle}
+                      dropdownStyle={dynamicStyles.dropdownStyle}
+                      searchInputStyle={dynamicStyles.searchInputStyle}
                     />
                     {/* Close selector when tapping outside */}
-                    <Pressable style={styles.selectorBackdrop} />
+                    <Pressable style={dynamicStyles.selectorBackdrop} />
                   </View>
                 </View>
 
-                <View style={styles.phoneInputContainer}>
-                  <Image
-                    source={require("../../assets/tajjob/auth/phoneLogo.jpg")}
-                    style={styles.phoneImg}
+                <View style={dynamicStyles.phoneInputContainer}>
+                  <FontAwesome
+                    name="phone"
+                    size={32}
+                    color={colorScheme === "dark" ? "#fff" : "black"}
+                    style={dynamicStyles.phoneImg}
                   />
                   <TextInput
                     placeholder={getPhonePlaceholder()}
                     style={[
-                      styles.phoneInput,
-                      phoneError && styles.phoneInputError,
+                      dynamicStyles.phoneInput,
+                      phoneError && dynamicStyles.phoneInputError,
                     ]}
                     keyboardType="phone-pad"
                     value={phone}
                     onChangeText={handlePhoneChange}
                     returnKeyType="next"
-                    placeholderTextColor="#999"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "#999"
+                    }
                   />
                 </View>
 
                 {/* {detectedOperator ? (
-                  <Text style={styles.operatorText}>
+                  <Text style={dynamicStyles.operatorText}>
                     Detected: {detectedOperator}
                   </Text>
                 ) : null} */}
 
                 {phoneError ? (
-                  <Text style={styles.phoneErrorText}>{phoneError}</Text>
+                  <Text style={dynamicStyles.phoneErrorText}>{phoneError}</Text>
                 ) : (
-                  <Text style={styles.phoneHintText}>
+                  <Text style={dynamicStyles.phoneHintText}>
                     {selectedCountry === "tj"
                       ? "Start with +992. Supported prefixes: 90, 91, 92, 93, 94, 98, 99, etc."
                       : "Start with + or select country. The country will auto-detect."}
@@ -716,23 +1117,26 @@ const ModalApply = ({
                 )}
               </View>
 
-              <View style={styles.uploadCvBlock}>
-                <Text style={styles.uploadCVLabel}>Upload CV *</Text>
+              <View style={dynamicStyles.uploadCvBlock}>
+                <Text style={dynamicStyles.uploadCVLabel}>Upload CV *</Text>
                 <Pressable
                   style={[
-                    styles.uploadCVButton,
-                    isFileSelected && styles.uploadCVButtonSelected,
+                    dynamicStyles.uploadCVButton,
+                    isFileSelected && dynamicStyles.uploadCVButtonSelected,
                   ]}
                   onPress={pickDocument}
                 >
-                  <Image
-                    source={require("../../assets/tajjob/job/upload-cv-img.jpg")}
-                    style={styles.uploadCVButtonImg}
+                  <MaterialIcons
+                    name="cloud-upload"
+                    size={75}
+                    color={colorScheme === "dark" ? "#fff" : "black"}
+                    style={dynamicStyles.uploadCVButtonImg}
                   />
                   <Text
                     style={[
-                      styles.uploadCVButtonText,
-                      isFileSelected && styles.uploadCVButtonTextSelected,
+                      dynamicStyles.uploadCVButtonText,
+                      isFileSelected &&
+                        dynamicStyles.uploadCVButtonTextSelected,
                     ]}
                     numberOfLines={1}
                     ellipsizeMode="middle"
@@ -742,10 +1146,10 @@ const ModalApply = ({
                 </Pressable>
 
                 {isFileSelected && (
-                  <View style={styles.fileActions}>
-                    <View style={styles.fileNameContainer}>
+                  <View style={dynamicStyles.fileActions}>
+                    <View style={dynamicStyles.fileNameContainer}>
                       <Text
-                        style={styles.fileSelectedText}
+                        style={dynamicStyles.fileSelectedText}
                         numberOfLines={1}
                         ellipsizeMode="middle"
                       >
@@ -754,40 +1158,45 @@ const ModalApply = ({
                     </View>
                     <Pressable
                       onPress={removeSelectedFile}
-                      style={styles.removeFileBtn}
+                      style={dynamicStyles.removeFileBtn}
                     >
-                      <Text style={styles.removeFileText}>Remove</Text>
+                      <Text style={dynamicStyles.removeFileText}>Remove</Text>
                     </Pressable>
                   </View>
                 )}
 
-                <Text style={styles.fileHint}>
+                <Text style={dynamicStyles.fileHint}>
                   Maximum file size: 5 MB. Supported formats: PDF, DOC, DOCX
                 </Text>
               </View>
 
-              <View style={styles.commentApplyBlock}>
-                <Text style={styles.commentApplyLabel}>
+              <View style={dynamicStyles.commentApplyBlock}>
+                <Text style={dynamicStyles.commentApplyLabel}>
                   Additional Comments
                 </Text>
                 <TextInput
                   placeholder="Enter any additional information here..."
-                  style={styles.commentInput}
+                  style={dynamicStyles.commentInput}
                   multiline
                   numberOfLines={5}
                   value={comment}
                   onChangeText={setComment}
                   textAlignVertical="top"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={
+                    colorScheme === "dark" ? "#fff" : "#999"
+                  }
                 />
               </View>
 
               <Pressable
-                style={[styles.btnApply, isLoading && styles.btnApplyDisabled]}
+                style={[
+                  dynamicStyles.btnApply,
+                  isLoading && dynamicStyles.btnApplyDisabled,
+                ]}
                 onPress={handleSubmit}
                 disabled={isLoading}
               >
-                <Text style={styles.btnTextApply}>
+                <Text style={dynamicStyles.btnTextApply}>
                   {isLoading ? "Submitting..." : "Submit"}
                 </Text>
               </Pressable>
@@ -798,364 +1207,5 @@ const ModalApply = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalApplyComponent: {},
-  overlayModalApply: {
-    position: "absolute",
-    inset: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalApplyMainBlock: {
-    position: "absolute",
-    inset: 0,
-    backgroundColor: "#fff",
-  },
-  headerModalApply: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 41,
-    padding: 20,
-  },
-  closeModalBtn: {
-    backgroundColor: "#dddddd",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 50,
-  },
-  textHeaderModalApply: {
-    color: "#3E3D3D",
-    fontSize: 25,
-    fontWeight: "600",
-  },
-  sectionModalApply: {},
-  block1SectionModalApply: {
-    paddingHorizontal: 20,
-    paddingBottom: 100,
-    gap: 20,
-  },
-  fullnameBlock: {
-    gap: 10,
-  },
-  fullnameLabel: {
-    color: "#4C4ADA",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  fullnameInputContainer: {
-    position: "relative",
-  },
-  fullnameImg: {
-    width: 38,
-    height: 38,
-    position: "absolute",
-    top: 6,
-    left: 6,
-    zIndex: 1,
-  },
-  fullnameInput: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    paddingHorizontal: 15,
-    paddingLeft: 53,
-    paddingVertical: 12,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    fontSize: 20,
-    width: "100%",
-    backgroundColor: "#fff",
-  },
-  emailBlock: {
-    gap: 10,
-  },
-  emailLabel: {
-    color: "#4C4ADA",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  emailInputContainer: {
-    position: "relative",
-  },
-  emailImg: {
-    width: 38,
-    height: 38,
-    position: "absolute",
-    top: 6,
-    left: 6,
-    zIndex: 1,
-  },
-  emailInput: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    paddingHorizontal: 15,
-    paddingLeft: 53,
-    paddingVertical: 12,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    fontSize: 20,
-    width: "100%",
-    backgroundColor: "#fff",
-  },
-  phoneBlock: {
-    gap: 10,
-  },
-  phoneLabel: {
-    color: "#4C4ADA",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  countrySelectorContainer: {
-    zIndex: 1000,
-  },
-  selectedCountryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#fff",
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    backgroundColor: "#fff",
-  },
-  selectedCountryText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectorWrapper: {
-    position: "relative",
-  },
-  selectorStyle: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    backgroundColor: "#fff",
-    paddingHorizontal: 15,
-  },
-  selectorBackdrop: {
-    position: "absolute",
-    top: -100,
-    left: -20,
-    right: -20,
-    bottom: -100,
-    zIndex: -1,
-  },
-  dropdownStyle: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    marginTop: 5,
-    maxHeight: 200,
-  },
-  optionStyle: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-  },
-  phoneInputContainer: {
-    position: "relative",
-  },
-  phoneImg: {
-    width: 31,
-    height: 31,
-    position: "absolute",
-    top: 11,
-    left: 11,
-    zIndex: 1,
-  },
-  phoneInput: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    paddingHorizontal: 15,
-    paddingLeft: 53,
-    paddingVertical: 12,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    fontSize: 20,
-    width: "100%",
-    backgroundColor: "#fff",
-  },
-  phoneInputError: {
-    borderColor: "#d32f2f",
-    borderWidth: 2,
-  },
-  phoneErrorText: {
-    color: "#d32f2f",
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 5,
-  },
-  phoneHintText: {
-    color: "#666",
-    fontSize: 12,
-    fontStyle: "italic",
-    marginTop: 5,
-    lineHeight: 16,
-  },
-  operatorText: {
-    color: "#4C4ADA",
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 5,
-    fontStyle: "italic",
-  },
-  uploadCvBlock: {
-    gap: 10,
-  },
-  uploadCVLabel: {
-    color: "#4C4ADA",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  uploadCVButton: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    borderRadius: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    alignItems: "center",
-    gap: 2,
-    minHeight: 60,
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#fff",
-  },
-  uploadCVButtonSelected: {
-    borderColor: "#4C4ADA",
-    backgroundColor: "#f0f4ff",
-  },
-  uploadCVButtonImg: {},
-  uploadCVButtonText: {
-    color: "#A2A2A2",
-    fontSize: 18,
-    fontWeight: "400",
-    textAlign: "center",
-    flex: 1,
-  },
-  uploadCVButtonTextSelected: {
-    color: "#666",
-  },
-  fileActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-    gap: 10,
-  },
-  fileNameContainer: {
-    flex: 1,
-    marginRight: 10,
-  },
-  fileSelectedText: {
-    color: "#4C4ADA",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  removeFileBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#ffebee",
-    borderRadius: 8,
-    flexShrink: 0,
-  },
-  removeFileText: {
-    color: "#d32f2f",
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  fileHint: {
-    color: "#666",
-    fontSize: 12,
-    fontStyle: "italic",
-    marginTop: 4,
-  },
-  commentApplyBlock: {
-    gap: 10,
-  },
-  commentApplyLabel: {
-    color: "#4C4ADA",
-    fontSize: 25,
-    fontWeight: "500",
-  },
-  commentInput: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    fontSize: 20,
-    width: "100%",
-    height: 190,
-    textAlignVertical: "top",
-    backgroundColor: "#fff",
-  },
-  btnApply: {
-    backgroundColor: "#2623D2",
-    paddingVertical: 15,
-    borderRadius: 20,
-    marginTop: 30,
-  },
-  btnApplyDisabled: {
-    backgroundColor: "#999",
-    opacity: 0.7,
-  },
-  btnTextApply: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 25,
-    fontWeight: "700",
-  },
-});
 
 export default ModalApply;

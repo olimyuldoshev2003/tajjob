@@ -355,7 +355,7 @@ const Home = ({ onJobPress }: HomeProps) => {
       position: "relative",
     },
     notificationIcon: {
-      backgroundColor: colorScheme === "dark" ? "#121212": "#ffffff45",
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#ffffff45",
       borderRadius: 10,
     },
     newNotificationNotice: {
@@ -519,6 +519,24 @@ const Home = ({ onJobPress }: HomeProps) => {
       fontWeight: "400",
       width: "100%",
       backgroundColor: colorScheme === "dark" ? "#1E1E1E" : "#fff",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+
+    dropdownStyle: {
+      borderWidth: 1,
+      borderColor: "#ddd",
+      borderRadius: 10,
+      marginTop: 5,
+      maxHeight: 200,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+    },
+    optionStyle: {
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    searchInputStyle: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
       color: colorScheme === "dark" ? "#fff" : "#000",
     },
 
@@ -782,11 +800,14 @@ const Home = ({ onJobPress }: HomeProps) => {
                   }}
                   placeholder="Select the city..."
                   searchable={true}
-                  primaryColor="#1976d2"
+                  primaryColor={colorScheme === "dark" ? "#00c3ff" : "#1976d2"}
                   style={dynamicStyles.selectByCity}
+                  optionStyle={dynamicStyles.optionStyle}
+                  dropdownStyle={dynamicStyles.dropdownStyle}
                   textStyle={{
                     color: "#bebebe",
                   }}
+                  searchInputStyle={dynamicStyles.searchInputStyle}
                   customArrow={
                     <Entypo
                       name="chevron-thin-down"

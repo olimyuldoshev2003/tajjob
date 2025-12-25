@@ -1,13 +1,14 @@
 import EachJob from "@/components/home/EachJob";
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React from "react";
+import React, { use } from "react";
 import {
   Platform,
   Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -111,17 +112,80 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
 
   const navigation: any = useNavigation();
 
+  const colorScheme = useColorScheme();
+
   const handleJobPress = (job: any) => {
     onJobPress?.(job);
   };
 
+  const dynamicStyles = StyleSheet.create({
+    savedJobsComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212":"#fff",
+    },
+    savedJobsComponentBlock: {
+      paddingTop: 40,
+    },
+    headerSavedJobsComponent: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 10,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    blockIconBackAndTitleOfComponentHeaderSavedJobsComponent: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+    },
+    iconBack: {},
+    titleOfComponent: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: colorScheme === "dark" ? "#fff":"#000",
+    },
+    sectionSavedJobsComponent: {
+      marginTop: 20,
+    },
+    savedJobsBlockScrollView: {
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      gap: 15,
+      paddingBottom: 135,
+    },
+    savedJobsBlock: {},
+
+    btnMoreBlock: {
+      flexDirection: "row",
+      justifyContent: "center",
+    },
+    btnMore: {
+      flexDirection: "row",
+      justifyContent: "center",
+    },
+    textBtnMore: {
+      color: colorScheme === "dark" ? "#fff":"#7F7F7F",
+      fontSize: 26,
+      fontWeight: "400",
+    },
+    downIcon: {},
+  });
+
+
   return (
-    <View style={styles.savedJobsComponent}>
-      <View style={styles.savedJobsComponentBlock}>
-        <View style={styles.headerSavedJobsComponent}>
+    <View style={dynamicStyles.savedJobsComponent}>
+      <View style={dynamicStyles.savedJobsComponentBlock}>
+        <View style={dynamicStyles.headerSavedJobsComponent}>
           <View
             style={
-              styles.blockIconBackAndTitleOfComponentHeaderSavedJobsComponent
+              dynamicStyles.blockIconBackAndTitleOfComponentHeaderSavedJobsComponent
             }
           >
             {Platform.OS === "ios" ? (
@@ -133,8 +197,8 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
                 <Entypo
                   name="chevron-small-left"
                   size={50}
-                  color="black"
-                  style={styles.iconBack}
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
+                  style={dynamicStyles.iconBack}
                 />
               </TouchableOpacity>
             ) : (
@@ -143,17 +207,25 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
                   navigation.goBack();
                 }}
               >
-                <Ionicons name="arrow-back-sharp" size={31} color="black" />
+                <Ionicons
+                  name="arrow-back-sharp"
+                  size={31}
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
+                />
               </TouchableOpacity>
             )}
-            <Text style={styles.titleOfComponent}>Saved job</Text>
+            <Text style={dynamicStyles.titleOfComponent}>Saved job</Text>
           </View>
-          <FontAwesome name="bookmark" size={32} color="black" />
+          <FontAwesome
+            name="bookmark"
+            size={32}
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+          />
         </View>
-        <View style={styles.sectionSavedJobsComponent}>
+        <View style={dynamicStyles.sectionSavedJobsComponent}>
           <ScrollView
-            contentContainerStyle={styles.savedJobsBlockScrollView}
-            style={styles.savedJobsBlock}
+            contentContainerStyle={dynamicStyles.savedJobsBlockScrollView}
+            style={dynamicStyles.savedJobsBlock}
           >
             {jobs.map((savedJob: any) => {
               return (
@@ -164,14 +236,14 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
                 />
               );
             })}
-            <View style={styles.btnMoreBlock}>
-              <Pressable style={styles.btnMore}>
-                <Text style={styles.textBtnMore}>More</Text>
+            <View style={dynamicStyles.btnMoreBlock}>
+              <Pressable style={dynamicStyles.btnMore}>
+                <Text style={dynamicStyles.textBtnMore}>More</Text>
                 <Entypo
                   name="chevron-small-down"
                   size={37}
-                  color="black"
-                  style={styles.downIcon}
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
+                  style={dynamicStyles.downIcon}
                 />
               </Pressable>
             </View>
@@ -184,61 +256,3 @@ const SavedJobs = ({ onJobPress }: { onJobPress: any }) => {
 
 export default SavedJobs;
 
-const styles = StyleSheet.create({
-  savedJobsComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  savedJobsComponentBlock: {
-    paddingTop: 40,
-  },
-  headerSavedJobsComponent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  blockIconBackAndTitleOfComponentHeaderSavedJobsComponent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  iconBack: {},
-  titleOfComponent: {
-    fontSize: 32,
-    fontWeight: "700",
-  },
-  sectionSavedJobsComponent: {
-    marginTop: 20,
-  },
-  savedJobsBlockScrollView: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    gap: 15,
-    paddingBottom: 135,
-  },
-  savedJobsBlock: {},
-
-  btnMoreBlock: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  btnMore: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  textBtnMore: {
-    color: "#7F7F7F",
-    fontSize: 26,
-    fontWeight: "400",
-  },
-  downIcon: {},
-});

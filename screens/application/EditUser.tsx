@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
   TouchableWithoutFeedback,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -90,6 +91,8 @@ const TAJIK_PREFIXES = {
 };
 
 const EditUser = () => {
+  const colorScheme = useColorScheme();
+
   const scrollViewRef = useRef<ScrollView>(null);
   const [userImage, setUserImage] = useState<string | null>(
     require("../../assets/tajjob/profile/profileIcon.jpg")
@@ -759,22 +762,217 @@ const EditUser = () => {
     Alert.alert("Success", "Profile updated successfully!");
   };
 
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: "#fff",
+    },
+    editUserComponentScrollView: {
+      paddingBottom:80,
+    },
+    editUserComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+      padding: 12,
+    },
+    headerEditUserComponentBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 30,
+    },
+    imageContainer: {
+      position: "relative",
+    },
+    userImg: {
+      width: 117,
+      height: 117,
+      borderRadius: 100,
+      borderWidth: 3,
+    },
+    loadingOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      borderRadius: 100,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    buttonContainer: {
+      gap: 12,
+    },
+    btnImgUserChange: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#FBF9F9",
+      padding: 10,
+      elevation: 8,
+      borderRadius: 20,
+    },
+    btnRemoveImage: {
+      backgroundColor: "#FF3B30",
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      elevation: 4,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: 40,
+    },
+    btnDisabled: {
+      opacity: 0.6,
+    },
+    btnTextImgUserChange: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    btnTextRemoveImage: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: "#fff",
+    },
+    sectionEditUserComponentBlock: {
+      marginTop: 20,
+    },
+    formEditUserlabelsAndInputs: {
+      gap: 17,
+    },
+    fullnameUserBlock: {},
+    birthdayDateBlock: {},
+    numberPhoneBlock: {},
+    emailBlock: {},
+    locationBlock: {},
+
+    // Form elements
+    labelAndInpBlock: {
+      gap: 8,
+    },
+    label: {
+      color: colorScheme === "dark" ? "#fff" : "#747474",
+      fontSize: 20,
+      fontWeight: "700",
+    },
+    inpBlock: {
+      position: "relative",
+    },
+    input: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#FBF9F9",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      fontSize: 17,
+      paddingRight: 46,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    inputError: {
+      borderColor: "#FF3B30",
+      borderWidth: 1,
+    },
+    checkIcon: {
+      position: "absolute",
+      right: 10,
+      top: 9,
+    },
+    errorText: {
+      color: "#FF3B30",
+      fontSize: 14,
+      fontWeight: "500",
+      marginTop: 4,
+    },
+    hintText: {
+      color: colorScheme === "dark" ? "#fff" : "#666",
+      fontSize: 12,
+      fontStyle: "italic",
+      marginTop: 4,
+    },
+    operatorText: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
+      fontSize: 14,
+      fontWeight: "500",
+      marginTop: 4,
+      fontStyle: "italic",
+    },
+
+    // Country selector styles
+    countrySelectorContainer: {
+      marginBottom: 8,
+      zIndex: 1000,
+    },
+    selectorStyle: {
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#333" : "#fff",
+      borderRadius: 10,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 4,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+      paddingHorizontal: 15,
+    },
+    dropdownStyle: {
+      borderWidth: 1,
+      borderColor: "#ddd",
+      borderRadius: 10,
+      marginTop: 5,
+      maxHeight: 200,
+      backgroundColor: colorScheme === "dark" ? "#333" : "#fff",
+    },
+    optionStyle: {
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    searchInputStyle: {
+      backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+  
+
+    // Save button
+    saveButton: {
+      backgroundColor: "#2623D2",
+      paddingVertical: 15,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: 30,
+      elevation: 4,
+    },
+    saveButtonText: {
+      color: "#fff",
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+  });
+
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={dynamicStyles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 20}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={styles.editUserComponentScrollView}
-          style={styles.editUserComponent}
+          contentContainerStyle={dynamicStyles.editUserComponentScrollView}
+          style={dynamicStyles.editUserComponent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.headerEditUserComponentBlock}>
-            <View style={styles.imageContainer}>
+          <View style={dynamicStyles.headerEditUserComponentBlock}>
+            <View style={dynamicStyles.imageContainer}>
               <Image
                 source={
                   userImage
@@ -783,7 +981,7 @@ const EditUser = () => {
                       : userImage
                     : require("../../assets/tajjob/profile/profileIcon.jpg")
                 }
-                style={styles.userImg}
+                style={dynamicStyles.userImg}
                 onError={() => {
                   Alert.alert("Error", "Failed to load image");
                   setUserImage(
@@ -792,17 +990,17 @@ const EditUser = () => {
                 }}
               />
               {isLoading && (
-                <View style={styles.loadingOverlay}>
+                <View style={dynamicStyles.loadingOverlay}>
                   <ActivityIndicator size="large" color="#2623D2" />
                 </View>
               )}
             </View>
 
-            <View style={styles.buttonContainer}>
+            <View style={dynamicStyles.buttonContainer}>
               <Pressable
                 style={[
-                  styles.btnImgUserChange,
-                  isLoading && styles.btnDisabled,
+                  dynamicStyles.btnImgUserChange,
+                  isLoading && dynamicStyles.btnDisabled,
                 ]}
                 onPress={showImagePickerOptions}
                 disabled={isLoading}
@@ -810,7 +1008,7 @@ const EditUser = () => {
                 {isLoading ? (
                   <ActivityIndicator size="small" color="#fff" />
                 ) : (
-                  <Text style={styles.btnTextImgUserChange}>
+                  <Text style={dynamicStyles.btnTextImgUserChange}>
                     Change Profile Picture
                   </Text>
                 )}
@@ -819,26 +1017,31 @@ const EditUser = () => {
               {userImage && typeof userImage === "string" && (
                 <Pressable
                   style={[
-                    styles.btnRemoveImage,
-                    isLoading && styles.btnDisabled,
+                    dynamicStyles.btnRemoveImage,
+                    isLoading && dynamicStyles.btnDisabled,
                   ]}
                   onPress={removeImage}
                   disabled={isLoading}
                 >
-                  <Text style={styles.btnTextRemoveImage}>Remove</Text>
+                  <Text style={dynamicStyles.btnTextRemoveImage}>Remove</Text>
                 </Pressable>
               )}
             </View>
           </View>
 
-          <View style={styles.sectionEditUserComponentBlock}>
-            <View style={styles.formEditUserlabelsAndInputs}>
+          <View style={dynamicStyles.sectionEditUserComponentBlock}>
+            <View style={dynamicStyles.formEditUserlabelsAndInputs}>
               {/* Full Name Field */}
-              <View style={[styles.labelAndInpBlock, styles.fullnameUserBlock]}>
-                <Text style={styles.label}>Full name</Text>
-                <View style={styles.inpBlock}>
+              <View
+                style={[
+                  dynamicStyles.labelAndInpBlock,
+                  dynamicStyles.fullnameUserBlock,
+                ]}
+              >
+                <Text style={dynamicStyles.label}>Full name</Text>
+                <View style={dynamicStyles.inpBlock}>
                   <TextInput
-                    style={styles.input}
+                    style={dynamicStyles.input}
                     value={fullName}
                     onChangeText={(text) => {
                       setFullName(text);
@@ -846,26 +1049,40 @@ const EditUser = () => {
                     }}
                     onFocus={() => handleInputFocus("fullName")}
                     placeholder="Enter your full name"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "gray"
+                    }
                   />
                   <Feather
                     name="check-circle"
                     size={28}
                     color={getCheckIconColor(isFullNameValid)}
-                    style={styles.checkIcon}
+                    style={dynamicStyles.checkIcon}
                   />
                 </View>
               </View>
 
               {/* Date of Birth Field */}
-              <View style={[styles.labelAndInpBlock, styles.birthdayDateBlock]}>
-                <Text style={styles.label}>Date of birth</Text>
-                <View style={styles.inpBlock}>
+              <View
+                style={[
+                  dynamicStyles.labelAndInpBlock,
+                  dynamicStyles.birthdayDateBlock,
+                ]}
+              >
+                <Text style={dynamicStyles.label}>Date of birth</Text>
+                <View style={dynamicStyles.inpBlock}>
                   <TextInput
-                    style={[styles.input, dateError && styles.inputError]}
+                    style={[
+                      dynamicStyles.input,
+                      dateError && dynamicStyles.inputError,
+                    ]}
                     value={dateOfBirth}
                     onChangeText={handleDateChange}
                     onFocus={() => handleInputFocus("dateOfBirth")}
                     placeholder="DD/MM/YYYY"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "gray"
+                    }
                     keyboardType="numeric"
                     maxLength={10}
                   />
@@ -873,69 +1090,88 @@ const EditUser = () => {
                     name="check-circle"
                     size={28}
                     color={getCheckIconColor(isDateValid, !!dateError)}
-                    style={styles.checkIcon}
+                    style={dynamicStyles.checkIcon}
                   />
                 </View>
                 {dateError ? (
-                  <Text style={styles.errorText}>{dateError}</Text>
+                  <Text style={dynamicStyles.errorText}>{dateError}</Text>
                 ) : (
-                  <Text style={styles.hintText}>
+                  <Text style={dynamicStyles.hintText}>
                     Format: DD/MM/YYYY (You must be at least 13 years old)
                   </Text>
                 )}
               </View>
 
               {/* Phone Number Field */}
-              <View style={[styles.labelAndInpBlock, styles.numberPhoneBlock]}>
-                <Text style={styles.label}>Phone Number</Text>
+              <View
+                style={[
+                  dynamicStyles.labelAndInpBlock,
+                  dynamicStyles.numberPhoneBlock,
+                ]}
+              >
+                <Text style={dynamicStyles.label}>Phone Number</Text>
 
                 {/* Country Selector */}
-                <View style={styles.countrySelectorContainer}>
+                <View style={dynamicStyles.countrySelectorContainer}>
                   <Selector
                     options={COUNTRIES_DATA}
                     selectedValue={selectedCountry}
                     onValueChange={handleCountrySelect}
                     placeholder="Select Country"
                     searchable={true}
-                    primaryColor="#4C4ADA"
+                    primaryColor={colorScheme === "dark" ? "#00c3ff":"#4C4ADA"}
                     customArrow={
-                      <Entypo name="chevron-thin-down" size={16} color="#666" />
+                      <Entypo
+                        name="chevron-thin-down"
+                        size={16}
+                        color={colorScheme === "dark" ? "#fff" : "#666"}
+                      />
                     }
-                    optionStyle={styles.optionStyle}
                     searchPlaceholder="Search countries..."
-                    style={styles.selectorStyle}
-                    dropdownStyle={styles.dropdownStyle}
+                    optionStyle={dynamicStyles.optionStyle}
+                    style={dynamicStyles.selectorStyle}
+                    dropdownStyle={dynamicStyles.dropdownStyle}
+                    textStyle={{
+                      color: "#bebebe",
+                    }}
+                    searchInputStyle={dynamicStyles.searchInputStyle}
                   />
                 </View>
 
-                <View style={styles.inpBlock}>
+                <View style={dynamicStyles.inpBlock}>
                   <TextInput
-                    style={[styles.input, phoneError && styles.inputError]}
+                    style={[
+                      dynamicStyles.input,
+                      phoneError && dynamicStyles.inputError,
+                    ]}
                     value={phone}
                     onChangeText={handlePhoneChange}
                     onFocus={() => handleInputFocus("phone")}
                     placeholder={getPhonePlaceholder()}
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "gray"
+                    }
                     keyboardType="phone-pad"
                   />
                   <Feather
                     name="check-circle"
                     size={28}
                     color={getCheckIconColor(isPhoneValid, !!phoneError)}
-                    style={styles.checkIcon}
+                    style={dynamicStyles.checkIcon}
                   />
                 </View>
 
                 {/* Display detected operator */}
                 {detectedOperator && !phoneError && (
-                  <Text style={styles.operatorText}>
+                  <Text style={dynamicStyles.operatorText}>
                     Detected: {detectedOperator}
                   </Text>
                 )}
 
                 {phoneError ? (
-                  <Text style={styles.errorText}>{phoneError}</Text>
+                  <Text style={dynamicStyles.errorText}>{phoneError}</Text>
                 ) : (
-                  <Text style={styles.hintText}>
+                  <Text style={dynamicStyles.hintText}>
                     {selectedCountry === "tj"
                       ? "Start with +992. Supported prefixes: 90, 91, 92, 93, 94, 98, 99, etc."
                       : "Start with + or select country. The country will auto-detect."}
@@ -944,11 +1180,16 @@ const EditUser = () => {
               </View>
 
               {/* Email Field */}
-              <View style={[styles.labelAndInpBlock, styles.emailBlock]}>
-                <Text style={styles.label}>Email</Text>
-                <View style={styles.inpBlock}>
+              <View
+                style={[
+                  dynamicStyles.labelAndInpBlock,
+                  dynamicStyles.emailBlock,
+                ]}
+              >
+                <Text style={dynamicStyles.label}>Email</Text>
+                <View style={dynamicStyles.inpBlock}>
                   <TextInput
-                    style={styles.input}
+                    style={dynamicStyles.input}
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
@@ -956,6 +1197,9 @@ const EditUser = () => {
                     }}
                     onFocus={() => handleInputFocus("email")}
                     placeholder="Enter your email"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "gray"
+                    }
                     keyboardType="email-address"
                     autoCapitalize="none"
                   />
@@ -963,17 +1207,22 @@ const EditUser = () => {
                     name="check-circle"
                     size={28}
                     color={getCheckIconColor(isEmailValid)}
-                    style={styles.checkIcon}
+                    style={dynamicStyles.checkIcon}
                   />
                 </View>
               </View>
 
               {/* Location Field */}
-              <View style={[styles.labelAndInpBlock, styles.locationBlock]}>
-                <Text style={styles.label}>Location</Text>
-                <View style={styles.inpBlock}>
+              <View
+                style={[
+                  dynamicStyles.labelAndInpBlock,
+                  dynamicStyles.locationBlock,
+                ]}
+              >
+                <Text style={dynamicStyles.label}>Location</Text>
+                <View style={dynamicStyles.inpBlock}>
                   <TextInput
-                    style={styles.input}
+                    style={dynamicStyles.input}
                     value={location}
                     onChangeText={(text) => {
                       setLocation(text);
@@ -981,19 +1230,25 @@ const EditUser = () => {
                     }}
                     onFocus={() => handleInputFocus("location")}
                     placeholder="Enter your location"
+                    placeholderTextColor={
+                      colorScheme === "dark" ? "#fff" : "gray"
+                    }
                   />
                   <Feather
                     name="check-circle"
                     size={28}
                     color={getCheckIconColor(isLocationValid)}
-                    style={styles.checkIcon}
+                    style={dynamicStyles.checkIcon}
                   />
                 </View>
               </View>
 
               {/* Save Button */}
-              <Pressable style={styles.saveButton} onPress={handleSaveProfile}>
-                <Text style={styles.saveButtonText}>Save Changes</Text>
+              <Pressable
+                style={dynamicStyles.saveButton}
+                onPress={handleSaveProfile}
+              >
+                <Text style={dynamicStyles.saveButtonText}>Save Changes</Text>
               </Pressable>
             </View>
           </View>
@@ -1004,189 +1259,3 @@ const EditUser = () => {
 };
 
 export default EditUser;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  editUserComponentScrollView: {
-    paddingBottom: 40,
-  },
-  editUserComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 12,
-  },
-  headerEditUserComponentBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 30,
-  },
-  imageContainer: {
-    position: "relative",
-  },
-  userImg: {
-    width: 117,
-    height: 117,
-    borderRadius: 100,
-    borderWidth: 3,
-  },
-  loadingOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonContainer: {
-    gap: 12,
-  },
-  btnImgUserChange: {
-    backgroundColor: "#FBF9F9",
-    padding: 10,
-    elevation: 8,
-    borderRadius: 20,
-  },
-  btnRemoveImage: {
-    backgroundColor: "#FF3B30",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    elevation: 4,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 40,
-  },
-  btnDisabled: {
-    opacity: 0.6,
-  },
-  btnTextImgUserChange: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  btnTextRemoveImage: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  sectionEditUserComponentBlock: {
-    marginTop: 20,
-  },
-  formEditUserlabelsAndInputs: {
-    gap: 17,
-  },
-  fullnameUserBlock: {},
-  birthdayDateBlock: {},
-  numberPhoneBlock: {},
-  emailBlock: {},
-  locationBlock: {},
-
-  // Form elements
-  labelAndInpBlock: {
-    gap: 8,
-  },
-  label: {
-    color: "#747474",
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  inpBlock: {
-    position: "relative",
-  },
-  input: {
-    backgroundColor: "#FBF9F9",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    fontSize: 17,
-    paddingRight: 46,
-  },
-  inputError: {
-    borderColor: "#FF3B30",
-    borderWidth: 1,
-  },
-  checkIcon: {
-    position: "absolute",
-    right: 10,
-    top: 9,
-  },
-  errorText: {
-    color: "#FF3B30",
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 4,
-  },
-  hintText: {
-    color: "#666",
-    fontSize: 12,
-    fontStyle: "italic",
-    marginTop: 4,
-  },
-  operatorText: {
-    color: "#4C4ADA",
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 4,
-    fontStyle: "italic",
-  },
-
-  // Country selector styles
-  countrySelectorContainer: {
-    marginBottom: 8,
-    zIndex: 1000,
-  },
-  selectorStyle: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 4,
-    backgroundColor: "#fff",
-    paddingHorizontal: 15,
-  },
-  dropdownStyle: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    marginTop: 5,
-    maxHeight: 200,
-  },
-  optionStyle: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-  },
-
-  // Save button
-  saveButton: {
-    backgroundColor: "#2623D2",
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 30,
-    elevation: 4,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
