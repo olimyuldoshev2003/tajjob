@@ -1,3 +1,4 @@
+import { FontAwesome6 } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import React from "react";
@@ -35,11 +36,12 @@ const AboutEmployer = ({ route }: { route: any }) => {
       paddingHorizontal: 10,
       paddingBottom: 20,
     },
-    officesBlock: { flexDirection: "row", gap: 10 },
-    officeIcon: {
-      width: 36,
-      height: 36,
+    officesBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
     },
+    officeIcon: {},
     officesTextAndAmount: {},
     officesText: {
       color: colorScheme === "dark" ? "#fff" : "#616161",
@@ -56,11 +58,7 @@ const AboutEmployer = ({ route }: { route: any }) => {
       alignItems: "center",
       gap: 10,
     },
-    workerIcon: {
-      width: 36,
-      height: 36,
-      resizeMode: "contain",
-    },
+    workerIcon: {},
     workersTextAndAmount: {},
     workersText: {
       color: colorScheme === "dark" ? "#fff" : "#616161",
@@ -134,8 +132,10 @@ const AboutEmployer = ({ route }: { route: any }) => {
         </Text>
         <View style={dynamicStyles.officesAndWorkersAmountBlock}>
           <View style={dynamicStyles.officesBlock}>
-            <Image
-              source={require("../../assets/tajjob/job/office-icon.jpg")}
+            <MaterialCommunityIcons
+              name="office-building-marker"
+              size={+31}
+              color={colorScheme === "dark" ? "#fff" : "black"}
               style={dynamicStyles.officeIcon}
             />
             <View style={dynamicStyles.officesTextAndAmount}>
@@ -144,8 +144,10 @@ const AboutEmployer = ({ route }: { route: any }) => {
             </View>
           </View>
           <View style={dynamicStyles.workersBlock}>
-            <Image
-              source={require("../../assets/tajjob/job/worker-icon.jpg")}
+            <FontAwesome6
+              name="users"
+              size={26}
+              color={colorScheme === "dark" ? "#fff" : "black"}
               style={dynamicStyles.workerIcon}
             />
             <View style={dynamicStyles.workersTextAndAmount}>

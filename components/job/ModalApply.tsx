@@ -855,7 +855,7 @@ const ModalApply = ({
     },
     uploadCVButtonSelected: {
       borderColor: colorScheme === "dark" ? "#00c3ff" : "#4C4ADA",
-      backgroundColor: "#f0f4ff",
+      backgroundColor: colorScheme === "dark" ? "#333":"#f0f4ff",
     },
     uploadCVButtonImg: {},
     uploadCVButtonText: {
@@ -866,7 +866,7 @@ const ModalApply = ({
       flex: 1,
     },
     uploadCVButtonTextSelected: {
-      color: "#666",
+      color: colorScheme === "dark" ? "#fff":"#666",
     },
     fileActions: {
       flexDirection: "row",

@@ -1,9 +1,17 @@
+import { FontAwesome5 } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Modalize } from "react-native-modalize";
 
 interface JobDetailModalProps {
@@ -13,7 +21,7 @@ interface JobDetailModalProps {
 
 const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
   const navigation: any = useNavigation();
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
 
   function handleCloseModal() {
     modalizeRef?.current?.close();
@@ -21,7 +29,7 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
 
   const handleNavigateToJob = () => {
     handleCloseModal();
-    
+
     // Navigate to the Job screen with the job data
     // navigation.navigate("Application", {
     //   screen: "HomeStack",
@@ -42,140 +50,140 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
     });
   };
 
-    const dynamicStyles = StyleSheet.create({
-      modalEachJobBlock: {
-        padding: 13,
-        backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
-      },
-      blockCloseModalIcon: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-      },
-      employerImgEmployerNameAndJobBlock: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 15,
-      },
-      employerImg: {
-        width: 66,
-        height: 66,
-        borderRadius: 10,
-      },
-      employerNameAndJobBlock: {},
-      employerName: {
-        fontWeight: "bold",
-        fontSize: 30,
-        color: colorScheme === "dark" ? "#fff" : "#000",
-      },
-      job: {
-        color: colorScheme === "dark" ? "#f1f1f1" : "#888888",
-        fontSize: 25,
-      },
-      locationContainerBlock: {
-        marginTop: 10,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingLeft: 10,
-      },
-      location: {
-        color: colorScheme === "dark" ? "#f1f1f1" : "#B7B7B7",
-        fontSize: 24,
-        fontWeight: "600",
-      },
-      employmentTypeWorkingModelAndJobLevelContainerBlock: {
-        marginTop: 15,
-        flexDirection: "row",
-        justifyContent: "center",
-        gap: 12,
-      },
-      employmentType: {
-        color: "#616161",
-        fontSize: 18,
-        fontWeight: "600",
-        paddingVertical: 1,
-        paddingHorizontal: 8,
-        backgroundColor: "#D9D9D9",
-        borderRadius: 20,
-      },
-      workingModel: {
-        color: "#616161",
-        fontSize: 18,
-        fontWeight: "600",
-        paddingVertical: 1,
-        paddingHorizontal: 8,
-        backgroundColor: "#D9D9D9",
-        borderRadius: 20,
-      },
-      jobLevel: {
-        color: "#616161",
-        fontSize: 18,
-        fontWeight: "600",
-        paddingVertical: 1,
-        paddingHorizontal: 8,
-        backgroundColor: "#D9D9D9",
-        borderRadius: 20,
-      },
-      salaryAndWorkTimeBlock: {
-        marginTop: 15,
-        flexDirection: "row",
-        justifyContent: "space-between",
-      },
-      salaryBlock: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 5,
-      },
-      moneyIcon: {},
-      salaryAmount: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: colorScheme === "dark" ? "#fff" : "#7E7E7E",
-      },
-      salary: {
-        color: colorScheme === "dark" ? "#00c3ff" : "#766EAA",
-      },
-      workTimeBlock: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 5,
-      },
-      workingTime: {
-        fontSize: 19,
-        fontWeight: "600",
-        color: colorScheme === "dark" ? "#fff":"#000"
-      },
-      buttonsBlock: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 20,
-        paddingHorizontal: 30,
-      },
-      btnCancel: {
-        borderWidth: 1,
-        borderColor: colorScheme === "dark" ? "#fff":"#000",
-        borderRadius: 20,
-        paddingVertical: 1,
-        paddingHorizontal: 30,
-      },
-      textBtnCancel: {
-        fontSize: 25,
-        fontWeight: "500",
-        color: colorScheme === "dark" ? "#fff":"#000",
-      },
-      btnOpenPageJobByIdPage: {
-        backgroundColor: "#2623D0",
-        borderRadius: 20,
-        paddingVertical: 1,
-        paddingHorizontal: 30,
-      },
-      textBtnOpenPageJobByIdPage: {
-        fontSize: 25,
-        fontWeight: "500",
-        color: "white",
-      },
-    });
+  const dynamicStyles = StyleSheet.create({
+    modalEachJobBlock: {
+      padding: 13,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+    },
+    blockCloseModalIcon: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+    },
+    employerImgEmployerNameAndJobBlock: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 15,
+    },
+    employerImg: {
+      width: 66,
+      height: 66,
+      borderRadius: 10,
+    },
+    employerNameAndJobBlock: {},
+    employerName: {
+      fontWeight: "bold",
+      fontSize: 30,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    job: {
+      color: colorScheme === "dark" ? "#f1f1f1" : "#888888",
+      fontSize: 25,
+    },
+    locationContainerBlock: {
+      marginTop: 10,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingLeft: 10,
+    },
+    location: {
+      color: colorScheme === "dark" ? "#f1f1f1" : "#B7B7B7",
+      fontSize: 24,
+      fontWeight: "600",
+    },
+    employmentTypeWorkingModelAndJobLevelContainerBlock: {
+      marginTop: 15,
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 12,
+    },
+    employmentType: {
+      color: "#616161",
+      fontSize: 18,
+      fontWeight: "600",
+      paddingVertical: 1,
+      paddingHorizontal: 8,
+      backgroundColor: "#D9D9D9",
+      borderRadius: 20,
+    },
+    workingModel: {
+      color: "#616161",
+      fontSize: 18,
+      fontWeight: "600",
+      paddingVertical: 1,
+      paddingHorizontal: 8,
+      backgroundColor: "#D9D9D9",
+      borderRadius: 20,
+    },
+    jobLevel: {
+      color: "#616161",
+      fontSize: 18,
+      fontWeight: "600",
+      paddingVertical: 1,
+      paddingHorizontal: 8,
+      backgroundColor: "#D9D9D9",
+      borderRadius: 20,
+    },
+    salaryAndWorkTimeBlock: {
+      marginTop: 15,
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    salaryBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6.5,
+    },
+    moneyIcon: {},
+    salaryAmount: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: colorScheme === "dark" ? "#fff" : "#7E7E7E",
+    },
+    salary: {
+      color: colorScheme === "dark" ? "#00c3ff" : "#766EAA",
+    },
+    workTimeBlock: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+    },
+    workingTime: {
+      fontSize: 19,
+      fontWeight: "600",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    buttonsBlock: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 20,
+      paddingHorizontal: 30,
+    },
+    btnCancel: {
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#fff" : "#000",
+      borderRadius: 20,
+      paddingVertical: 1,
+      paddingHorizontal: 30,
+    },
+    textBtnCancel: {
+      fontSize: 25,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    btnOpenPageJobByIdPage: {
+      backgroundColor: "#2623D0",
+      borderRadius: 20,
+      paddingVertical: 1,
+      paddingHorizontal: 30,
+    },
+    textBtnOpenPageJobByIdPage: {
+      fontSize: 25,
+      fontWeight: "500",
+      color: "white",
+    },
+  });
 
   return (
     <Modalize
@@ -226,8 +234,10 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
         </View>
         <View style={dynamicStyles.salaryAndWorkTimeBlock}>
           <View style={dynamicStyles.salaryBlock}>
-            <Image
-              source={require("../../assets/tajjob/home/moneyIcon.jpg")}
+            <FontAwesome5
+              name="money-bill-alt"
+              size={24}
+              color={colorScheme === "dark" ? "#fff" : "black"}
               style={dynamicStyles.moneyIcon}
             />
             <Text style={dynamicStyles.salaryAmount}>
@@ -261,7 +271,5 @@ const JobDetailModal = ({ modalizeRef, jobData }: JobDetailModalProps) => {
     </Modalize>
   );
 };
-
-
 
 export default JobDetailModal;

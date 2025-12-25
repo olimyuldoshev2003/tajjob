@@ -24,7 +24,7 @@ const ReviewJob = ({
 }) => {
   // console.log(route.params.id);
 
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
 
   const [rating, setRating] = useState(0);
 
@@ -89,8 +89,6 @@ const ReviewJob = ({
       borderRadius: 10,
     },
     filterIcon: {
-      width: 24,
-      height: 24,
     },
     btnTextFilter: {
       fontSize: 15,
@@ -176,7 +174,6 @@ const ReviewJob = ({
     },
   });
 
-
   return (
     <View style={dynamicStyles.reviewJobComponent}>
       <ScrollView
@@ -211,8 +208,10 @@ const ReviewJob = ({
           </View>
           <View style={dynamicStyles.headerBlock3ReviewJobComponent}>
             <Pressable style={dynamicStyles.btnFilter}>
-              <Image
-                source={require("../../assets/tajjob/job/filter-icon.jpg")}
+              <Ionicons
+                name="options"
+                size={24}
+                color={colorScheme === "dark" ? "#fff":"black"}
                 style={dynamicStyles.filterIcon}
               />
               <Text style={dynamicStyles.btnTextFilter}>Filter</Text>
@@ -317,4 +316,3 @@ const ReviewJob = ({
 };
 
 export default ReviewJob;
-

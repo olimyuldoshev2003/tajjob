@@ -347,7 +347,7 @@ const Home = ({ onJobPress }: HomeProps) => {
       fontSize: 28,
     },
     greetingText: {
-      color: colorScheme === "dark" ? "#004997" : "#9FBFE2",
+      color: colorScheme === "dark" ? "#000000c0" : "#9fc2e2",
       fontWeight: "500",
       fontSize: 21,
     },
