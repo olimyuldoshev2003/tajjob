@@ -1,17 +1,20 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React from "react";
+import React, { use } from "react";
 import {
   Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  useColorScheme,
   View,
 } from "react-native";
 
 const AboutApp = () => {
   const navigation: any = useNavigation();
+  const colorScheme = useColorScheme();
+
 
   // const data = [
   //   { label: "Item 1", value: "1" },
@@ -26,31 +29,121 @@ const AboutApp = () => {
 
   //  const [value, setValue] = useState(null);
 
+  const dynamicStyles = StyleSheet.create({
+    aboutAppComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212": "#fff",
+    },
+    aboutAppComponentBlock: {},
+    aboutAppComponentBlockHeader: {
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      padding: 12,
+      paddingTop: 40,
+    },
+    closeOrBackBtn: {
+      backgroundColor: colorScheme === "dark" ? "#333":"#D9D9D9",
+      paddingVertical: 6,
+      paddingHorizontal: 11,
+      borderRadius: 50,
+    },
+    scrollForAboutAppComponentSectionAndFooterBlockScrollView: {
+      paddingBottom: 170,
+      paddingHorizontal: 10,
+    },
+    scrollForAboutAppComponentSectionAndFooterBlock: {},
+    aboutAppComponentBlockSection: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    tajjobLogo: {
+      width: 230,
+      height: 230,
+    },
+    about: {
+      fontSize: 26,
+      fontWeight: "400",
+      textAlign: "justify",
+      color: colorScheme === "dark" ? "#fff": "#000",
+    },
+    aboutAppComponentBlockFooter: {
+      marginTop: 20,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    footerTitle: {
+      fontSize: 28,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#fff": "#000",
+    },
+    socialMediaAndMessengersBlock: {
+      marginTop: 10,
+      flexDirection: "row",
+      gap: 25,
+    },
+    socialMediaAndMessenger: {},
+
+    // Dropdown
+
+    // dropdown: {
+    //   margin: 16,
+    //   height: 50,
+    //   borderBottomColor: "gray",
+    //   borderBottomWidth: 0.5,
+    // },
+    // icon: {
+    //   marginRight: 5,
+    // },
+    // placeholderStyle: {
+    //   fontSize: 16,
+    // },
+    // selectedTextStyle: {
+    //   fontSize: 16,
+    // },
+    // iconStyle: {
+    //   width: 20,
+    //   height: 20,
+    // },
+    // inputSearchStyle: {
+    //   height: 40,
+    //   fontSize: 16,
+    // },
+  });
+
+
   return (
-    <View style={styles.aboutAppComponent}>
-      <View style={styles.aboutAppComponentBlock}>
-        <View style={styles.aboutAppComponentBlockHeader}>
+    <View style={dynamicStyles.aboutAppComponent}>
+      <View style={dynamicStyles.aboutAppComponentBlock}>
+        <View style={dynamicStyles.aboutAppComponentBlockHeader}>
           <Pressable
-            style={styles.closeOrBackBtn}
+            style={dynamicStyles.closeOrBackBtn}
             onPress={() => {
               navigation.goBack();
             }}
           >
-            <FontAwesome name="close" size={41} color="black" />
+            <FontAwesome
+              name="close"
+              size={41}
+              color={colorScheme === "dark" ? "#fff" : "black"}
+            />
           </Pressable>
         </View>
         <ScrollView
           contentContainerStyle={
-            styles.scrollForAboutAppComponentSectionAndFooterBlockScrollView
+            dynamicStyles.scrollForAboutAppComponentSectionAndFooterBlockScrollView
           }
-          style={styles.scrollForAboutAppComponentSectionAndFooterBlock}
+          style={dynamicStyles.scrollForAboutAppComponentSectionAndFooterBlock}
         >
-          <View style={styles.aboutAppComponentBlockSection}>
+          <View style={dynamicStyles.aboutAppComponentBlockSection}>
             <Image
-              source={require("../../assets/tajjob/introduction/tajjobLogo.jpg")}
-              style={styles.tajjobLogo}
+              source={
+                colorScheme === "dark"
+                  ? require("../../assets/tajjob/introduction/tajjobLogoDarkMode.png")
+                  : require("../../assets/tajjob/introduction/tajjobLogoLightMode.png")
+              }
+              style={dynamicStyles.tajjobLogo}
             />
-            <Text style={styles.about}>
+            <Text style={dynamicStyles.about}>
               TajJob is an innovative platform designed for job seekers and
               employers, created specifically for Tajikistan and the global
               market. The app allows anyone to easily find the right job or the
@@ -61,30 +154,30 @@ const AboutApp = () => {
               salary range, and work type (full-time, part-time, or freelance).
             </Text>
           </View>
-          <View style={styles.aboutAppComponentBlockFooter}>
-            <Text style={styles.footerTitle}>Our social media</Text>
-            <View style={styles.socialMediaAndMessengersBlock}>
+          <View style={dynamicStyles.aboutAppComponentBlockFooter}>
+            <Text style={dynamicStyles.footerTitle}>Our social media</Text>
+            <View style={dynamicStyles.socialMediaAndMessengersBlock}>
               <Image
                 source={require("../../assets/tajjob/profile/instagram.png")}
-                style={styles.socialMediaAndMessenger}
+                style={dynamicStyles.socialMediaAndMessenger}
               />
               <Image
                 source={require("../../assets/tajjob/profile/telegram.png")}
-                style={styles.socialMediaAndMessenger}
+                style={dynamicStyles.socialMediaAndMessenger}
               />
               <Image
                 source={require("../../assets/tajjob/profile/mobile-phone.png")}
-                style={styles.socialMediaAndMessenger}
+                style={dynamicStyles.socialMediaAndMessenger}
               />
             </View>
           </View>
 
           {/* <Dropdown
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
+            style={dynamicStyles.dropdown}
+            placeholderStyle={dynamicStyles.placeholderStyle}
+            selectedTextStyle={dynamicStyles.selectedTextStyle}
+            inputSearchStyle={dynamicStyles.inputSearchStyle}
+            iconStyle={dynamicStyles.iconStyle}
             data={data}
             search
             maxHeight={300}
@@ -98,7 +191,7 @@ const AboutApp = () => {
             }}
             renderLeftIcon={() => (
               <AntDesign
-                style={styles.icon}
+                style={dynamicStyles.icon}
                 color="black"
                 // name="Safety"
                 size={20}
@@ -112,82 +205,3 @@ const AboutApp = () => {
 };
 
 export default AboutApp;
-
-const styles = StyleSheet.create({
-  aboutAppComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  aboutAppComponentBlock: {},
-  aboutAppComponentBlockHeader: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    padding: 12,
-    paddingTop: 40,
-  },
-  closeOrBackBtn: {
-    backgroundColor: "#D9D9D9",
-    paddingVertical: 6,
-    paddingHorizontal: 11,
-    borderRadius: 50,
-  },
-  scrollForAboutAppComponentSectionAndFooterBlockScrollView: {
-    paddingBottom: 130,
-    paddingHorizontal: 10,
-  },
-  scrollForAboutAppComponentSectionAndFooterBlock: {},
-  aboutAppComponentBlockSection: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  tajjobLogo: {
-    width: 230,
-    height: 230,
-  },
-  about: {
-    fontSize: 26,
-    fontWeight: "400",
-    textAlign: "justify",
-  },
-  aboutAppComponentBlockFooter: {
-    marginTop: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  footerTitle: {
-    fontSize: 28,
-    fontWeight: "500",
-  },
-  socialMediaAndMessengersBlock: {
-    marginTop: 10,
-    flexDirection: "row",
-    gap: 25,
-  },
-  socialMediaAndMessenger: {},
-
-  // Dropdown
-
-  // dropdown: {
-  //   margin: 16,
-  //   height: 50,
-  //   borderBottomColor: "gray",
-  //   borderBottomWidth: 0.5,
-  // },
-  // icon: {
-  //   marginRight: 5,
-  // },
-  // placeholderStyle: {
-  //   fontSize: 16,
-  // },
-  // selectedTextStyle: {
-  //   fontSize: 16,
-  // },
-  // iconStyle: {
-  //   width: 20,
-  //   height: 20,
-  // },
-  // inputSearchStyle: {
-  //   height: 40,
-  //   fontSize: 16,
-  // },
-});

@@ -5,116 +5,125 @@ import {
 } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  useColorScheme,
+  View,
+} from "react-native";
 
 const FAQ = () => {
   const Tab = createMaterialTopTabNavigator();
 
+  const colorScheme = useColorScheme();
+
+  const dynamicStyles = StyleSheet.create({
+    FAQComponent: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212":"#fff",
+    },
+    FAQComponentBlock: {
+      padding: 10,
+    },
+    FAQComponentHeader: {},
+    titleOfInfoLinks: {
+      color: colorScheme === "dark" ?"#fff" :"#969695",
+      fontSize: 17,
+      fontWeight: "300",
+    },
+    infoLinkBlock: {
+      marginTop: 14,
+    },
+    goToWebsiteBtn: {},
+    emailBtn: {},
+    termsOfServiceBtn: {},
+
+    // Styles with the same names
+    //////////////////////////////
+    linkBtn: {
+      borderBottomWidth: 1,
+      borderBottomColor: "#A2A2A2",
+      paddingVertical: 12,
+    },
+    iconAndLinkName: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 10,
+    },
+    iconOfLink: {},
+    linkName: {
+      fontSize: 21,
+      fontWeight: "500",
+      color: colorScheme === "dark" ?"#fff" :"#000",
+    },
+    //////////////////////////////
+
+    FAQComponentSection: {},
+  });
+
   return (
-    <View style={styles.FAQComponent}>
-      <View style={styles.FAQComponentBlock}>
-        <View style={styles.FAQComponentHeader}>
-          <Text style={styles.titleOfInfoLinks}>
+    <View style={dynamicStyles.FAQComponent}>
+      <View style={dynamicStyles.FAQComponentBlock}>
+        <View style={dynamicStyles.FAQComponentHeader}>
+          <Text style={dynamicStyles.titleOfInfoLinks}>
             Didn’t find the answer you were looking for? Contact our support
             center!
           </Text>
-          <View style={styles.infoLinkBlock}>
+          <View style={dynamicStyles.infoLinkBlock}>
             <TouchableHighlight
-              style={[styles.linkBtn, styles.goToWebsiteBtn]}
+              style={[dynamicStyles.linkBtn, dynamicStyles.goToWebsiteBtn]}
               onPress={() => {}}
               underlayColor="#f0f0f0"
             >
-              <View style={styles.iconAndLinkName}>
+              <View style={dynamicStyles.iconAndLinkName}>
                 <Ionicons
                   name="globe-outline"
                   size={29}
                   color="#A2A2A2"
-                  style={styles.iconOfLink}
+                  style={dynamicStyles.iconOfLink}
                 />
-                <Text style={styles.linkName}>Go to Website</Text>
+                <Text style={dynamicStyles.linkName}>Go to Website</Text>
               </View>
             </TouchableHighlight>
             <TouchableHighlight
-              style={[styles.linkBtn, styles.emailBtn]}
+              style={[dynamicStyles.linkBtn, dynamicStyles.emailBtn]}
               onPress={() => {}}
               underlayColor="#f0f0f0"
             >
-              <View style={styles.iconAndLinkName}>
+              <View style={dynamicStyles.iconAndLinkName}>
                 <MaterialCommunityIcons
                   name="email-outline"
                   size={29}
                   color="#A2A2A2"
-                  style={styles.iconOfLink}
+                  style={dynamicStyles.iconOfLink}
                 />
-                <Text style={styles.linkName}>Email Us</Text>
+                <Text style={dynamicStyles.linkName}>Email Us</Text>
               </View>
             </TouchableHighlight>
             <TouchableHighlight
-              style={[styles.linkBtn, styles.termsOfServiceBtn]}
+              style={[dynamicStyles.linkBtn, dynamicStyles.termsOfServiceBtn]}
               onPress={() => {}}
               underlayColor="#f0f0f0"
             >
-              <View style={styles.iconAndLinkName}>
+              <View style={dynamicStyles.iconAndLinkName}>
                 <FontAwesome
                   name="file-text-o"
                   size={29}
                   color="#A2A2A2"
-                  style={styles.iconOfLink}
+                  style={dynamicStyles.iconOfLink}
                 />
-                <Text style={styles.linkName}>Terms of Service</Text>
+                <Text style={dynamicStyles.linkName}>Terms of Service</Text>
               </View>
             </TouchableHighlight>
           </View>
         </View>
 
-        <View style={styles.FAQComponentSection}></View>
+        <View style={dynamicStyles.FAQComponentSection}></View>
       </View>
     </View>
   );
 };
 
 export default FAQ;
-
-const styles = StyleSheet.create({
-  FAQComponent: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  FAQComponentBlock: {
-    padding: 10,
-  },
-  FAQComponentHeader: {},
-  titleOfInfoLinks: {
-    color: "#969695",
-    fontSize: 17,
-    fontWeight: "300",
-  },
-  infoLinkBlock: {
-    marginTop: 14,
-  },
-  goToWebsiteBtn: {},
-  emailBtn: {},
-  termsOfServiceBtn: {},
-
-  // Styles with the same names
-  //////////////////////////////
-  linkBtn: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#A2A2A2",
-    paddingVertical: 12,
-  },
-  iconAndLinkName: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 10,
-  },
-  iconOfLink: {},
-  linkName: {
-    fontSize: 21,
-    fontWeight: "500",
-  },
-  //////////////////////////////
-
-  FAQComponentSection: {},
-});
