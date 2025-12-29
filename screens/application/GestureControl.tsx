@@ -17,6 +17,25 @@ const GestureControl = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [callingEnabled, setCallingEnabled] = useState(false);
 
+  // Switch colors for light and dark mode with better contrast
+  const switchColors = {
+    light: {
+      thumb: "#f4f3f4",
+      trackTrue: "#2623D2",
+      trackFalse: "#767577",
+      ios_background: "#E0E0E0",
+    },
+    dark: {
+      thumb: "#FFFFFF",
+      trackTrue: "#4A47FF", // Brighter blue for dark mode
+      trackFalse: "#555555", // Darker gray for better contrast
+      ios_background: "#3A3A3A",
+    },
+  };
+
+  const colors =
+    colorScheme === "dark" ? switchColors.dark : switchColors.light;
+
   const dynamicStyles = StyleSheet.create({
     gestureControlComponent: {
       flex: 1,
@@ -43,7 +62,7 @@ const GestureControl = () => {
       gap: 10,
     },
     iconBlock: {
-      backgroundColor: "#D9D9D9",
+      backgroundColor: colorScheme === "dark" ? "#2A2A2A" : "#D9D9D9",
       padding: 10,
       borderRadius: 50,
     },
@@ -66,6 +85,8 @@ const GestureControl = () => {
               dynamicStyles.acceptAdvertisingFunc,
               dynamicStyles.gestureControlButtonGestureControlFunc,
             ]}
+            underlayColor={colorScheme === "dark" ? "#2A2A2A" : "#F5F5F5"}
+            activeOpacity={0.7}
           >
             <View style={dynamicStyles.iconGestureControlNameAndSwitchBlock}>
               <View style={dynamicStyles.iconAndGestureControlNameBlock}>
@@ -73,7 +94,7 @@ const GestureControl = () => {
                   <Ionicons
                     name="megaphone-outline"
                     size={29}
-                    color="black"
+                    color={colorScheme === "dark" ? "#FFFFFF" : "black"}
                     style={dynamicStyles.icon}
                   />
                 </View>
@@ -85,6 +106,12 @@ const GestureControl = () => {
                 style={dynamicStyles.switchOnAndSwitchOffGestureControlSwitcher}
                 value={advertisingEnabled}
                 onValueChange={(value) => setAdvertisingEnabled(value)}
+                trackColor={{
+                  false: colors.trackFalse,
+                  true: colors.trackTrue,
+                }}
+                thumbColor={advertisingEnabled ? colors.thumb : colors.thumb}
+                ios_backgroundColor={colors.ios_background}
               />
             </View>
           </TouchableHighlight>
@@ -95,6 +122,8 @@ const GestureControl = () => {
               dynamicStyles.acceptAdvertisingFunc,
               dynamicStyles.gestureControlButtonGestureControlFunc,
             ]}
+            underlayColor={colorScheme === "dark" ? "#2A2A2A" : "#F5F5F5"}
+            activeOpacity={0.7}
           >
             <View style={dynamicStyles.iconGestureControlNameAndSwitchBlock}>
               <View style={dynamicStyles.iconAndGestureControlNameBlock}>
@@ -102,7 +131,7 @@ const GestureControl = () => {
                   <Entypo
                     name="chat"
                     size={29}
-                    color="black"
+                    color={colorScheme === "dark" ? "#FFFFFF" : "black"}
                     style={dynamicStyles.icon}
                   />
                 </View>
@@ -114,6 +143,12 @@ const GestureControl = () => {
                 style={dynamicStyles.switchOnAndSwitchOffGestureControlSwitcher}
                 value={messageEnabled}
                 onValueChange={(value) => setMessageEnabled(value)}
+                trackColor={{
+                  false: colors.trackFalse,
+                  true: colors.trackTrue,
+                }}
+                thumbColor={messageEnabled ? colors.thumb : colors.thumb}
+                ios_backgroundColor={colors.ios_background}
               />
             </View>
           </TouchableHighlight>
@@ -124,6 +159,8 @@ const GestureControl = () => {
               dynamicStyles.acceptAdvertisingFunc,
               dynamicStyles.gestureControlButtonGestureControlFunc,
             ]}
+            underlayColor={colorScheme === "dark" ? "#2A2A2A" : "#F5F5F5"}
+            activeOpacity={0.7}
           >
             <View style={dynamicStyles.iconGestureControlNameAndSwitchBlock}>
               <View style={dynamicStyles.iconAndGestureControlNameBlock}>
@@ -131,7 +168,7 @@ const GestureControl = () => {
                   <Ionicons
                     name="notifications-outline"
                     size={29}
-                    color="black"
+                    color={colorScheme === "dark" ? "#FFFFFF" : "black"}
                     style={dynamicStyles.icon}
                   />
                 </View>
@@ -143,6 +180,12 @@ const GestureControl = () => {
                 style={dynamicStyles.switchOnAndSwitchOffGestureControlSwitcher}
                 value={notificationsEnabled}
                 onValueChange={(value) => setNotificationsEnabled(value)}
+                trackColor={{
+                  false: colors.trackFalse,
+                  true: colors.trackTrue,
+                }}
+                thumbColor={notificationsEnabled ? colors.thumb : colors.thumb}
+                ios_backgroundColor={colors.ios_background}
               />
             </View>
           </TouchableHighlight>
@@ -153,6 +196,8 @@ const GestureControl = () => {
               dynamicStyles.acceptAdvertisingFunc,
               dynamicStyles.gestureControlButtonGestureControlFunc,
             ]}
+            underlayColor={colorScheme === "dark" ? "#2A2A2A" : "#F5F5F5"}
+            activeOpacity={0.7}
           >
             <View style={dynamicStyles.iconGestureControlNameAndSwitchBlock}>
               <View style={dynamicStyles.iconAndGestureControlNameBlock}>
@@ -160,7 +205,7 @@ const GestureControl = () => {
                   <FontAwesome6
                     name="phone-volume"
                     size={29}
-                    color="black"
+                    color={colorScheme === "dark" ? "#FFFFFF" : "black"}
                     style={dynamicStyles.icon}
                   />
                 </View>
@@ -172,6 +217,12 @@ const GestureControl = () => {
                 style={dynamicStyles.switchOnAndSwitchOffGestureControlSwitcher}
                 value={callingEnabled}
                 onValueChange={(value) => setCallingEnabled(value)}
+                trackColor={{
+                  false: colors.trackFalse,
+                  true: colors.trackTrue,
+                }}
+                thumbColor={callingEnabled ? colors.thumb : colors.thumb}
+                ios_backgroundColor={colors.ios_background}
               />
             </View>
           </TouchableHighlight>

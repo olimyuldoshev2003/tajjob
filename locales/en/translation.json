@@ -1,0 +1,9 @@
+{
+  "chooseLanguage": "Choose Language",
+  "choosePreferredLanguage": "Choose your preferred language",
+  "yourChosenLanguage": "Your chosen language",
+  "allLanguages": "All Languages",
+  "searchLanguages": "Search languages...",
+  "apply": "Apply",
+  "languageChanged": "Language changed to: {{language}}"
+}

@@ -75,7 +75,7 @@ const FAQ = () => {
             <TouchableHighlight
               style={[dynamicStyles.linkBtn, dynamicStyles.goToWebsiteBtn]}
               onPress={() => {}}
-              underlayColor="#f0f0f0"
+              underlayColor={colorScheme === "dark" ? "#000":"#f0f0f0"}
             >
               <View style={dynamicStyles.iconAndLinkName}>
                 <Ionicons
@@ -90,7 +90,7 @@ const FAQ = () => {
             <TouchableHighlight
               style={[dynamicStyles.linkBtn, dynamicStyles.emailBtn]}
               onPress={() => {}}
-              underlayColor="#f0f0f0"
+              underlayColor={colorScheme === "dark" ? "#000":"#f0f0f0"}
             >
               <View style={dynamicStyles.iconAndLinkName}>
                 <MaterialCommunityIcons
@@ -105,7 +105,7 @@ const FAQ = () => {
             <TouchableHighlight
               style={[dynamicStyles.linkBtn, dynamicStyles.termsOfServiceBtn]}
               onPress={() => {}}
-              underlayColor="#f0f0f0"
+              underlayColor={colorScheme === "dark" ? "#000":"#f0f0f0"}
             >
               <View style={dynamicStyles.iconAndLinkName}>
                 <FontAwesome
