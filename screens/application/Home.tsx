@@ -1060,7 +1060,7 @@ const Home = ({ onJobPress }: HomeProps) => {
                         style={dynamicStyles.checkboxAndItsLabel}
                       />
                     </View>
-                    <View style={dynamicStyles.checkboxAndItsLabelBlock}>
+                    {/* <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
                         size={25}
@@ -1080,7 +1080,7 @@ const Home = ({ onJobPress }: HomeProps) => {
                         }}
                         style={dynamicStyles.checkboxAndItsLabel}
                       />
-                    </View>
+                    </View> */}
                     <View style={dynamicStyles.checkboxAndItsLabelBlock}>
                       <BouncyCheckbox
                         isChecked={checked}
