@@ -8,23 +8,23 @@ import translationTajik from "./locales/tj/translation.json";
 
 const resources = {
   en: {
-    translation: {},
+    translation: translationEnglish,
   },
   ru: {
-    translation: {},
+    translation: translationRussian,
   },
   tj: {
-    translation: {},
+    translation:  translationTajik,
   },
 };
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: "en", // default language
-  fallbackLng: "en",
-  interpolation: {
-    escapeValue: false,
-  },
+  lng: "en",
+  // fallbackLng: "en",
+  // interpolation: {
+  //   escapeValue: false,
+  // },
 });
 
 export default i18n;

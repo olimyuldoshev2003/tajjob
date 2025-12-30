@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { use, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -20,34 +22,99 @@ const Language = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedLanguageValue, setSelectedLanguageValue] = useState("en");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Sample languages data
-  const languages = [
+  const [languages, setLanguages] = useState([
     {
       id: 1,
       name: "English",
       value: "en",
       flag: require("../../assets/tajjob/profile/en-lang.jpg"),
+      searchTerms: ["english", "английский", "англисӣ"], // Search terms in all languages
     },
     {
       id: 2,
       name: "Russian",
       value: "ru",
       flag: require("../../assets/tajjob/profile/ru-lang.jpg"),
+      searchTerms: ["russian", "русский", "русӣ"],
     },
     {
       id: 3,
       name: "Tajik",
       value: "tj",
       flag: require("../../assets/tajjob/profile/tj-lang.jpg"),
+      searchTerms: ["tajik", "таджикский", "тоҷикӣ"],
     },
-  
-  ];
+  ]);
 
-  // Filter languages based on search query
-  const filteredLanguages = languages.filter((language) =>
-    language.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  //for translation
+  const { t, i18n } = useTranslation();
+
+  // Update language names when translation changes
+  useEffect(() => {
+    setLanguages([
+      {
+        id: 1,
+        name: t("language.en"),
+        value: "en",
+        flag: require("../../assets/tajjob/profile/en-lang.jpg"),
+        searchTerms: ["english", "английский", "англисӣ"],
+      },
+      {
+        id: 2,
+        name: t("language.ru"),
+        value: "ru",
+        flag: require("../../assets/tajjob/profile/ru-lang.jpg"),
+        searchTerms: ["russian", "русский", "русӣ"],
+      },
+      {
+        id: 3,
+        name: t("language.tj"),
+        value: "tj",
+        flag: require("../../assets/tajjob/profile/tj-lang.jpg"),
+        searchTerms: ["tajik", "таджикский", "тоҷикӣ"],
+      },
+    ]);
+  }, [t]);
+
+  // Also update selectedLanguage name when languages change
+  useEffect(() => {
+    const currentLang = languages.find(
+      (lang) => lang.value === selectedLanguageValue
+    );
+    if (currentLang) {
+      setSelectedLanguage(currentLang.name);
+    }
+  }, [languages, selectedLanguageValue]);
+
+  const changeLanguage = (language: string) => {
+    i18n.changeLanguage(language);
+  };
+
+  // Filter languages based on search query in all languages
+  const filteredLanguages = languages.filter((language) => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase();
+
+    // Search in the current language name
+    if (language.name.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    // Search in all search terms (English, Russian, Tajik)
+    if (
+      language.searchTerms?.some((term) => term.toLowerCase().includes(query))
+    ) {
+      return true;
+    }
+
+    // Search in language value
+    if (language.value.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    return false;
+  });
 
   const handleLanguageSelect = (
     languageName: string,
@@ -58,16 +125,65 @@ const Language = () => {
   };
 
   const handleApply = () => {
-    console.log("Applied language:", selectedLanguage);
+    // Get the selected language object to get the updated name
+    const selectedLang = languages.find(
+      (lang) => lang.value === selectedLanguageValue
+    );
+
+    // Store the current language for the alert message
+    const languageToApply = selectedLanguageValue;
+
+    // Get language names in all languages for the alert
+    const languageNames = {
+      en: "English",
+      ru: "Russian",
+      tj: "Tajik",
+    };
+
+    // First change the language
+    changeLanguage(selectedLanguageValue);
+
+    // Create alert message manually instead of using t() function
+    // This ensures we show the correct language name
+    const getAlertMessage = () => {
+      const langName =
+        languageNames[languageToApply as keyof typeof languageNames];
+
+      switch (languageToApply) {
+        case "en":
+          return `Language changed to ${langName.toLowerCase()}`;
+        case "ru":
+          return `Язык изменен на ${
+            langName === "Russian"
+              ? "русский"
+              : langName === "English"
+              ? "английский"
+              : "таджикский"
+          }`;
+        case "tj":
+          return `Забон ба ${
+            langName === "Tajik"
+              ? "тоҷикӣ"
+              : langName === "English"
+              ? "англисӣ"
+              : "русӣ"
+          } иваз карда шуд`;
+        default:
+          return `Language changed to ${langName}`;
+      }
+    };
+
+    // Show alert immediately with the new language message
+    Alert.alert(getAlertMessage());
+
+    console.log("Applied language:", selectedLang?.name || selectedLanguage);
     console.log("Applied language value:", selectedLanguageValue);
-    // Here you would typically save the selected language to your state management or backend
-    alert(`Language set to: ${selectedLanguage}`);
   };
 
   const dynamicStyles = StyleSheet.create({
     languageComponent: {
       flex: 1,
-      backgroundColor: colorScheme === "dark" ?"#121212":"#fff",
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
     },
     languageComponentBlock: {
       paddingVertical: 10,
@@ -87,7 +203,7 @@ const Language = () => {
       fontWeight: "500",
       color: colorScheme === "dark" ? "#FFFFFF" : "#000000",
     },
-    
+
     blockChosenLanguage: {
       marginTop: 20,
     },
@@ -101,7 +217,7 @@ const Language = () => {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      
+
       padding: 5,
       borderWidth: 1,
       borderColor: "#00BBCA",
@@ -122,7 +238,7 @@ const Language = () => {
       fontWeight: "400",
       color: colorScheme === "dark" ? "#FFFFFF" : "#000000",
     },
-    
+
     blockSearchLanguageAndAllLanguages: {
       marginTop: 30,
       paddingHorizontal: 5,
@@ -158,9 +274,9 @@ const Language = () => {
       borderTopRightRadius: 10,
       color: colorScheme === "dark" ? "#FFFFFF" : "#000000",
     },
-    
+
     allLanguagesBlockScrollView: {},
-    
+
     allLanguagesBlock: {
       maxHeight: 250,
     },
@@ -169,7 +285,6 @@ const Language = () => {
     },
     blockLanguage: {
       flexDirection: "row",
-      // alignItems: "center",
       justifyContent: "space-between",
     },
     blockFlagIconAndLanguageName: {
@@ -194,7 +309,6 @@ const Language = () => {
       backgroundColor: "#00BBCA",
       borderRadius: 62,
       paddingVertical: 15,
-      // paddingHorizontal: 20,
     },
     btnTextApply: {
       color: "#FFFFFF",
@@ -204,27 +318,33 @@ const Language = () => {
     },
   });
 
-
   return (
     <View style={dynamicStyles.languageComponent}>
       <View style={dynamicStyles.languageComponentBlock}>
         <View style={dynamicStyles.blockTitleAndDescriptionOfLanguageComponent}>
-          <Text style={dynamicStyles.titleOfLanguageComponent}>Choose Language</Text>
+          <Text style={dynamicStyles.titleOfLanguageComponent}>
+            {t("language.chooseLanguage")}
+          </Text>
           <Text style={dynamicStyles.descriptionOfLanguageComponent}>
-            Choose your preferred language
+            {t("language.choosePreferredLanguage")}
           </Text>
         </View>
         <View style={dynamicStyles.blockChosenLanguage}>
-          <Text style={dynamicStyles.chosenLanguageTitle}>Your chosen language</Text>
+          <Text style={dynamicStyles.chosenLanguageTitle}>
+            {t("language.yourChosenLanguage")}
+          </Text>
           <View style={dynamicStyles.blockInfoChosenLanguage}>
             <View style={dynamicStyles.blockFlagIconAndChosenLanguageName}>
               <Image
                 source={
-                  languages.find((lang) => lang.name === selectedLanguage)?.flag
+                  languages.find((lang) => lang.value === selectedLanguageValue)
+                    ?.flag
                 }
                 style={dynamicStyles.chosenLanguageFlag}
               />
-              <Text style={dynamicStyles.chosenLanguageName}>{selectedLanguage}</Text>
+              <Text style={dynamicStyles.chosenLanguageName}>
+                {selectedLanguage}
+              </Text>
             </View>
             <View>
               <BouncyCheckbox
@@ -240,35 +360,38 @@ const Language = () => {
           </View>
         </View>
         <View style={dynamicStyles.blockSearchLanguageAndAllLanguages}>
-          <Text style={dynamicStyles.allLanguagesTitle}>All Languages</Text>
+          <Text style={dynamicStyles.allLanguagesTitle}>
+            {t("language.allLanguages")}
+          </Text>
           <View style={dynamicStyles.blockSearchAndChooseLanguage}>
             <View style={dynamicStyles.searchInputAllLanguagesBlock}>
               <Ionicons
                 name="search"
                 size={31}
-                color={colorScheme === "dark" ? "#fff":"black"}
+                color={colorScheme === "dark" ? "#fff" : "black"}
                 style={dynamicStyles.searchIconAllLanguages}
               />
               <TextInput
                 style={dynamicStyles.searchInputAllLanguages}
-                placeholder="Search languages..."
-                placeholderTextColor={colorScheme === "dark" ? "#cecece" : "#414141"}
+                placeholder={t("language.searchLanguages")}
+                placeholderTextColor={
+                  colorScheme === "dark" ? "#cecece" : "#414141"
+                }
                 value={searchQuery}
-                onChangeText={setSearchQuery}
+                onChangeText={(text) => {
+                  setSearchQuery(text);
+                }}
               />
             </View>
             <ScrollView
               contentContainerStyle={dynamicStyles.allLanguagesBlockScrollView}
               style={dynamicStyles.allLanguagesBlock}
-
-                
-              
             >
               {filteredLanguages.map((language) => (
                 <TouchableHighlight
                   style={dynamicStyles.btnSelectLanguage}
                   key={language.id}
-                  underlayColor={colorScheme === "dark" ? "#000":"#f0f0f0"}
+                  underlayColor={colorScheme === "dark" ? "#000" : "#f0f0f0"}
                   onPress={() =>
                     handleLanguageSelect(language.name, language.value)
                   }
@@ -279,7 +402,9 @@ const Language = () => {
                         source={language.flag}
                         style={dynamicStyles.languageFlag}
                       />
-                      <Text style={dynamicStyles.languageName}>{language.name}</Text>
+                      <Text style={dynamicStyles.languageName}>
+                        {language.name}
+                      </Text>
                     </View>
                     <BouncyCheckbox
                       size={20}
@@ -291,7 +416,6 @@ const Language = () => {
                       onPress={() =>
                         handleLanguageSelect(language.name, language.value)
                       }
-                      disabled
                     />
                   </View>
                 </TouchableHighlight>
@@ -301,7 +425,9 @@ const Language = () => {
         </View>
         <View style={dynamicStyles.blockBtnApply}>
           <Pressable style={dynamicStyles.btnApply} onPress={handleApply}>
-            <Text style={dynamicStyles.btnTextApply}>Apply</Text>
+            <Text style={dynamicStyles.btnTextApply}>
+              {t("language.apply")}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -310,4 +436,3 @@ const Language = () => {
 };
 
 export default Language;
-

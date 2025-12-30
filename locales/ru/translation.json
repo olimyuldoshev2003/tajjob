@@ -1,9 +1,15 @@
 {
-  "chooseLanguage": "Выберите язык",
-  "choosePreferredLanguage": "Выберите предпочитаемый язык",
-  "yourChosenLanguage": "Ваш выбранный язык",
-  "allLanguages": "Все языки",
-  "searchLanguages": "Поиск языков...",
-  "apply": "Применить",
-  "languageChanged": "Язык изменен на: {{language}}"
+  "language":{
+
+    "chooseLanguage": "Выберите язык",
+    "choosePreferredLanguage": "Выберите предпочитаемый язык",
+    "yourChosenLanguage": "Ваш выбранный язык",
+    "allLanguages": "Все языки",
+    "searchLanguages": "Поиск языков...",
+    "apply": "Применить",
+    "languageChanged": "Язык изменен на русский",
+    "en": "Английский",
+    "ru": "Русский",
+    "tj": "Таджикский"
+  }
 }

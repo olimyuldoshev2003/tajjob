@@ -3,8 +3,9 @@ import {
   NavigationContainer,
   NavigationIndependentTree,
 } from "@react-navigation/native";
-import { useEffect } from "react";
-import { Platform, StatusBar } from "react-native";
+import React, { useEffect } from "react";
+import { Platform, StatusBar, Text, View } from "react-native";
+import "../i18n";
 
 function App() {
   useEffect(() => {
@@ -22,11 +23,19 @@ function App() {
   }, []);
 
   return (
-    <NavigationIndependentTree>
-      <NavigationContainer>
-        <TabNavigator />
-      </NavigationContainer>
-    </NavigationIndependentTree>
+    <React.Suspense
+      fallback={
+        <View>
+          <Text>...Loading</Text>
+        </View>
+      }
+    >
+      <NavigationIndependentTree>
+        <NavigationContainer>
+          <TabNavigator />
+        </NavigationContainer>
+      </NavigationIndependentTree>
+    </React.Suspense>
   );
 }
 

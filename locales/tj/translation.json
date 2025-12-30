@@ -1,9 +1,14 @@
 {
-  "chooseLanguage": "Забонро интихоб кунед",
-  "choosePreferredLanguage": "Забони дӯстдоштаи худро интихоб кунед",
-  "yourChosenLanguage": "Забони интихобшудаи шумо",
-  "allLanguages": "Ҳама забонҳо",
-  "searchLanguages": "Забонҳоро ҷустуҷӯ кунед...",
-  "apply": "Истифода",
-  "languageChanged": "Забон ба {{language}} иваз шуд"
+  "language": {
+    "chooseLanguage": "Забонро интихоб кунед",
+    "choosePreferredLanguage": "Забони дӯстдоштаи худро интихоб кунед",
+    "yourChosenLanguage": "Забони интихобшудаи шумо",
+    "allLanguages": "Ҳама забонҳо",
+    "searchLanguages": "Забонҳоро ҷустуҷӯ кунед...",
+    "apply": "Истифода",
+    "languageChanged": "Забон ба Тоҷикӣ иваз шуд",
+    "en": "Англисӣ",
+    "ru": "Русӣ",
+    "tj": "Тоҷикӣ"
+  }
 }
